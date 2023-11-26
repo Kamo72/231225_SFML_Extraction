@@ -45,8 +45,6 @@ namespace _231109_SFML_Test
 
                         InputManager.DebugProcess();
 
-                        Sound sound = new Sound(new SoundBuffer(@"Assets\Sounds\SpiralMissileFly.ogg"));
-                        sound.Play();
                     }
                     // 화면 업데이트
                     window.Display();

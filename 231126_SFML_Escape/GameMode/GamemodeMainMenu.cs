@@ -13,6 +13,7 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
+using SFML.Audio;
 
 namespace _231109_SFML_Test
 {
@@ -40,7 +41,19 @@ namespace _231109_SFML_Test
                 }
 
             Console.WriteLine($"GamemodeMainMenu Init 5 >>> ");
-            uis.Add(new UiTest(this, new Vector2f(100f, 100f), new Vector2f(100f, 100f)));
+            Ui ui = new UiTest(this, new Vector2f(100f, 100f), new Vector2f(100f, 100f));
+            ui.Clicked += () =>
+            {
+                Sound sound = new Sound(new SoundBuffer(@"Assets\Sounds\SpiralMissileFly.ogg"));
+                sound.RelativeToListener = true;
+                sound.Play();
+                sound.Position = new Vector3f((float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f);
+                Console.WriteLine(sound.ToString());    
+                sounds.Add(sound);
+            };
+            uis.Add(ui);
+
+
 
             //entity = new Player(this, new Vector2f(0, 0));
 
@@ -49,7 +62,7 @@ namespace _231109_SFML_Test
         Entity entity;
         List<Ui> uis = new List<Ui>();
         public List<Box> boxs = new List<Box>(); 
-
+        public List<Sound> sounds = new List<Sound>();
         protected override void DrawProcess()
         {
             Font font = ResourceManager.fonts["Jalnan"];

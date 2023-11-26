@@ -47,7 +47,7 @@ namespace _231109_SFML_Test
                 Sound sound = new Sound(new SoundBuffer(@"Assets\Sounds\SpiralMissileFly.ogg"));
                 sound.RelativeToListener = true;
                 sound.Play();
-                sound.Position = new Vector3f((float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f);
+                sound.Position = new Vector3f((float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f)    ;
                 Console.WriteLine(sound.ToString());    
                 sounds.Add(sound);
             };

@@ -7,6 +7,13 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
+using Rm = _231109_SFML_Test.ResourceManager;
+using Cm = _231109_SFML_Test.CameraManager;
+using Dm = _231109_SFML_Test.DrawManager;
+using Im = _231109_SFML_Test.InputManager;
+using Sm = _231109_SFML_Test.SoundManager;
+using Vm = _231109_SFML_Test.VideoManager;
+
 namespace _231109_SFML_Test
 {
     internal class GamemodeMainMenu : Gamemode
@@ -15,18 +22,29 @@ namespace _231109_SFML_Test
         {
             Random random = new Random();
 
+            Console.WriteLine($"GamemodeMainMenu Init >>> ");
             lock (boxs)
-                for (int i = 0; i <= 100; i++) 
+                for (int i = 0; i <= 100; i++)
                 {
+                    Console.WriteLine($"GamemodeMainMenu Init 1 >>> ");
                     Box box = new Box(new Vector2f(random.Next(5000) - 2500, random.Next(5000) - 2500), new Vector2f(random.Next(200) +20, random.Next(200) + 20));
+
+                    Console.WriteLine($"GamemodeMainMenu Init 2 >>> ");
                     box.Texture = ResourceManager.textures["smgIcon"];
+
+                    Console.WriteLine($"GamemodeMainMenu Init 3 >>> ");
                     box.Rotation = random.Next(360);
+
+                    Console.WriteLine($"GamemodeMainMenu Init 4 >>> ");
                     boxs.Add(box);
                 }
 
+            Console.WriteLine($"GamemodeMainMenu Init 5 >>> ");
             uis.Add(new UiTest(this, new Vector2f(100f, 100f), new Vector2f(100f, 100f)));
 
-            entity = new Player(this, new Vector2f(0, 0));
+            //entity = new Player(this, new Vector2f(0, 0));
+
+            Console.WriteLine($"GamemodeMainMenu Init End >>> ");
         }
         Entity entity;
         List<Ui> uis = new List<Ui>();
@@ -52,10 +70,6 @@ namespace _231109_SFML_Test
             DrawManager.uiTex[1].Draw(ntext);
 
 
-            //float timeValue = clock.ElapsedTime.AsSeconds();
-            //Vector2f newPos = new Vector2f((float)Math.Cos(timeValue), (float)Math.Sin(timeValue)) * 300f;
-            //box.Position = newPos;
-
             lock (boxs)
                 foreach (Box box in boxs)
                     if(CameraManager.IsSkippable(box.Position) == false)
@@ -65,6 +79,7 @@ namespace _231109_SFML_Test
 
         protected override void LogicProcess()
         {
+            Console.WriteLine($"GamemodeMainMenu LogicProcess >>> ");
 
 
         }

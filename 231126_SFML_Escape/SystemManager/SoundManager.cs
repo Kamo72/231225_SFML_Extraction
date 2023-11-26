@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFML.Audio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,4 +14,26 @@ using Vm = _231109_SFML_Test.VideoManager;
 
 namespace _231109_SFML_Test
 {
+    internal static class SoundManager
+    {
+
+        static SoundManager() 
+        {
+            sound = new Sound(Rm.bgms["EnemyHit"]);
+            sound.Play();
+        }
+
+        static Sound sound;
+        static float totalVol = 0.5f;
+
+        public class SoundUnion 
+        {
+
+        }
+
+
+
+
+
+    }
 }

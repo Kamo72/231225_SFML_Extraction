@@ -8,6 +8,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Timers;
 
+using Rm = _231109_SFML_Test.ResourceManager;
+using Cm = _231109_SFML_Test.CameraManager;
+using Dm = _231109_SFML_Test.DrawManager;
+using Im = _231109_SFML_Test.InputManager;
+using Sm = _231109_SFML_Test.SoundManager;
+using Vm = _231109_SFML_Test.VideoManager;
+
 namespace _231109_SFML_Test
 {
     internal static class CameraManager
@@ -76,7 +83,6 @@ namespace _231109_SFML_Test
         {
             double reduction = shakeReduction * 1f / (VideoManager.fpsNow + 1);
             shakeValue *= (1f - reduction);
-            Console.WriteLine($"{shakeValue} >>> {reduction}");
 
             if (shakeValue < 0) shakeValue = 0;
 

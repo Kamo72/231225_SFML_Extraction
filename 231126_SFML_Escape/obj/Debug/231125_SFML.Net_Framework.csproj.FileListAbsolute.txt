@@ -1,0 +1,13 @@
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\obj\Debug\231125_SFML.Net_Framework.csproj.AssemblyReference.cache
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\obj\Debug\231125_SFML.Net_Framework.csproj.SuggestedBindingRedirects.cache
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\obj\Debug\231125_SFML.Net_Framework.csproj.CoreCompileInputs.cache
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\obj\Debug\231109_SFML_Test.exe
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\obj\Debug\231109_SFML_Test.pdb
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\bin\Debug\231109_SFML_Test.exe.config
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\bin\Debug\231109_SFML_Test.exe
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\bin\Debug\231109_SFML_Test.pdb
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\bin\Debug\sfmlnet-audio-2.dll
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\bin\Debug\sfmlnet-graphics-2.dll
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\bin\Debug\sfmlnet-system-2.dll
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\bin\Debug\sfmlnet-window-2.dll
+F:\[GitHub]\231125_SFML.Net_Framework\231125_SFML.Net_Framework\obj\Debug\231125_SFML.Net_Framework.csproj.CopyComplete

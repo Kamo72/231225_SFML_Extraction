@@ -1,0 +1,29 @@
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\231109_SFML_Test.exe.config
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\231109_SFML_Test.exe
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\231109_SFML_Test.pdb
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\SFML.Audio.dll
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\SFML.Graphics.dll
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\SFML.System.dll
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\SFML.Window.dll
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\SFML.Audio.xml
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\SFML.Graphics.xml
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\SFML.System.xml
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\bin\Debug\SFML.Window.xml
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.csproj.AssemblyReference.cache
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.csproj.CoreCompileInputs.cache
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.csproj.CopyComplete
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.exe
+S:\[Education]\2학년 2학기\[TEST] Test\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.pdb
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\bin\Debug\231109_SFML_Test.exe.config
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\bin\Debug\231109_SFML_Test.exe
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\bin\Debug\231109_SFML_Test.pdb
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.csproj.AssemblyReference.cache
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.csproj.SuggestedBindingRedirects.cache
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.csproj.CoreCompileInputs.cache
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.csproj.CopyComplete
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.exe
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\obj\Debug\231109_SFML_Test.pdb
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\bin\Debug\sfmlnet-audio-2.dll
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\bin\Debug\sfmlnet-graphics-2.dll
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\bin\Debug\sfmlnet-system-2.dll
+F:\[Education]\231109_SFML_Test\231109_SFML_Test\bin\Debug\sfmlnet-window-2.dll

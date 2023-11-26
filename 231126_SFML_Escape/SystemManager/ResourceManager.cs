@@ -12,6 +12,7 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
+using System.Windows.Forms;
 
 namespace _231109_SFML_Test
 {
@@ -55,19 +56,8 @@ namespace _231109_SFML_Test
             //sfx
             {
                 string header = @"Assets\Sounds\";
-                try
-                {
-
-                    SoundBuffer soundBuffer = new SoundBuffer(header + "SpiralMissileFly.ogg");
-                    sfxs.Add("EnemyHit", soundBuffer);
-                    //...
-                    new Sound(soundBuffer).Play();
-
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                sfxs.Add("SpiralMissileFly", new SoundBuffer(header + "SpiralMissileFly.ogg"));
+                sfxs.Add("EnemyHit", new SoundBuffer(header + "EnemyHit.ogg"));
             }
         }
     }

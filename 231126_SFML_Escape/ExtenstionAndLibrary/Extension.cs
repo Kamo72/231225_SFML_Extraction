@@ -31,6 +31,19 @@ namespace _231109_SFML_Test
                 return vector;
         }
 
+        //Vector2f를 원점을 기준으로 회전하는 Extension 메서드
+        public static Vector2f RotateFromZero(this Vector2f vector, float rotation)
+        {
+            // 라디안으로 변환
+            float radians = rotation * (float)(Math.PI / 180.0);
+
+            // 회전 행렬을 사용하여 벡터를 회전
+            float x = vector.X * (float)Math.Cos(radians) - vector.Y * (float)Math.Sin(radians);
+            float y = vector.X * (float)Math.Sin(radians) + vector.Y * (float)Math.Cos(radians);
+
+            return new Vector2f(x, y);
+        }
+
         // float를 벡터로 변환하는 Extension 메서드
         public static Vector2f ToVector(this float direction)
         {

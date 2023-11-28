@@ -31,7 +31,6 @@ namespace _231109_SFML_Test
             {
                 totalManager.SetGamemodeType(GamemodeType.MAIN_MENU);
             }
-            Console.WriteLine(miliSec.ToString()  + "/"+ logoTimeMax.ToString());
         }
 
         protected override void DrawProcess() 

@@ -26,7 +26,7 @@ namespace _231109_SFML_Test
 
         protected override void DrawProcess()
         {
-            DrawManager.worldTex[2].Draw(mask, CameraManager.worldRenderState);
+            DrawManager.texWrHigher.Draw(mask, CameraManager.worldRenderState);
         }
 
         protected override void LogicProcess()

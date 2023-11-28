@@ -18,7 +18,7 @@ namespace _231109_SFML_Test
 {
     internal static class DrawManager
     {
-        static DrawManager() 
+        static DrawManager()
         {
             //해상도 변경될 때마다 자동으로 텍스쳐 조정
             VideoManager.ChangedResolution += ResolutionChanged;
@@ -39,7 +39,7 @@ namespace _231109_SFML_Test
 
 
             //새로운 텍스쳐 생성
-            for(int idx = 0; idx < uiTex.Length; idx++)
+            for (int idx = 0; idx < uiTex.Length; idx++)
                 uiTex[idx] = new RenderTexture((uint)resolution.X, (uint)resolution.Y);
 
             for (int idx = 0; idx < worldTex.Length; idx++)
@@ -49,8 +49,21 @@ namespace _231109_SFML_Test
         }
 
         //입력받을 텍스쳐
-        public static RenderTexture[] uiTex = new RenderTexture[3];     //0 = 화면 효과 1 = UI 2 = 효과
-        public static RenderTexture[] worldTex = new RenderTexture[4];  //0 = 배경 1 = 동적 2 = 효과 3 = 증강 효과
+
+        #region [텍스쳐 파라미터]
+        public static RenderTexture texUiBackground { get { return uiTex[0]; } }
+        public static RenderTexture texUiInterface { get { return uiTex[1]; } }
+        public static RenderTexture texUiPopup { get { return uiTex[2]; } }
+        public static RenderTexture texUiWhole { get { return uiTex[3]; } }
+        public static RenderTexture texWrBackground { get { return worldTex[0]; } }
+        public static RenderTexture texWrLower { get { return worldTex[1]; } }
+        public static RenderTexture texWrHigher { get { return worldTex[2]; } }
+        public static RenderTexture texWrEffect { get { return worldTex[3]; } }
+        public static RenderTexture texWrAugment { get { return worldTex[4]; } }
+        #endregion
+
+        public static RenderTexture[] uiTex = new RenderTexture[4];     //0 = 화면 효과 1 = UI, 2 = 팝업 3 = 전체 효과
+        public static RenderTexture[] worldTex = new RenderTexture[5];  //0 = 배경, 1 = 바닥 1 = 동적 2 = 효과 3 = 증강 효과
         public static RenderTexture resultTex;
 
 

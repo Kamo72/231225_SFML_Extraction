@@ -81,19 +81,20 @@
   <ItemGroup>
     <Compile Include="BaseModels\Basics.cs" />
     <Compile Include="ExtenstionAndLibrary\Extension.cs" />
+    <Compile Include="GameMode\Ingame\GamemodeIngame.cs" />
     <Compile Include="Implementation\Entitys.cs" />
     <Compile Include="Implementation\Particles.cs" />
     <Compile Include="Implementation\Projectiles.cs" />
     <Compile Include="Implementation\Uis.cs" />
-    <Compile Include="GameMode\GamemodeLogo.cs" />
-    <Compile Include="GameMode\Gamemode.cs" />
-    <Compile Include="GameMode\GamemodeMainMenu.cs" />
+    <Compile Include="GameMode\Logo\GamemodeLogo.cs" />
+    <Compile Include="GameMode\System\Gamemode.cs" />
+    <Compile Include="GameMode\MainMenu\GamemodeMainMenu.cs" />
     <Compile Include="SystemManager\CameraManager.cs" />
     <Compile Include="SystemManager\DrawManager.cs" />
     <Compile Include="SystemManager\InputManager.cs" />
     <Compile Include="SystemManager\ResourceManager.cs" />
     <Compile Include="BaseModels\Collision.cs" />
-    <Compile Include="GameMode\TotalManager.cs" />
+    <Compile Include="GameMode\System\TotalManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemManager\SoundManager.cs" />

@@ -77,8 +77,9 @@ namespace _231109_SFML_Test
 
         public Ui(Gamemode gamemode, Vector2f position, Vector2f size)
         {
-            Position = position;
             Size = size;
+            Position = position;
+            Origin = size / 2f;
 
             this.gamemode = gamemode;
             gamemode.DisposablesAdd(this);

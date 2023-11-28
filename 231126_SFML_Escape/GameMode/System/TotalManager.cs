@@ -59,6 +59,7 @@ namespace _231109_SFML_Test
                     gmNow = new GamemodeMainMenu(this);
                     break;
                 case GamemodeType.INGAME:
+                    gmNow = new GamemodeIngame(this);
                     break;
                 case GamemodeType.RESULT:
                     break;

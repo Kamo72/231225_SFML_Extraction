@@ -28,7 +28,11 @@ namespace _231109_SFML_Test
         static Entity master;
 
         static public Vector2f mousePosition = new Vector2f(0,0);
-        static public Vector2f screenSize { get { return (Vector2f)VideoManager.resolutionNow; } }
+        static Vector2f screenSize { get { return (Vector2f)VideoManager.resolutionNow; } }
+        public static bool CommandCheck(CommandType cmdType)
+        {
+            return commandDic[CommandType.MOVE_RIGHT].Check();
+        }
 
         #region [입력 장치 제어]
         //키값
@@ -49,7 +53,7 @@ namespace _231109_SFML_Test
             }
             public KeyData(Mouse.Button mouseCode)
             {
-                isKey = true;
+                isKey = false;
                 this.keyCode = null;
                 this.mouseCode = mouseCode;
                 isActivatedBefore = false;
@@ -235,6 +239,17 @@ namespace _231109_SFML_Test
             //commandDic[CommandType.TACTIC] = new CommandData("전술 장비", KeyReadType.RELEASE, new KeyData(KeyCode.Q));
         }
 
+        public static void RefreshProcess()
+        {
+            try {
+                foreach (CommandData command in commandDic.Values)
+                    command.AfterCheckProcess();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToString() + ex.StackTrace);
+            }
+        }
         #endregion
 
 

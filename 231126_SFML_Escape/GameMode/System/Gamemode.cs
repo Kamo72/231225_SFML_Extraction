@@ -68,16 +68,26 @@ namespace _231109_SFML_Test
         }
         public void Dispose()
         {
+            Console.WriteLine("Debug - Gamemode Dipose Init");
             if (totalManager.gmNow == this) { totalManager.gmNow = null; }
 
+            Console.WriteLine("Debug - To Diposable heap - " + disposables.Count);
             while (disposables.Count > 0)
             {
-                disposables[0].Dispose();
-                disposables.RemoveAt(0);
+                Console.WriteLine("Debug - Dipose  heap - " + disposables[0].ToString());
+                IDisposable disposable = disposables[0];
+
+                if (disposable is TextLabel ui) ui.Dispose();
+                else disposables[0].Dispose();
+
+                //disposables.RemoveAt(0);
             }
-            
+
+            Console.WriteLine("Debug - To Diposable heap - " + disposables.Count);
+
             timer.Dispose();
             GC.SuppressFinalize(this);
+            Console.WriteLine("Debug - Gamemode Dipose End");
         }
     }
 }

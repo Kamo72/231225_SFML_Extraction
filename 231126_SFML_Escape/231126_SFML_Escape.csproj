@@ -82,10 +82,13 @@
     <Compile Include="BaseModels\Basics.cs" />
     <Compile Include="ExtenstionAndLibrary\Extension.cs" />
     <Compile Include="GameMode\Ingame\GamemodeIngame.cs" />
-    <Compile Include="Implementation\Entitys.cs" />
-    <Compile Include="Implementation\Particles.cs" />
-    <Compile Include="Implementation\Projectiles.cs" />
-    <Compile Include="Implementation\Uis.cs" />
+    <Compile Include="Implementation\Entitys\Humanoid.cs" />
+    <Compile Include="Implementation\Entitys\Player.cs" />
+    <Compile Include="Implementation\Particles\Particles.cs" />
+    <Compile Include="Implementation\Projectiles\Projectiles.cs" />
+    <Compile Include="Implementation\Uis\TextLabel.cs" />
+    <Compile Include="Implementation\Uis\TextMainMenu.cs" />
+    <Compile Include="Implementation\Uis\Uis.cs" />
     <Compile Include="GameMode\Logo\GamemodeLogo.cs" />
     <Compile Include="GameMode\System\Gamemode.cs" />
     <Compile Include="GameMode\MainMenu\GamemodeMainMenu.cs" />
@@ -106,6 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="openal32.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Implementation\Structures\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

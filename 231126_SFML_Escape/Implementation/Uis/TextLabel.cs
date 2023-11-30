@@ -1,10 +1,8 @@
-﻿using SFML.Graphics;
+﻿
 using SFML.System;
-using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,45 +12,18 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
+using SFML.Graphics;
+using System.Diagnostics;
 
 namespace _231109_SFML_Test
 {
-    class UiTest : Ui 
+
+    class TextLabel : Ui
     {
-        public UiTest(Gamemode gamemode, Vector2f position, Vector2f size) : base(gamemode, position, size)
-        {
-            Clicked += () =>
-            { 
-                Random random = new Random();
-                lock(((GamemodeIngame)gamemode).boxs)
-                    for (int i = 0; i <= 100; i++)
-                    {
-                        Box box = new Box(new Vector2f(random.Next(5000) - 2500, random.Next(5000) - 2500), new Vector2f(random.Next(200) + 20, random.Next(200) + 20));
-                        box.Texture = ResourceManager.textures["smgIcon"];
-                        box.Rotation = random.Next(360);
-                        ((GamemodeIngame)gamemode).boxs.Add(box);
-                    }
-                CameraManager.GetShake(10f);
-            };
-
-        }
-
-        protected override void DrawProcess()
-        {
-            DrawManager.uiTex[1].Draw(this);
-        }
-
-        protected override void LogicProcess()
-        {
-        }
-    }
-
-    class UiMenuButtonTitle : Ui
-    {
-        public UiMenuButtonTitle(Gamemode gamemode, Vector2f position, Vector2f size) : base(gamemode, position, size)
+        public TextLabel(Gamemode gamemode, Vector2f position, Vector2f size) : base(gamemode, position, size)
         {
             text = new Text();
-            TextSet(Rm.fonts["Jalnan"], 10, " ");
+            TextSet(Rm.fonts["Jalnan"], 10, Color.White, "");
 
             gamemode.drawEvent += TextProcess;
         }
@@ -62,17 +33,27 @@ namespace _231109_SFML_Test
         public bool isMultiline = false;
         public float margin = 5f;
         string originalString;
-        public void TextSet(Font font, float size, string str)
+
+        public void TextSet(Font font, float size, Color color, string str)
         {
             text.Font = font;
+            text.FillColor = color;
             text.CharacterSize = (uint)size;
             TextSet(str);
         }
         public void TextSet(string str)
         {
-            originalString = str;
-            text.DisplayedString = originalString;
-            text.Origin = new Vector2f(text.GetGlobalBounds().Width / 2, text.GetGlobalBounds().Height / 2);
+            try
+            {
+                originalString = str;
+                text.DisplayedString = originalString;
+                FloatRect floatRect = text.GetGlobalBounds();
+                text.Origin = new Vector2f(floatRect.Width / 2f, floatRect.Height / 2f);
+            }
+            catch(AccessViolationException ex)
+            {
+                Console.WriteLine(ex.ToString() + ex.StackTrace);
+            }
         }
 
 
@@ -80,6 +61,7 @@ namespace _231109_SFML_Test
         protected void TextProcess()
         {
             Dm.texUiInterface.Draw(text);
+
             try
             {
                 if (isMultiline)
@@ -108,7 +90,7 @@ namespace _231109_SFML_Test
                     for (int i = 0; i < lineCount - 1; i++)
                     {
                         float idxRatio = (lineSize) * (i + 1) / (lineSize * lineCount + lineRemain);
-                        int idxTarget = (int)Math.Floor(str.Length * idxRatio);
+                        int idxTarget = (int)Math.Ceiling(str.Length * idxRatio);
 
                         if (str[idxTarget] == '\n') return; //해도 의미 없어보인다는...
 
@@ -122,9 +104,12 @@ namespace _231109_SFML_Test
 
                     //결과를 대입
                     text.DisplayedString = str;
+                    //수정된 문자열에 맞춰서 중심을 다시 잡음
+                    text.Origin = new Vector2f(text.GetGlobalBounds().Width, text.GetGlobalBounds().Height) / 2f;
+
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
@@ -142,6 +127,17 @@ namespace _231109_SFML_Test
         protected override void LogicProcess()
         {
             text.Position = Position;
+            
+        }
+
+
+        public override void Dispose() 
+        {
+            Console.WriteLine("Dipose STR");
+            text.Dispose();
+            gamemode.drawEvent -= TextProcess;
+            base.Dispose();
+            Console.WriteLine("Dipose END");
         }
     }
 }

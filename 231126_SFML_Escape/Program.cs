@@ -26,7 +26,7 @@ namespace _231109_SFML_Test
             
 
             int gcStack = 0;
-
+            Thread.Sleep(1000);
             while (window.IsOpen)
             {
                 lock (window)
@@ -43,8 +43,9 @@ namespace _231109_SFML_Test
 
                         VideoManager.FrameReset();
 
-                        InputManager.DebugProcess();
 
+                        InputManager.DebugProcess();
+                        //InputManager.RefreshProcess();
                     }
                     // 화면 업데이트
                     window.Display();

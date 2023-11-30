@@ -1,14 +1,11 @@
-﻿using SFML.Graphics;
-using SFML.System;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Timers;
+
+using SFML.Graphics;
+using SFML.System;
 
 using Rm = _231109_SFML_Test.ResourceManager;
 using Cm = _231109_SFML_Test.CameraManager;
@@ -16,6 +13,9 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
+using System.Runtime.InteropServices;
+
+using dy = dynamic;
 
 namespace _231109_SFML_Test
 {
@@ -23,6 +23,11 @@ namespace _231109_SFML_Test
     {
         public TotalManager()
         {
+            gmEnumToType[GamemodeType.LOGO] = typeof(GamemodeLogo);
+            gmEnumToType[GamemodeType.MAIN_MENU] = typeof(GamemodeMainMenu);
+            gmEnumToType[GamemodeType.INGAME] = typeof(GamemodeIngame);
+            gmEnumToType[GamemodeType.RESULT] = typeof(void);
+
             SetGamemodeType(GamemodeType.LOGO);
         }
 
@@ -42,32 +47,24 @@ namespace _231109_SFML_Test
 
         public Gamemode gmNow;
         public GamemodeType gamemode = GamemodeType.NONE;
+
+        public static Dictionary<GamemodeType, Type> gmEnumToType = new Dictionary<GamemodeType, Type>();
+
         public void SetGamemodeType(GamemodeType gamemode)
         {
             if (this.gamemode == gamemode) return;
             
             gmNow?.Dispose();
-            //gmNow = null;
             this.gamemode = gamemode;
 
-            switch (this.gamemode)
-            {
-                case GamemodeType.LOGO:
-                    gmNow = new GamemodeLogo(this);
-                    break;
-                case GamemodeType.MAIN_MENU:
-                    gmNow = new GamemodeMainMenu(this);
-                    break;
-                case GamemodeType.INGAME:
-                    gmNow = new GamemodeIngame(this);
-                    break;
-                case GamemodeType.RESULT:
-                    break;
-            }
+            Type type = gmEnumToType[this.gamemode];
+            gmNow = (Gamemode)Activator.CreateInstance(type, this);
         }
 
-
     }
+
+
+ 
 
     public enum GamemodeType
     {

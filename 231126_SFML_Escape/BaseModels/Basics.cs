@@ -13,7 +13,7 @@ namespace _231109_SFML_Test
 {
     internal abstract class Entity : IDisposable
     {
-        Gamemode gamemode;
+        protected Gamemode gamemode;
 
         public Entity(Gamemode gamemode, Vector2f position, ICollision collision)
         {
@@ -73,7 +73,7 @@ namespace _231109_SFML_Test
 
     internal abstract class Ui : RectangleShape
     {
-        Gamemode gamemode;
+        protected Gamemode gamemode;
 
         public Ui(Gamemode gamemode, Vector2f position, Vector2f size)
         {
@@ -90,12 +90,19 @@ namespace _231109_SFML_Test
 
         public bool IsMouseOn()
         {
-            Vector2f mousePos = (Vector2f)Mouse.GetPosition();
-            FloatRect floatRect = this.GetGlobalBounds();
-            bool IsOn = floatRect.Contains(mousePos.X, mousePos.Y);
-            return IsOn;
+            try
+            {
+                Vector2f mousePos = (Vector2f)Mouse.GetPosition();
+                FloatRect floatRect = this.GetGlobalBounds();
+                bool IsOn = floatRect.Contains(mousePos.X, mousePos.Y);
+                return IsOn;
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.Message + ex.StackTrace);
+                return false;
+            }
         }
-
         protected abstract void DrawProcess();
         protected abstract void LogicProcess();
 
@@ -118,7 +125,7 @@ namespace _231109_SFML_Test
 
         ~Ui() { Dispose(); }
 
-        public new void Dispose()
+        public new virtual void Dispose()
         {
             gamemode.DisposablesRemove(this);
             gamemode.logicEvent -= LogicProcess;
@@ -133,7 +140,7 @@ namespace _231109_SFML_Test
 
     internal abstract class Particle : IDisposable
     {
-        Gamemode gamemode;
+        protected Gamemode gamemode;
         public Particle(Gamemode gamemode, int lifeTime, Vector2f position, Vector2f scale, float rotation = 0f) 
         {
             this.position = position;
@@ -181,7 +188,7 @@ namespace _231109_SFML_Test
 
     internal abstract class Projectile : IDisposable
     {
-        Gamemode gamemode;
+        protected Gamemode gamemode;
         public Projectile(Gamemode gamemode, int lifeTime, ICollision mask, Vector2f position, float rotation = 0f, float speed = 0f)
         {
             this.mask = mask;
@@ -263,7 +270,7 @@ namespace _231109_SFML_Test
 
     internal abstract class Structure : IDisposable
     {
-        Gamemode gamemode;
+        protected Gamemode gamemode;
         public Structure(Gamemode gamemode, Vector2f position, ICollision collision)
         {
             mask = collision;

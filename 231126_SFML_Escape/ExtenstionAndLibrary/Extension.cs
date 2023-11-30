@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace _231109_SFML_Test
 {
-    public static class SFMLExtensions
+    public static class Vector2fEx
     {
         // Vector2f를 방향으로 변환하는 Extension 메서드
         public static float ToDirection(this Vector2f vector)
@@ -49,5 +49,9 @@ namespace _231109_SFML_Test
         {
             return new Vector2f((float)Math.Cos(direction), (float)Math.Sin(direction));
         }
+
+        public static Vector2f Zero { get { return new Vector2f(0f, 0f); } }
     }
+
+
 }

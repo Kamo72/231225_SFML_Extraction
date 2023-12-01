@@ -28,7 +28,7 @@ namespace _231109_SFML_Test
             gmEnumToType[GamemodeType.INGAME] = typeof(GamemodeIngame);
             gmEnumToType[GamemodeType.RESULT] = typeof(void);
 
-            SetGamemodeType(GamemodeType.LOGO);
+            SetGamemodeType(GamemodeType.INGAME);
         }
 
         public void DrawAll()
@@ -37,6 +37,7 @@ namespace _231109_SFML_Test
             CameraManager.RefreshTransform();
             //카메라 흔들림 적용
             CameraManager.ShakeProcess();
+            CameraManager.TraggingProcess();
 
             //그릴거 다 그리기
             gmNow?.DoDraw();

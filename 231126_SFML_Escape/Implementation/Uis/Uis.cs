@@ -24,14 +24,6 @@ namespace _231109_SFML_Test
             Clicked += () =>
             { 
                 Random random = new Random();
-                lock(((GamemodeIngame)gamemode).boxs)
-                    for (int i = 0; i <= 100; i++)
-                    {
-                        Box box = new Box(new Vector2f(random.Next(5000) - 2500, random.Next(5000) - 2500), new Vector2f(random.Next(200) + 20, random.Next(200) + 20));
-                        box.Texture = ResourceManager.textures["smgIcon"];
-                        box.Rotation = random.Next(360);
-                        ((GamemodeIngame)gamemode).boxs.Add(box);
-                    }
                 CameraManager.GetShake(10f);
             };
 
@@ -39,7 +31,7 @@ namespace _231109_SFML_Test
 
         protected override void DrawProcess()
         {
-            DrawManager.uiTex[1].Draw(this);
+            DrawManager.texUiInterface.Draw(this.mask);
         }
 
         protected override void LogicProcess()

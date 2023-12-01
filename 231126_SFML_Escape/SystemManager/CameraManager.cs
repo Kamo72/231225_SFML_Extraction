@@ -40,6 +40,10 @@ namespace _231109_SFML_Test
         static double shakeValue = 0d;
         const double shakeReduction = 5d;
 
+
+        public static Vector2f targetPos = Vector2fEx.Zero;
+        public const float targetSpeed = 0.02f;
+
         static void ChangedResolution(Vector2i resolution)
         {
             size = (Vector2f)resolution;
@@ -97,6 +101,11 @@ namespace _231109_SFML_Test
                 );
             rotationShake = rot;
             sizeShake = size;
+        }
+
+        public static void TraggingProcess() 
+        {
+            position = (position + targetPos * targetSpeed) / (1f + targetSpeed);
         }
 
         public static void GetShake(float shakeValue)

@@ -12,6 +12,8 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
+using System.Windows.Forms;
+using SFML.Window;
 
 namespace _231109_SFML_Test
 {
@@ -19,15 +21,25 @@ namespace _231109_SFML_Test
     {
         public GamemodeLogo(TotalManager tm) : base(tm, 60) 
         {
-            TextMainMenu logo = new TextMainMenu(this, (Vector2f)Vm.resolutionNow / 2f, (Vector2f)Vm.resolutionNow);
-            logo.TextSet(Rm.fonts["Jalnan"], 100f, Color.Black, "히히상한이 바보");
-            ui = logo;
+            //TextLabel logo = new TextLabel(this, (Vector2f)Vm.resolutionNow / 2f, (Vector2f)Vm.resolutionNow);
+            //logo.TextSet(Rm.fonts["Jalnan"], 100f, Color.Red, "뿌직");
+
+            logo = new UiTest(this, (Vector2f)Vm.resolutionNow / 2f, new Vector2f(600f, 600f));
+            logo.mask.Texture = Rm.textures["valve"];
+            logicEvent += () =>
+            {
+                Vector2f perlinNoise = new Vector2f(noise.GetPerlin(Vm.GetTimeTotal() * 8000f, 10f), noise.GetPerlin(Vm.GetTimeTotal() * 8000f, 1235f));
+                logo.Position = (Vector2f)Vm.resolutionNow / 2f + perlinNoise * 4f;
+            };
         }
+        
+        Ui logo;
+        FastNoise noise = new FastNoise();
 
-        Ui ui;
 
-        const int logoTimeMax = 2000;
-        const int logoTimeEdge = 500;
+        const int logoTimePre = 2000;
+        const int logoTimeMax = 10000;
+        const int logoTimeEdge = 3000;
 
         protected override void LogicProcess()
         {
@@ -45,20 +57,21 @@ namespace _231109_SFML_Test
 
         protected override void DrawProcess()
         {
-            //페이드 인 아웃 표과
-            RectangleShape shape = new RectangleShape((Vector2f)Vm.resolutionNow);
-            shape.FillColor = Color.White;
-            Dm.texUiBackground.Draw(shape);
+            //배경이 하얀 효과
+            Dm.texUiBackground.Clear(Color.Black);
 
 
-
+            //페이드 인 아웃 투명도 조절
             Time time = clock.ElapsedTime;
             float logoTimeNow = time.AsMilliseconds();
 
             float gammaRatio;
-            if (logoTimeNow < logoTimeEdge)
+            if (logoTimeNow < logoTimePre)
+                //초기 부분
+                gammaRatio = 0f;
+            if (logoTimeNow < logoTimePre+logoTimeEdge)
                 //시작 부분
-                gammaRatio = logoTimeNow / logoTimeEdge;
+                gammaRatio = logoTimeNow / (logoTimePre +logoTimeEdge);
             else if (logoTimeMax - logoTimeEdge < logoTimeNow)
                 //끝나는 부분
                 gammaRatio = 1f - (logoTimeNow - (logoTimeMax - logoTimeEdge)) / logoTimeEdge;
@@ -66,14 +79,11 @@ namespace _231109_SFML_Test
                 //중간 부분
                 gammaRatio = 1f;
 
-            byte alphaValue = (byte)(255 * Math.Max(Math.Min( gammaRatio, 1f), 0f));
+            byte alphaValue = (byte)(255 * Math.Max(Math.Min( 1f - gammaRatio, 1f), 0f));
 
 
             //페이드 인 아웃 표과
-            RectangleShape shapeFade = new RectangleShape((Vector2f)Vm.resolutionNow);
-            shapeFade.FillColor = new Color(255, 255, 255, alphaValue);
-            DrawManager.texUiWhole.Draw(shapeFade);
-
+            DrawManager.texUiWhole.Clear(new Color(0, 0, 0, alphaValue));
         }
 
     }

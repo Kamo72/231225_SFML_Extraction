@@ -97,9 +97,13 @@ namespace _231109_SFML_Test
                 resolutionNow = resolution;
                 drawfpsNow = drawfps;
 
+                //ContextSettings settings = new ContextSettings();
+                //settings.AntialiasingLevel = 8; // 원하는 안티얼라이어싱 레벨을 설정합니다.
+
                 VideoMode videoMode = new VideoMode((uint)resolutionNow.X, (uint)resolutionNow.Y);
                 window = new RenderWindow(videoMode, "TitleName", Styles.Fullscreen);
                 window.SetFramerateLimit(drawfpsNow);
+                window.SetVerticalSyncEnabled(true); // 수직 동기화를 활성화하여 안티얼라이어싱을 적용할 수 있습니다.
             }
 
             ChangedResolution?.Invoke(resolutionNow);

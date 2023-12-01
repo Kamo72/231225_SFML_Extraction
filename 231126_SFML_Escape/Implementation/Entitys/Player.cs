@@ -13,7 +13,7 @@ using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
 
 
-namespace _231109_SFML_Test.Implementation
+namespace _231109_SFML_Test
 {
     internal class Player : Humanoid
     {
@@ -24,16 +24,24 @@ namespace _231109_SFML_Test.Implementation
 
         protected override void DrawProcess()
         {
-            DrawManager.texWrHigher.Draw(mask, CameraManager.worldRenderState);
+            ((Circle)mask).Scale = new Vector2f(100f, 100f);
+            DrawManager.texUiInterface.Draw(mask, CameraManager.worldRenderState);
         }
 
         protected override void LogicProcess()
         {
-
+            CameraManager.targetPos = Position;
         }
 
         protected override void PhysicsProcess()
         {
+            Console.WriteLine(Position);
+
+            moveDir = Vector2fEx.Zero;
+            if (Im.CommandCheck(Im.CommandType.MOVE_LEFT)) moveDir +=     (Direction + 180f).ToRadian().ToVector();
+            if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT)) moveDir +=    (Direction + 000f).ToRadian().ToVector();
+            if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD)) moveDir +=  (Direction + 270f).ToRadian().ToVector();
+            if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD)) moveDir += (Direction + 090f).ToRadian().ToVector();
 
             base.PhysicsProcess();
         }

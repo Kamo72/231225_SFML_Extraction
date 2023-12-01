@@ -22,7 +22,7 @@ namespace _231109_SFML_Test
     {
         public TextLabel(Gamemode gamemode, Vector2f position, Vector2f size) : base(gamemode, position, size)
         {
-            text = new Text();
+            text = new Text("",Rm.fonts["Jalnan"]);
             TextSet(Rm.fonts["Jalnan"], 10, Color.White, "");
 
             gamemode.drawEvent += TextProcess;
@@ -46,8 +46,10 @@ namespace _231109_SFML_Test
             try
             {
                 originalString = str;
+
                 text.DisplayedString = originalString;
                 FloatRect floatRect = text.GetGlobalBounds();
+
                 text.Origin = new Vector2f(floatRect.Width / 2f, floatRect.Height / 2f);
             }
             catch(AccessViolationException ex)
@@ -66,9 +68,10 @@ namespace _231109_SFML_Test
             {
                 if (isMultiline)
                 {
-                    text.DisplayedString = originalString;
 
-                    float uiWidth = GetGlobalBounds().Width;
+                    text.DisplayedString = originalString;
+                    
+                    float uiWidth = mask.GetGlobalBounds().Width;
                     float textWidth = text.GetGlobalBounds().Width;
 
                     //한줄의 길이를 구해봄
@@ -84,8 +87,6 @@ namespace _231109_SFML_Test
                     string str = originalString;
                     if (originalString == null) return;
 
-                    List<int> testPos = new List<int>();
-
                     //줄바꿈 위치를 추측해 때려 넣는다
                     for (int i = 0; i < lineCount - 1; i++)
                     {
@@ -95,12 +96,7 @@ namespace _231109_SFML_Test
                         if (str[idxTarget] == '\n') return; //해도 의미 없어보인다는...
 
                         str = str.Insert(idxTarget, "\n");
-                        testPos.Add(idxTarget);
                     }
-                    string debugMsg = str + lineCount + testPos.Count;
-                    foreach (int i in testPos)
-                        debugMsg += $"[{i}]";
-                    Console.WriteLine(debugMsg);
 
                     //결과를 대입
                     text.DisplayedString = str;
@@ -113,31 +109,27 @@ namespace _231109_SFML_Test
             {
                 Console.WriteLine(e.ToString());
             }
+            
         }
 
         protected override void DrawProcess()
         {
-            this.OutlineColor = Color.White;
-            this.OutlineThickness = 10;
-            this.FillColor = new Color(0, 0, 0, 0);
-
-            Dm.texUiInterface.Draw(this);
+            this.mask.OutlineColor = Color.White;
+            this.mask.OutlineThickness = 10;
+            this.mask.FillColor = new Color(0, 0, 0, 0);
         }
 
         protected override void LogicProcess()
         {
-            text.Position = Position;
-            
+           text.Position = Position;
         }
 
 
-        public override void Dispose() 
+        public override void Dispose()
         {
-            Console.WriteLine("Dipose STR");
-            text.Dispose();
-            gamemode.drawEvent -= TextProcess;
             base.Dispose();
-            Console.WriteLine("Dipose END");
+            gamemode.drawEvent -= TextProcess;
+            text?.Dispose();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace _231109_SFML_Test
 
         }
 
-        public const float accel = 0.2f;    //가속
+        public const float accel = 1000f;    //가속
         public float accelPer = 1.00f;      //가속 배율
         public const float friction = 2.4f;   //마찰
 
@@ -45,7 +45,7 @@ namespace _231109_SFML_Test
         protected override void PhysicsProcess()
         {
             //마찰에 의한 감속
-            double deltaTime = 1000d / gamemode.logicFps;
+            double deltaTime = 1d / gamemode.logicFps;
             speed *= (float)(1d - friction * deltaTime);
 
             //이동에 의한 가속

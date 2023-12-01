@@ -45,6 +45,9 @@ namespace _231109_SFML_Test
             {
                 string header = @"Assets\Textures\";
                 textures.Add("smgIcon", new Texture(header + "smgIcon.png"));
+                textures.Add("valve", new Texture(header + "valveOnSanghan.png"));
+                textures.Add("texGrass", new Texture(header + "texGrassCompressed.jpg"));
+                textures.Add("texConcrete", new Texture(header + "texConcrete.jpg"));
             }
 
             //bgm

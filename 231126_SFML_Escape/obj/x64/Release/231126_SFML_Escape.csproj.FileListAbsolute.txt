@@ -23,3 +23,5 @@ S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\obj\x64\Release\231126_SFML_Es
 S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\obj\x64\Release\231126_SFML_Escape.csproj.CopyComplete
 S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\obj\x64\Release\231109_SFML_Test.exe
 S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\obj\x64\Release\231109_SFML_Test.pdb
+S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\bin\x64\Release\231018_닷넷 서버 클라.dll
+S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\bin\x64\Release\231018_닷넷 서버 클라.pdb

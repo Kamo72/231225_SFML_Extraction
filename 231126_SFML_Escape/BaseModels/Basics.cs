@@ -14,6 +14,7 @@ namespace _231109_SFML_Test
     internal abstract class Entity : IDisposable
     {
         protected Gamemode gamemode;
+        public bool isDisposed = false;
 
         public Entity(Gamemode gamemode, Vector2f position, ICollision collision)
         {
@@ -63,6 +64,8 @@ namespace _231109_SFML_Test
         ~Entity() { Dispose(); }
         public void Dispose()
         {
+            isDisposed = true;
+
             gamemode.DisposablesRemove(this);
             gamemode.logicEvent -= LogicProcess;
             gamemode.logicEvent -= PhysicsProcess;
@@ -71,15 +74,19 @@ namespace _231109_SFML_Test
         }
     }
 
-    internal abstract class Ui : RectangleShape
+    internal abstract class Ui : IDisposable
     {
         protected Gamemode gamemode;
 
+        public Box mask;
+        public bool isDisposed = false;
+
+        public Vector2f Position { get { return mask.Position; } set { mask.Position = value; } }
+
         public Ui(Gamemode gamemode, Vector2f position, Vector2f size)
         {
-            Size = size;
-            Position = position;
-            Origin = size / 2f;
+            mask = new Box(position, size);
+            mask.Origin = size / 2f;
 
             this.gamemode = gamemode;
             gamemode.DisposablesAdd(this);
@@ -93,7 +100,7 @@ namespace _231109_SFML_Test
             try
             {
                 Vector2f mousePos = (Vector2f)Mouse.GetPosition();
-                FloatRect floatRect = this.GetGlobalBounds();
+                FloatRect floatRect = mask.GetGlobalBounds();
                 bool IsOn = floatRect.Contains(mousePos.X, mousePos.Y);
                 return IsOn;
             }
@@ -110,6 +117,8 @@ namespace _231109_SFML_Test
 
         void ClickProcess()
         {
+            if (isDisposed) return;
+
             if (pressedBefore == false)
                 if (IsMouseOn())
                     if (Mouse.IsButtonPressed(Mouse.Button.Left))
@@ -125,14 +134,16 @@ namespace _231109_SFML_Test
 
         ~Ui() { Dispose(); }
 
-        public new virtual void Dispose()
+        public virtual void Dispose()
         {
+            isDisposed = true;
             gamemode.DisposablesRemove(this);
             gamemode.logicEvent -= LogicProcess;
             gamemode.logicEvent -= ClickProcess;
             gamemode.drawEvent -= DrawProcess;
+            
+            mask.Dispose();
 
-            base.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -141,6 +152,7 @@ namespace _231109_SFML_Test
     internal abstract class Particle : IDisposable
     {
         protected Gamemode gamemode;
+        public bool isDisposed = false;
         public Particle(Gamemode gamemode, int lifeTime, Vector2f position, Vector2f scale, float rotation = 0f) 
         {
             this.position = position;
@@ -177,6 +189,7 @@ namespace _231109_SFML_Test
         ~Particle() { Dispose(); }
         public void Dispose()
         {
+            isDisposed = true;
             gamemode.DisposablesRemove(this);
             gamemode.drawEvent -= DrawProcess;
             gamemode.logicEvent -= LogicProcess;
@@ -189,6 +202,8 @@ namespace _231109_SFML_Test
     internal abstract class Projectile : IDisposable
     {
         protected Gamemode gamemode;
+        public bool isDisposed = false;
+
         public Projectile(Gamemode gamemode, int lifeTime, ICollision mask, Vector2f position, float rotation = 0f, float speed = 0f)
         {
             this.mask = mask;
@@ -258,6 +273,7 @@ namespace _231109_SFML_Test
         ~Projectile(){ Dispose(); }
         public void Dispose()
         {
+            isDisposed = true;
             gamemode.DisposablesRemove(this);
             gamemode.drawEvent -= DrawProcess;
             gamemode.logicEvent -= LogicProcess;
@@ -271,6 +287,8 @@ namespace _231109_SFML_Test
     internal abstract class Structure : IDisposable
     {
         protected Gamemode gamemode;
+        public bool isDisposed = false;
+
         public Structure(Gamemode gamemode, Vector2f position, ICollision collision)
         {
             mask = collision;
@@ -314,6 +332,7 @@ namespace _231109_SFML_Test
         ~Structure() { Dispose(); }
         public void Dispose()
         {
+            isDisposed = true;
             gamemode.DisposablesRemove(this);
             gamemode.drawEvent -= DrawProcess;
 

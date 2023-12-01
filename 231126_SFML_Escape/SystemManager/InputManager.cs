@@ -31,7 +31,7 @@ namespace _231109_SFML_Test
         static Vector2f screenSize { get { return (Vector2f)VideoManager.resolutionNow; } }
         public static bool CommandCheck(CommandType cmdType)
         {
-            return commandDic[CommandType.MOVE_RIGHT].Check();
+            return commandDic[cmdType].Check();
         }
 
         #region [입력 장치 제어]
@@ -263,24 +263,24 @@ namespace _231109_SFML_Test
                 }
             }
 
-            if (Keyboard.IsKeyPressed(Keyboard.Key.W))
-            {
-                CameraManager.position.Y--;
-            }
-            if (Keyboard.IsKeyPressed(Keyboard.Key.S))
-            {
-                CameraManager.position.Y++;
-            }
+            //if (Keyboard.IsKeyPressed(Keyboard.Key.W))
+            //{
+            //    CameraManager.position.Y -= 10;
+            //}
+            //if (Keyboard.IsKeyPressed(Keyboard.Key.S))
+            //{
+            //    CameraManager.position.Y+=10;
+            //}
 
 
-            if (Keyboard.IsKeyPressed(Keyboard.Key.A))
-            {
-                CameraManager.position.X--;
-            }
-            if (Keyboard.IsKeyPressed(Keyboard.Key.D))
-            {
-                CameraManager.position.X++;
-            }
+            //if (Keyboard.IsKeyPressed(Keyboard.Key.A))
+            //{
+            //    CameraManager.position.X -= 10;
+            //}
+            //if (Keyboard.IsKeyPressed(Keyboard.Key.D))
+            //{
+            //    CameraManager.position.X+=10;
+            //}
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.Q))
             {

@@ -55,6 +55,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="231018_닷넷 서버 클라">
+      <HintPath>..\..\..\[Education]\2학년 2학기\[05] C# &amp; Winform\231018_닷넷 서버 클라\231018_닷넷 서버 클라\bin\Debug\231018_닷넷 서버 클라.dll</HintPath>
+    </Reference>
     <Reference Include="sfmlnet-audio-2, Version=2.4.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\SFML.Net.x64.2.4.0\lib\sfmlnet-audio-2.dll</HintPath>
     </Reference>
@@ -81,7 +84,10 @@
   <ItemGroup>
     <Compile Include="BaseModels\Basics.cs" />
     <Compile Include="ExtenstionAndLibrary\Extension.cs" />
+    <Compile Include="ExtenstionAndLibrary\Mathf.cs" />
+    <Compile Include="ExtenstionAndLibrary\Noise.cs" />
     <Compile Include="GameMode\Ingame\GamemodeIngame.cs" />
+    <Compile Include="GameMode\Ingame\IngameBackgroundDrawer.cs" />
     <Compile Include="Implementation\Entitys\Humanoid.cs" />
     <Compile Include="Implementation\Entitys\Player.cs" />
     <Compile Include="Implementation\Particles\Particles.cs" />
@@ -112,6 +118,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Implementation\Structures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\[Library]\CSFML-2.4.0-windows-64-bit\bin\csfml-audio-2.dll" />
+    <Analyzer Include="..\..\..\[Library]\CSFML-2.4.0-windows-64-bit\bin\csfml-graphics-2.dll" />
+    <Analyzer Include="..\..\..\[Library]\CSFML-2.4.0-windows-64-bit\bin\csfml-network-2.dll" />
+    <Analyzer Include="..\..\..\[Library]\CSFML-2.4.0-windows-64-bit\bin\csfml-system-2.dll" />
+    <Analyzer Include="..\..\..\[Library]\CSFML-2.4.0-windows-64-bit\bin\csfml-window-2.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

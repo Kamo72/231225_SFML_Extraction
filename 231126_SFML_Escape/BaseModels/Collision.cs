@@ -3,6 +3,7 @@ using SFML.System;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace _231109_SFML_Test
         {
             Position = position;
             Size = size;
+            Origin = size / 2f;
         }
 
         public bool IsCollision(ICollision other)
@@ -50,6 +52,7 @@ namespace _231109_SFML_Test
         {
             Position = position;
             Radius = radius;
+            Origin = new Vector2f(radius, radius);
         }
 
         public bool IsCollision(ICollision other)

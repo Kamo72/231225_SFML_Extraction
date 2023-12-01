@@ -20,12 +20,12 @@ namespace _231109_SFML_Test
     {
         protected TotalManager totalManager;
 
-        //로직 타이머 시작
         public Gamemode(TotalManager tm, double logicFps)
         {
             totalManager = tm;
             this.logicFps = logicFps;
 
+            //로직 타이머 시작
             timer = new Timer(1000d / logicFps);
             timer.Elapsed += (s, e) => {
                 logicEvent?.Invoke();   //로직 처리 호출
@@ -41,6 +41,7 @@ namespace _231109_SFML_Test
         //로직 타이머 관련 변수
         public readonly double logicFps;
         Timer timer;
+
         protected Clock clock;
 
         //로직, 드로우, 드로우 UI 등의 이벤트
@@ -85,9 +86,12 @@ namespace _231109_SFML_Test
 
             Console.WriteLine("Debug - To Diposable heap - " + disposables.Count);
 
+
             timer.Dispose();
             GC.SuppressFinalize(this);
             Console.WriteLine("Debug - Gamemode Dipose End");
+
+            GC.Collect();
         }
     }
 }

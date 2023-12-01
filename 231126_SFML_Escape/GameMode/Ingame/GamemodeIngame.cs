@@ -16,18 +16,6 @@ namespace _231109_SFML_Test
         {
             Random random = new Random();
 
-            lock (boxs)
-                for (int i = 0; i <= 100; i++)
-                {
-                    Box box = new Box(new Vector2f(random.Next(5000) - 2500, random.Next(5000) - 2500), new Vector2f(random.Next(200) + 20, random.Next(200) + 20));
-
-                    box.Texture = ResourceManager.textures["smgIcon"];
-
-                    box.Rotation = random.Next(360);
-
-                    boxs.Add(box);
-                }
-
             Ui ui = new UiTest(this, new Vector2f(100f, 100f), new Vector2f(100f, 100f));
             ui.Clicked += () =>
             {
@@ -36,17 +24,15 @@ namespace _231109_SFML_Test
                 sound.Play();
                 sound.Position = new Vector3f((float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f);
                 Console.WriteLine(sound.ToString());
-                sounds.Add(sound);
             };
-            uis.Add(ui);
 
-            //entity = new Player(this, new Vector2f(0, 0));
+            entity = new Player(this, new Vector2f(0, 0));
+
+            ibd = new IngameBackgroundDrawer();
         }
 
+        IngameBackgroundDrawer ibd;
         Entity entity;
-        List<Ui> uis = new List<Ui>();
-        public List<Box> boxs = new List<Box>();
-        public List<Sound> sounds = new List<Sound>();
         
         
         protected override void DrawProcess()
@@ -62,24 +48,24 @@ namespace _231109_SFML_Test
             DrawManager.uiTex[1].Draw(text);
 
             string msgFps =
-                $"fps : {VideoManager.fpsNow} - Boxs.Count : {boxs.Count}";
+                $"fps : {VideoManager.fpsNow} ";
             Text ntext = new Text(msgFps, font);
             ntext.Position = new Vector2f(VideoManager.resolutionNow.X - 600f, 300f);
             //text.Origin = new Vector2f(-110f, 0f);
             DrawManager.uiTex[1].Draw(ntext);
 
 
-            lock (boxs)
-                foreach (Box box in boxs)
-                    if (CameraManager.IsSkippable(box.Position) == false)
-                        DrawManager.uiTex[1].Draw(box, CameraManager.worldRenderState);
-
+            ibd.DrawBackgroundProcess();
         }
 
+        int i = 0;
         protected override void LogicProcess()
         {
-
+            if (i++ > 10)
+            {
+                i -= 10;
+                ibd.RefreshBackgroundProcess();
+            }
         }
-        
     }
 }

@@ -101,7 +101,7 @@ namespace _231109_SFML_Test
 
             public void SoundClearProcess()
             {
-                Console.WriteLine("SoundClearProcess" + soundList.Count);
+                //Console.WriteLine("SoundClearProcess" + soundList.Count);
 
                 List<Sound> toRemove = new List<Sound>();
 

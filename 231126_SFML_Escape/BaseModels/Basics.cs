@@ -23,6 +23,7 @@ namespace _231109_SFML_Test
             Direction = 0f;
             
             this.gamemode = gamemode;
+            
             gamemode.DisposablesAdd(this);
             gamemode.logicEvent += LogicProcess;
             gamemode.logicEvent += PhysicsProcess;
@@ -30,29 +31,35 @@ namespace _231109_SFML_Test
         }
 
         public float Direction;
-        public Vector2f Position { 
-            set 
+        public Vector2f Position {
+            set
             {
-                if (mask is Box box)
-                    box.Position = value;
-                else if(mask is Circle circle)
-                    circle.Position = value;
-                else if(mask is Point point)
-                    point.position = value;
-                else
-                    throw new NotImplementedException();
+                try {
+                    if (mask is Box box)
+                        box.Position = value;
+                    else if (mask is Circle circle)
+                        circle.Position = value;
+                    else if (mask is Point point)
+                        point.position = value;
+                    else
+                        throw new NotImplementedException();
+                }
+                catch (Exception ex) { Console.WriteLine(ex.ToString()); }
+                }
+            get
+            {
+                try {
+                    if (mask is Box box)
+                        return box.Position;
+                    else if (mask is Circle circle)
+                        return circle.Position;
+                    else if (mask is Point point)
+                        return point.position;
+                    else
+                        throw new NotImplementedException();
+                }
+                catch (Exception ex) { Console.WriteLine(ex.ToString()); return Vector2fEx.Zero; }
             }
-            get 
-            {
-                if (mask is Box box)
-                    return box.Position;
-                else if (mask is Circle circle)
-                    return circle.Position;
-                else if (mask is Point point)
-                    return point.position;
-                else
-                    throw new NotImplementedException();
-            } 
         }
 
         public ICollision mask;

@@ -33,10 +33,20 @@ namespace _231109_SFML_Test
 
             //마우스 허용 안됨.
             InputManager.mouseAllow = false;
+
+
+
+            structures.Add(new ConcreteBox(this, new Vector2f(+300f, +300f), new Vector2f(300f, 300f)));
+            structures.Add(new ConcreteBox(this, new Vector2f(+300f, -300f), new Vector2f(300f, 300f)));
+            structures.Add(new ConcreteBox(this, new Vector2f(-300f, +300f), new Vector2f(300f, 300f)));
+            structures.Add(new ConcreteBox(this, new Vector2f(-300f, -300f), new Vector2f(300f, 300f)));
+
         }
 
         IngameBackgroundDrawer ibd;
         
+        public List<Structure> structures = new List<Structure>();
+
         
         protected override void DrawProcess()
         {

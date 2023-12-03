@@ -11,7 +11,8 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
-
+using SFML.Graphics;
+using SFML.Window;
 
 namespace _231109_SFML_Test
 {
@@ -25,32 +26,27 @@ namespace _231109_SFML_Test
         protected override void DrawProcess()
         {
             //마스크 그리기 (임시)
-            ((Circle)mask).Scale = new Vector2f(100f, 100f);
             DrawManager.texUiInterface.Draw(mask, CameraManager.worldRenderState);
-
-            float dirOrigin = CameraManager.rotation;
 
             //카메라 회전 = 캐릭터 회전
             CameraManager.rotation = Direction;
 
             //마우스 변위만큼 조준점 이동
-            AimVector += InputManager.mouseDelta;
+            AimVector += new Vector2f(InputManager.mouseDelta.X, -InputManager.mouseDelta.Y);
 
-            //카메라 회전한 만큼 위상 이동
-            float dirDelta = InputManager.mouseDelta.X;
-            Vector2f posDif = CameraManager.position - Position;
+            CameraManager.zoomValue = Mathf.Clamp(0.5f, aimDistance /  500f, 3.0f);
 
-            CameraManager.position -= posDif;
-            Vector2f plus = (posDif.ToDirection() - dirDelta.ToRadian()).ToVector() * posDif.Magnitude();
-            CameraManager.position += plus;
+            Console.WriteLine(aimDistance);
+            CircleShape cir = new CircleShape(10f);
+            cir.Position = AimPosition;
+            DrawManager.texWrAugment.Draw(cir, CameraManager.worldRenderState);
+            cir.Dispose();
 
-
-            //Console.WriteLine(InputManager.mouseDelta);
         }
 
         protected override void LogicProcess()
         {
-            CameraManager.targetPos = Position + (-Direction - 90f).ToRadian().ToVector() *  VideoManager.resolutionNow.Y * 0.4f;
+            CameraManager.targetPos = Position + (-Direction - 90f).ToRadian().ToVector() *  VideoManager.resolutionNow.Y * 0.4f * CameraManager.zoomValue;
         }
 
         protected override void PhysicsProcess()
@@ -58,10 +54,10 @@ namespace _231109_SFML_Test
             //Console.WriteLine(Position);
 
             moveDir = Vector2fEx.Zero;
-            if (Im.CommandCheck(Im.CommandType.MOVE_LEFT)) moveDir +=     (-Direction + 180f).ToRadian().ToVector();
-            if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT)) moveDir +=    (-Direction + 000f).ToRadian().ToVector();
-            if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD)) moveDir +=  (-Direction + 270f).ToRadian().ToVector();
-            if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD)) moveDir += (-Direction + 090f).ToRadian().ToVector();
+            if (Im.CommandCheck(Im.CommandType.MOVE_LEFT)) moveDir +=     (Direction + 180f).ToRadian().ToVector();
+            if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT)) moveDir +=    (Direction + 000f).ToRadian().ToVector();
+            if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD)) moveDir +=  (Direction + 270f).ToRadian().ToVector();
+            if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD)) moveDir += (Direction + 090f).ToRadian().ToVector();
 
             base.PhysicsProcess();
         }

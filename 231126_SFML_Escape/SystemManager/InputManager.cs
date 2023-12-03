@@ -38,6 +38,8 @@ namespace _231109_SFML_Test
         static Vector2f screenSize { get { return (Vector2f)VideoManager.resolutionNow; } }
         public static bool CommandCheck(CommandType cmdType)
         {
+            if (Program.window.HasFocus() == false)
+                return false;
             return commandDic[cmdType].Check();
         }
 
@@ -327,7 +329,10 @@ namespace _231109_SFML_Test
 
             //마우스 고정 중이라면 중앙에 고정 
             if (mouseAllow == false)
+            {
                 Mouse.SetPosition(VideoManager.resolutionNow / 2);
+            }
+
 
             //마우스 위치 기억
             mousePositionPre = (Vector2f)Mouse.GetPosition();

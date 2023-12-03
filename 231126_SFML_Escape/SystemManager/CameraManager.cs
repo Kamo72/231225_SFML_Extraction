@@ -14,6 +14,7 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
+using System.Windows.Forms;
 
 namespace _231109_SFML_Test
 {
@@ -28,6 +29,7 @@ namespace _231109_SFML_Test
 
         public static Vector2f position = new Vector2f(0f, 0f);
         public static float rotation = 0f;
+        
         public static Vector2f size;
 
         public static float zoomValue = 1f;
@@ -42,7 +44,7 @@ namespace _231109_SFML_Test
 
 
         public static Vector2f targetPos = Vector2fEx.Zero;
-        public const float targetSpeed = 0.02f;
+        public const float targetSpeed = 0.2f;
 
         static void ChangedResolution(Vector2i resolution)
         {

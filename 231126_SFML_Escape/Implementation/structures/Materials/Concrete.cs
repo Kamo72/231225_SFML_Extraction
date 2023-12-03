@@ -21,9 +21,9 @@ namespace _231109_SFML_Test
     {
         public Concrete(Gamemode gamemode, Vector2f position, ICollision mask) : base(gamemode, position, mask, DestructLevel.NONE, 0.0f, 4.8f)
         {
-            if(mask is Shape shape) 
+            if (mask is Shape shape)
             {
-                shape.Texture = Rm.textures["Concrete"];
+                shape.Texture = Rm.textures["texConcrete"];
                 shape.OutlineThickness = 10.0f;
                 shape.OutlineColor = Color.Black;
             }

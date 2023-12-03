@@ -272,30 +272,29 @@ namespace _231109_SFML_Test
 
         public static bool CheckCollision(Box rectangle, Circle circle)
         {
-            Transform transform = new Transform();
-            transform.Translate(rectangle.Position);
-            transform.Rotate(rectangle.Rotation);
+            // Rectangle 정보 가져오기
+            FloatRect rectBounds = rectangle.GetGlobalBounds();
 
-            FloatRect rectBounds = rectangle.GetLocalBounds();
-            Vector2f rectCenter = new Vector2f(rectBounds.Width / 2.0f, rectBounds.Height / 2.0f);
-            rectCenter = transform.TransformPoint(rectCenter);
+            // Circle 정보 가져오기
+            FloatRect circleBounds = circle.GetGlobalBounds();
+            Vector2f circleCenter = new Vector2f(circleBounds.Left + circleBounds.Width / 2, circleBounds.Top + circleBounds.Height / 2);
 
-            Vector2f circleCenter = circle.Position;
-            circleCenter = transform.GetInverse().TransformPoint(circleCenter);
+            // Rectangle과 Circle 간의 거리 계산
+            float deltaX = Math.Abs(circleCenter.X - (rectBounds.Left + rectBounds.Width / 2));
+            float deltaY = Math.Abs(circleCenter.Y - (rectBounds.Top + rectBounds.Height / 2));
 
-            float circleRadius = circle.Radius;
+            // Circle이 Rectangle 내부에 있는지 여부 확인
+            if (deltaX <= rectBounds.Width / 2 && deltaY <= rectBounds.Height / 2 + circle.Radius)
+            {
+                // 충돌이 발생한 경우
+                return true;
+            }
 
-            Vector2f closestPoint;
-            closestPoint.X = Math.Max(rectBounds.Left, Math.Min(circleCenter.X, rectBounds.Left + rectBounds.Width));
-            closestPoint.Y = Math.Max(rectBounds.Top, Math.Min(circleCenter.Y, rectBounds.Top + rectBounds.Height));
-
-            Vector2f distanceVec = circleCenter - closestPoint;
-            float distanceSquared = distanceVec.X * distanceVec.X + distanceVec.Y * distanceVec.Y;
-
-            return distanceSquared < (circleRadius * circleRadius);
+            // 충돌이 없는 경우
+            return false;
         }
 
-        public static bool CheckCollision(Circle circle, Line line)
+    public static bool CheckCollision(Circle circle, Line line)
         {
             return Collision.CheckCollision(line, circle);
         }

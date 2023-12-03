@@ -89,21 +89,24 @@ namespace _231109_SFML_Test
             RenderStates rs = CameraManager.worldRenderState;
             //lock(nodesToDraw)
 
+            List<BackgroundNode> nodesToDrawT;
+            lock (nodesToDraw) nodesToDrawT= nodesToDraw;
+
             //Console.WriteLine("nodesToDraw - Draw Start" + nodesToDraw.Count);
-            lock(nodesToDraw)
-            for (int i = 0; i < nodesToDraw.Count; i++)
-            {
-                BackgroundNode node = nodesToDraw[i];
+            
+                for (int i = 0; i < nodesToDrawT.Count; i++)
+                {
+                    BackgroundNode node = nodesToDrawT[i];
 
-                RectangleShape rect = bgTexDic[node.type];
-                if (rect == null) continue;
-                rect.Position = (Vector2f)node.integerPos * backgroundSep;
-                rect.Rotation = node.rot * 90f;
-                rect.Origin = new Vector2f(backgroundSep, backgroundSep) / 2f;
+                    RectangleShape rect = bgTexDic[node.type];
+                    if (rect == null) continue;
+                    rect.Position = (Vector2f)node.integerPos * backgroundSep;
+                    rect.Rotation = node.rot * 90f;
+                    rect.Origin = new Vector2f(backgroundSep, backgroundSep) / 2f;
 
-                //Console.WriteLine("nodesToDraw - Draw" + node.integerPos);
-                DrawManager.texWrBackground.Draw(rect, rs);
-            }
+                    //Console.WriteLine("nodesToDraw - Draw" + node.integerPos);
+                    DrawManager.texWrBackground.Draw(rect, rs);
+                }
         }
 
         Thread refreshTask;
@@ -116,55 +119,51 @@ namespace _231109_SFML_Test
 
             refreshTask = new Thread(() =>
             {
-                lock (nodesToDraw)
-                {
+                List<BackgroundNode> nodesToDrawT = new List<BackgroundNode>();
 
-                    //Console.WriteLine("nodesToDraw - Reset");
-                    nodesToDraw.Clear();
-                    backgroundDrawRange = (float)Math.Sqrt(CameraManager.size.X * CameraManager.size.X + CameraManager.size.Y * CameraManager.size.Y) * CameraManager.zoomValue;
+                //Console.WriteLine("nodesToDraw - Reset");
+                //nodesToDraw.Clear();
+                backgroundDrawRange = (float)Math.Sqrt(CameraManager.size.X * CameraManager.size.X + CameraManager.size.Y * CameraManager.size.Y) * CameraManager.zoomValue;
 
-                    //추가
-                    Vector2f posCameraF = CameraManager.position;
-                    Vector2i posCamera = new Vector2i((int)(posCameraF.X / backgroundSep), (int)(posCameraF.Y / backgroundSep));
+                //추가
+                Vector2f posCameraF = CameraManager.position;
+                Vector2i posCamera = new Vector2i((int)(posCameraF.X / backgroundSep), (int)(posCameraF.Y / backgroundSep));
 
-                    int bgRange = (int)(backgroundDrawRange / backgroundSep);
-                    for (int xPick = posCamera.X - bgRange; xPick < posCamera.X + bgRange; xPick++)
-                        for (int yPick = posCamera.Y - bgRange; yPick < posCamera.Y + bgRange; yPick++)
+                int bgRange = (int)(backgroundDrawRange / backgroundSep);
+                for (int xPick = posCamera.X - bgRange; xPick < posCamera.X + bgRange; xPick++)
+                    for (int yPick = posCamera.Y - bgRange; yPick < posCamera.Y + bgRange; yPick++)
+                    {
+                        Vector2i pickPos = new Vector2i(xPick, yPick);
+
+                        float len = ((Vector2f)pickPos * backgroundSep - CameraManager.position).Magnitude();
+                        if (len > backgroundDrawRange) continue;
+
+                        //만약에 이미 nodes에 존재한다면, 넘어간다.
+                        BackgroundNode output;
+                        if (nodes.TryGetValue(pickPos, out output))
                         {
-                            Vector2i pickPos = new Vector2i(xPick, yPick);
-
-                            float len = ((Vector2f)pickPos * backgroundSep - CameraManager.position).Magnitude();
-                            if (len > backgroundDrawRange) continue;
-
-
-                            //만약에 이미 nodes에 존재한다면, 넘어간다.
-                            BackgroundNode output;
-                            bool ret = nodes.TryGetValue(pickPos, out output);
-                            if (ret == true)
-                            {
-                                //Console.WriteLine("nodesToDraw - Add (ret == true");
-                                nodesToDraw.Add(output);
-                                continue;
-                            }
-
-
-
-                            //없다면 새로 생성해 추가
-                            BackgroundType type;
-                            bool retT = backgroundLoaded.TryGetValue(pickPos, out type);
-
-                            type = retT ? type : BackgroundType.GRASS;
-
-                            BackgroundNode node = new BackgroundNode(pickPos, type);
-                            nodes.Add(pickPos, node);
-
-                            //Console.WriteLine("nodesToDraw - Add new");
-                            nodesToDraw.Add(node);
+                            //Console.WriteLine("nodesToDraw - Add (ret == true");
+                            nodesToDrawT.Add(output);
+                            continue;
                         }
 
-                }
+                        //없다면 새로 생성해 추가
+                        BackgroundType type;
+                        type = backgroundLoaded.TryGetValue(pickPos, out type) ? type : BackgroundType.GRASS;
+
+                        BackgroundNode node = new BackgroundNode(pickPos, type);
+                        nodes.Add(pickPos, node);
+
+                        //Console.WriteLine("nodesToDraw - Add new");
+                        nodesToDrawT.Add(node);
+                    }
+
+                lock (nodesToDraw)
+                    nodesToDraw = nodesToDrawT;
+
                 //Console.WriteLine("RefreshBackgroundProcess" + nodesToDraw.Count);
                 refreshTask = null;
+
             });
             refreshTask.Start();
 

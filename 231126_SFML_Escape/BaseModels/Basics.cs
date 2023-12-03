@@ -289,18 +289,21 @@ namespace _231109_SFML_Test
         protected Gamemode gamemode;
         public bool isDisposed = false;
 
-        public Structure(Gamemode gamemode, Vector2f position, ICollision collision)
+        public Structure(Gamemode gamemode, Vector2f position, ICollision collision, DestructLevel destructLevel, float transparency, float hardness)
         {
             mask = collision;
-            this.position = position;
+            this.Position = position;
 
             this.gamemode = gamemode;
             gamemode.DisposablesAdd(this);
             gamemode.drawEvent += DrawProcess;
+
+            this.transparency = transparency;
+            this.hardness = hardness;
         }
 
         public ICollision mask;
-        public Vector2f position
+        public Vector2f Position
         {
             set
             {
@@ -326,8 +329,21 @@ namespace _231109_SFML_Test
             }
         }
 
-        protected abstract void DrawProcess();
+        //물질 성질
+        public float transparency = 0.0f;   //물질 투명도
+        public float hardness = 0.0f;       //물질 경도
+        public DestructLevel destructLevel = DestructLevel.NONE; //물질 파괴 조건
+        public float destructValue = 1.0f;  //물질 파괴 정도
+        
+        //파괴 속성
+        public enum DestructLevel 
+        {
+            NONE,       //파괴불가
+            FRAGILE,    //투사체로 깨짐
+            DETONATABLE,//폭파로 파괴 가능
+        }
 
+        protected abstract void DrawProcess();
 
         ~Structure() { Dispose(); }
         public void Dispose()

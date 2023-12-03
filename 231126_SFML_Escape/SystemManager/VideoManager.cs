@@ -26,7 +26,7 @@ namespace _231109_SFML_Test
     {
         static VideoManager() 
         {
-            resolutionNow = resolutionPreset[4];
+            resolutionNow = resolutionPreset[7];
             drawfpsNow = drawfpsPreset[3];          //144
 
             clockTotal = new Clock();
@@ -97,8 +97,8 @@ namespace _231109_SFML_Test
                 resolutionNow = resolution;
                 drawfpsNow = drawfps;
 
-                //ContextSettings settings = new ContextSettings();
-                //settings.AntialiasingLevel = 8; // 원하는 안티얼라이어싱 레벨을 설정합니다.
+                ContextSettings settings = new ContextSettings();
+                settings.AntialiasingLevel = 8; // 원하는 안티얼라이어싱 레벨을 설정합니다.
 
                 VideoMode videoMode = new VideoMode((uint)resolutionNow.X, (uint)resolutionNow.Y);
                 window = new RenderWindow(videoMode, "TitleName", Styles.Fullscreen);

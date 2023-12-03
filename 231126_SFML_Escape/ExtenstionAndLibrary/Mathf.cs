@@ -17,5 +17,9 @@ namespace _231109_SFML_Test
             return (float)(rad * 180f / Math.PI);
         }
 
+        internal static float Clamp(float min, float value, float max)
+        {
+            return Math.Min(Math.Max(value, min), max);
+        }
     }
 }

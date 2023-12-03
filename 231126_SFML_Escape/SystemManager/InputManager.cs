@@ -27,7 +27,14 @@ namespace _231109_SFML_Test
 
         static Entity master;
 
-        static public Vector2f mousePosition = new Vector2f(0,0);
+        public static Vector2f mousePosition = new Vector2f(0, 0);
+        public static Vector2f mouseDelta = new Vector2f(0, 0);
+        static Vector2f mousePositionPre = new Vector2f(0, 0);
+
+        static Vector2f mouseSpeed = new Vector2f(0.5f, 0.5f);
+
+
+        public static bool mouseAllow = true;
         static Vector2f screenSize { get { return (Vector2f)VideoManager.resolutionNow; } }
         public static bool CommandCheck(CommandType cmdType)
         {
@@ -239,20 +246,21 @@ namespace _231109_SFML_Test
             //commandDic[CommandType.TACTIC] = new CommandData("전술 장비", KeyReadType.RELEASE, new KeyData(KeyCode.Q));
         }
 
+        #endregion
+
+
         public static void RefreshProcess()
         {
-            try {
+            try
+            {
                 foreach (CommandData command in commandDic.Values)
                     command.AfterCheckProcess();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString() + ex.StackTrace);
             }
         }
-        #endregion
-
-
         public static void DebugProcess()
         {
             if (Keyboard.IsKeyPressed(Keyboard.Key.Escape))
@@ -302,7 +310,28 @@ namespace _231109_SFML_Test
 
 
         }
+        public static void MouseProcess() 
+        {
+            Vector2f mouseSpeed = new Vector2f(
+                0.1f * InputManager.mouseSpeed.X,
+                1.0f * InputManager.mouseSpeed.Y
+                ); //감도 보정
 
+            mousePosition = (Vector2f)Mouse.GetPosition();
+
+            //마우스 변위 대입
+            mouseDelta = new Vector2f(
+                -(mousePosition.X - mousePositionPre.X) * mouseSpeed.X,
+                (mousePosition.Y - mousePositionPre.Y) * mouseSpeed.Y
+                );
+
+            //마우스 고정 중이라면 중앙에 고정 
+            if (mouseAllow == false)
+                Mouse.SetPosition(VideoManager.resolutionNow / 2);
+
+            //마우스 위치 기억
+            mousePositionPre = (Vector2f)Mouse.GetPosition();
+        }
 
 
     }

@@ -12,27 +12,30 @@ namespace _231109_SFML_Test
     internal class GamemodeIngame : Gamemode
     {
 
-        public GamemodeIngame(TotalManager tm) : base(tm, 60)
+        public GamemodeIngame(TotalManager tm) : base(tm, 90)
         {
+            //랜덤
             Random random = new Random();
 
+            //테스트 UI
             Ui ui = new UiTest(this, new Vector2f(100f, 100f), new Vector2f(100f, 100f));
             ui.Clicked += () =>
             {
-                Sound sound = new Sound(new SoundBuffer(@"Assets\Sounds\SpiralMissileFly.ogg"));
-                sound.RelativeToListener = true;
-                sound.Play();
-                sound.Position = new Vector3f((float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f, (float)random.NextDouble() * 2f);
-                Console.WriteLine(sound.ToString());
+                SoundManager.waveEffect.AddSound( ResourceManager.sfxs["SpiralMissileFly"], Vector2fEx.Zero, 1000f);
             };
 
-            entity = new Player(this, new Vector2f(0, 0));
-
+            //플레이어 객체 생성
+            Entity entity = new Player(this, new Vector2f(0, 0));
+            SoundManager.listener = entity;
+            
+            //배경 그리기 객체
             ibd = new IngameBackgroundDrawer();
+
+            //마우스 허용 안됨.
+            InputManager.mouseAllow = false;
         }
 
         IngameBackgroundDrawer ibd;
-        Entity entity;
         
         
         protected override void DrawProcess()
@@ -45,14 +48,14 @@ namespace _231109_SFML_Test
             Text text = new Text(msg, font);
             text.Position = new Vector2f(VideoManager.resolutionNow.X - 600f, 0f);
             //text.Origin = new Vector2f(-110f, 0f);
-            DrawManager.uiTex[1].Draw(text);
+            DrawManager.texUiInterface.Draw(text);
 
             string msgFps =
                 $"fps : {VideoManager.fpsNow} ";
             Text ntext = new Text(msgFps, font);
             ntext.Position = new Vector2f(VideoManager.resolutionNow.X - 600f, 300f);
             //text.Origin = new Vector2f(-110f, 0f);
-            DrawManager.uiTex[1].Draw(ntext);
+            DrawManager.texUiInterface.Draw(ntext);
 
 
             ibd.DrawBackgroundProcess();
@@ -61,9 +64,9 @@ namespace _231109_SFML_Test
         int i = 0;
         protected override void LogicProcess()
         {
-            if (i++ > 10)
+            if (i++ > 40)
             {
-                i -= 10;
+                i -= 40;
                 ibd.RefreshBackgroundProcess();
             }
         }

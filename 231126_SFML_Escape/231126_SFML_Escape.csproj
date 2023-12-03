@@ -88,10 +88,15 @@
     <Compile Include="ExtenstionAndLibrary\Noise.cs" />
     <Compile Include="GameMode\Ingame\GamemodeIngame.cs" />
     <Compile Include="GameMode\Ingame\IngameBackgroundDrawer.cs" />
+    <Compile Include="Implementation\Data\Data.cs" />
+    <Compile Include="Implementation\Data\Equipment.cs" />
+    <Compile Include="Implementation\Data\Weapon.cs" />
     <Compile Include="Implementation\Entitys\Humanoid.cs" />
     <Compile Include="Implementation\Entitys\Player.cs" />
     <Compile Include="Implementation\Particles\Particles.cs" />
     <Compile Include="Implementation\Projectiles\Projectiles.cs" />
+    <Compile Include="Implementation\Structures\Materials\Concrete.cs" />
+    <Compile Include="Implementation\Structures\Concretes\Materials.cs" />
     <Compile Include="Implementation\Uis\TextLabel.cs" />
     <Compile Include="Implementation\Uis\TextMainMenu.cs" />
     <Compile Include="Implementation\Uis\Uis.cs" />
@@ -116,9 +121,7 @@
   <ItemGroup>
     <Content Include="openal32.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Implementation\Structures\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Analyzer Include="..\..\..\[Library]\CSFML-2.4.0-windows-64-bit\bin\csfml-audio-2.dll" />
     <Analyzer Include="..\..\..\[Library]\CSFML-2.4.0-windows-64-bit\bin\csfml-graphics-2.dll" />

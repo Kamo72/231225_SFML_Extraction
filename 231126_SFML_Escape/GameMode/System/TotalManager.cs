@@ -16,6 +16,7 @@ using Vm = _231109_SFML_Test.VideoManager;
 using System.Runtime.InteropServices;
 
 using dy = dynamic;
+using System.Timers;
 
 namespace _231109_SFML_Test
 {
@@ -29,6 +30,9 @@ namespace _231109_SFML_Test
             gmEnumToType[GamemodeType.RESULT] = typeof(void);
 
             SetGamemodeType(GamemodeType.INGAME);
+
+            soundTimer.Elapsed += (s, e) => SoundManager.SoundProcess();
+            soundTimer.Start();
         }
 
         public void DrawAll()
@@ -48,6 +52,7 @@ namespace _231109_SFML_Test
 
         public Gamemode gmNow;
         public GamemodeType gamemode = GamemodeType.NONE;
+        public Timer soundTimer = new Timer(10d); //초당 100번 적용
 
         public static Dictionary<GamemodeType, Type> gmEnumToType = new Dictionary<GamemodeType, Type>();
 

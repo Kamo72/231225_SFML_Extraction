@@ -21,11 +21,14 @@ namespace _231109_SFML_Test
 
         static SoundManager()
         {
-            waveBgm = new SoundUnion(0.5f);
-            waveAmb = new SoundUnion3D(0.5f);
-            waveEffect = new SoundUnion3D(0.5f);
-            waveFootsteb = new SoundUnion3D(0.5f);
-            waveVoice = new SoundUnion3D(0.5f);
+            waves = new List<SoundUnion>()
+            {
+            new SoundUnion(0.5f),
+            new SoundUnion(0.5f),
+            new SoundUnion(0.5f),
+            new SoundUnion(0.5f),
+            new SoundUnion(0.5f),
+            };
 
         }
 
@@ -33,71 +36,73 @@ namespace _231109_SFML_Test
 
         public static Entity listener;
 
-        static SoundUnion waveBgm;  //배경음악
-        static SoundUnion3D waveAmb;  //앰비언트
-        static SoundUnion3D waveEffect ;   //효과
-        static SoundUnion3D waveFootsteb ; //발소리
-        static SoundUnion3D waveVoice;    //말소리
+        public static SoundUnion waveBgm        { get { return waves[0]; } }  //배경음악
+        public static SoundUnion waveAmb        { get { return waves[1]; } } //앰비언트
+        public static SoundUnion waveEffect     { get { return waves[2]; } }  //효과
+        public static SoundUnion waveFootsteb   { get { return waves[3]; } } //발소리
+        public static SoundUnion waveVoice      { get { return waves[4]; } }    //말소리
+
+        static List<SoundUnion> waves;
+
+        public static void SoundProcess()
+        {
+            foreach (var wave in waves) {
+                wave.SoundClearProcess();
+                wave.SoundPositionProcess();
+            }
+        }
 
         public class SoundUnion
         {
             public SoundUnion(float vol)
             {
                 this.vol = vol;
-                soundList = new List<Sound>();
-            }
-            public float vol;
-            protected List<Sound> soundList;
-            
-            
-            public void AddSound(Sound sound)
-            {
-                sound.Volume *= vol * Sm.totalVol;
-                soundList.Add(sound);
-            }
-
-            void SoundClearProcess()
-            {
-                List<Sound> toRemove = new List<Sound>();
-
-                for (int i = 0; i < soundList.Count; i++)
-                {
-                    soundList.ForEach(key =>
-                    {
-                        if (key.Status != SoundStatus.Playing)
-                            toRemove.Add(key);
-                    });
-                }
-
-                foreach (Sound sound in toRemove)
-                {
-                    soundList.Remove(sound);
-                    sound.Dispose();
-                }
-            }
-
-
-        }
-
-        public class SoundUnion3D
-        {
-            public SoundUnion3D(float vol)
-            {
-                this.vol = vol;
-                soundList = new Dictionary<Sound, Vector2f> ();
+                soundList = new Dictionary<Sound, Vector2f>();
             }
             public float vol;
             protected Dictionary<Sound, Vector2f> soundList;
-            
-            
-            public void AddSound3D(Sound sound, Vector2f position) 
+
+            //소리 추가
+            public Sound AddSound(SoundBuffer soundBuf) 
             {
-                soundList[sound] = position;
+                Sound sound = new Sound(soundBuf);
+                lock (soundList)
+                    soundList[sound] = Vector2fEx.Zero;
+
+                sound.Volume *= vol * Sm.totalVol * 10f;
+                sound.RelativeToListener = false;
+                sound.Play();
+
+                return sound;
+            }
+            public Sound AddSound(SoundBuffer soundBuf, Vector2f position, float distance)
+            {
+                Sound sound = new Sound(soundBuf);
+                lock (soundList)
+                    soundList[sound] = position;
+
+                sound.Volume *= vol * Sm.totalVol * 10f;
                 sound.RelativeToListener = true;
+                sound.MinDistance = distance;
+                sound.Play();
+
+                //회전 후 적용
+                {
+                    Vector2f listenerPos = Sm.listener.Position;
+                    float listenerRot = Sm.listener.Direction;
+                    Vector2f relativePos = position - listenerPos;
+
+                    Vector2f rotatedPos = relativePos.RotateFromZero(listenerRot);
+
+                    sound.Position = new Vector3f(rotatedPos.X, 0f, rotatedPos.Y);
+                }
+                return sound;
             }
 
-            void SoundClearProcess()
+            public void SoundClearProcess()
             {
+                Console.WriteLine("SoundClearProcess" + soundList.Count);
+
                 List<Sound> toRemove = new List<Sound>();
 
                 for (int i = 0; i < soundList.Count; i++)
@@ -109,21 +114,25 @@ namespace _231109_SFML_Test
                     });
                 }
 
-                foreach (Sound sound in toRemove)
-                {
-                    soundList.Remove(sound);
-                    sound.Dispose();
-                }
+                lock (soundList)
+                    foreach (Sound sound in toRemove)
+                    {
+                        soundList.Remove(sound);
+                        sound.Dispose();
+                    }
             }
 
-            void SoundPositionProcess()
+            public void SoundPositionProcess()
             {
                 try
                 {
                     if (Sm.listener == null) throw new Exception("리스너 등록 안됨");
 
+                    lock(soundList)
                     foreach (Sound sound in soundList.Keys)
                     {
+                        if (sound.RelativeToListener == false) continue;
+
                         Vector2f worldPos = soundList[sound];
                         Vector2f listenerPos = Sm.listener.Position;
                         float listenerRot = Sm.listener.Direction;

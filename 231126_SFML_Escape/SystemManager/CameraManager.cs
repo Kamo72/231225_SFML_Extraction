@@ -110,7 +110,7 @@ namespace _231109_SFML_Test
 
         public static void GetShake(float shakeValue)
         {
-            Console.WriteLine($"GetShake >>> {CameraManager.shakeValue}+{shakeValue}");
+            //Console.WriteLine($"GetShake >>> {CameraManager.shakeValue}+{shakeValue}");
             CameraManager.shakeValue += shakeValue;
         }
     }

@@ -43,9 +43,9 @@ namespace _231109_SFML_Test
 
                         VideoManager.FrameReset();
 
-
+                        InputManager.MouseProcess();
                         InputManager.DebugProcess();
-                        //InputManager.RefreshProcess();
+                        InputManager.RefreshProcess();
                     }
                     // 화면 업데이트
                     window.Display();

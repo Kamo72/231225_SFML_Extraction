@@ -82,11 +82,12 @@ namespace _231109_SFML_Test
 
 
             //레이어들 초기화
-            for (int idx = 0; idx < worldTex.Length; idx++)
-                worldTex[idx].Clear(new Color(0,0,0,0));
+            for (int idx = 1; idx < worldTex.Length; idx++)
+                worldTex[idx].Clear(new Color(0, 0, 0, 0));
 
             for (int idx = 0; idx < uiTex.Length; idx++)
                 uiTex[idx].Clear(new Color(0, 0, 0, 0));
+
 
             //결과 텍스쳐 반환
             Sprite resultSprite = new Sprite(resultTex.Texture, new IntRect(0, (int)resolution.Y, (int)resolution.X, -(int)resolution.Y));

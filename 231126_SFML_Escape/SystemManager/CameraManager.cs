@@ -29,7 +29,7 @@ namespace _231109_SFML_Test
 
         public static Vector2f position = new Vector2f(0f, 0f);
         public static float rotation = 0f;
-        
+
         public static Vector2f size;
 
         public static float zoomValue = 1f;
@@ -44,7 +44,9 @@ namespace _231109_SFML_Test
 
 
         public static Vector2f targetPos = Vector2fEx.Zero;
-        public const float targetSpeed = 0.2f;
+        const float targetPosSpeed = 0.2f;
+        public static float targetRot = 0f;
+        const float targetRotSpeed = 0.4f;
 
         static void ChangedResolution(Vector2i resolution)
         {
@@ -107,7 +109,8 @@ namespace _231109_SFML_Test
 
         public static void TraggingProcess() 
         {
-            position = (position + targetPos * targetSpeed) / (1f + targetSpeed);
+            position = (position + targetPos * targetPosSpeed) / (1f + targetPosSpeed);
+            rotation = (rotation + targetRot * targetRotSpeed) / (1f + targetRotSpeed);
         }
 
         public static void GetShake(float shakeValue)

@@ -69,7 +69,7 @@ namespace _231109_SFML_Test
         protected abstract void DrawProcess();
 
         ~Entity() { Dispose(); }
-        public void Dispose()
+        public virtual void Dispose()
         {
             isDisposed = true;
 

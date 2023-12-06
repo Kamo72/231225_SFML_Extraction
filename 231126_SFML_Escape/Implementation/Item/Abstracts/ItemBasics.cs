@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace _231109_SFML_Test
 {
@@ -234,21 +235,41 @@ namespace _231109_SFML_Test
     internal abstract class Item : IDisposable
     {
         public string spriteName;       //사용할 스프라이트
-        public Sprite droppedItem;
 
         public Storage onStorage = null;
 
         #region [Data]
         public string name; //아이템 이름
+        public string description; //아이템 설명
         public float mass;  //질량
         public Vector2i size; //인벤토리 크기
         public Rarerity rare;   //희귀도
         public float value; //상점 가치
+
+        public DroppedItem droppedItem;
         #endregion
 
         public Item()
         {
+        }
 
+        public Item(Vector2f pos)
+        {
+            DroppedItem(pos);
+        }
+
+        public void SetupBasicData(string name, string description, float mass, Vector2i size, Rarerity rare, float value) 
+        {
+            this.name = name;
+            this.description = description;
+            this.mass = mass;
+            this.size = size;
+            this.rare = rare;
+            this.value = value;
+        }
+        public void DroppedItem(Vector2f pos)
+        {
+            droppedItem = new DroppedItem(Program.tm.gmNow, pos, this);
         }
 
         //스토리지에 저장.
@@ -274,6 +295,7 @@ namespace _231109_SFML_Test
         ~Item () { Dispose(); }
         public void Dispose()
         {
+            droppedItem.Dispose();
 
             //onStorage에서 제거
             if (onStorage != null)
@@ -283,111 +305,90 @@ namespace _231109_SFML_Test
         }
     }
 
-    internal abstract class ItemStackable : Item
+    internal interface IStackable
     {
-        public int maxStack;   //스택 최대치
-        public int nowStack;   //스택 저장량
+        int stackNow { get; set; }
+        int stackMax { get; set; }
+    }
+    internal interface IDurable
+    {
+        float durableNow { get; set; }
+        float durableMax { get; set; }
+        bool zeroToDestruct { get; set; }
+    }
+    internal interface IHandable 
+    {
+        float equipTime { get; }
 
-        public ItemStackable() : base() { }
-
-        //다른 스택가능한 아이템에 포함될 것임...
-        ItemStackable BeAddStack(ItemStackable other)
-        {
-            //서로의 형이 다름.
-            if (other.GetType() != this.GetType()) { return other; }
-
-            int ableStack = maxStack - nowStack;
-            if (ableStack >= other.nowStack)
-            {
-                nowStack += other.nowStack;
-                return null;
-            }
-            nowStack = maxStack;
-            other.nowStack -= ableStack;
-            return other;
-        }
-        public void DoAddStack(ItemStackable target)
-        {
-            ItemStackable result = target.BeAddStack(this);
-            if (result == null)
-            {
-                Dispose();
-            }
-        }
-
-        public ItemStackable GetHalp()
-        {
-            if (nowStack == 1)
-            {
-                return null;
-            }
-
-            ItemStackable instance = Activator.CreateInstance(GetType()) as ItemStackable;
-            instance.nowStack = nowStack / 2;
-            nowStack -= instance.nowStack;
-
-            return instance;
-        }
     }
 
-    internal abstract class ItemDurable : Item
-    {
-        //내구도 정보
-        public float durableMax;    //스택 최대치
-        public float durableNow;    //스택 저장량
-        public bool zeroToDestruct; //내구도 0이 되면 파괴
+    //internal abstract class ItemStackable : Item
+    //{
+    //    public int maxStack;   //스택 최대치
+    //    public int nowStack;   //스택 저장량
 
-        //내구도 변화
-        public void DurableDelta(float delta)
-        {
-            durableNow += delta;
-            durableNow = Mathf.Clamp(durableNow, 0f, durableMax);
+    //    public ItemStackable() : base() { }
 
-            if (zeroToDestruct == true && durableNow <= 0.0001f)
-            {
-                Dispose();
-            }
-        }
-    }
+    //    //다른 스택가능한 아이템에 포함될 것임...
+    //    ItemStackable BeAddStack(ItemStackable other)
+    //    {
+    //        //서로의 형이 다름.
+    //        if (other.GetType() != this.GetType()) { return other; }
 
+    //        int ableStack = maxStack - nowStack;
+    //        if (ableStack >= other.nowStack)
+    //        {
+    //            nowStack += other.nowStack;
+    //            return null;
+    //        }
+    //        nowStack = maxStack;
+    //        other.nowStack -= ableStack;
+    //        return other;
+    //    }
+    //    public void DoAddStack(ItemStackable target)
+    //    {
+    //        ItemStackable result = target.BeAddStack(this);
+    //        if (result == null)
+    //        {
+    //            Dispose();
+    //        }
+    //    }
 
+    //    public ItemStackable GetHalp()
+    //    {
+    //        if (nowStack == 1)
+    //        {
+    //            return null;
+    //        }
 
+    //        ItemStackable instance = Activator.CreateInstance(GetType()) as ItemStackable;
+    //        instance.nowStack = nowStack / 2;
+    //        nowStack -= instance.nowStack;
 
-    internal class Container : RectangleShape
-    {
-        public Container() { }
+    //        return instance;
+    //    }
+    //}
 
-        //창고
-        public Storage storage;
+    //internal abstract class ItemDurable : Item
+    //{
+    //    //내구도 정보
+    //    public float durableMax;    //스택 최대치
+    //    public float durableNow;    //스택 저장량
+    //    public bool zeroToDestruct; //내구도 0이 되면 파괴
 
-        //상자 열기 제어
-        public bool isOpen = false;
-        public Humanoid openBy = null;
+    //    //내구도 변화
+    //    public void DurableDelta(float delta)
+    //    {
+    //        durableNow += delta;
+    //        durableNow = Mathf.Clamp(durableNow, 0f, durableMax);
 
-        //상자 열기
-        public bool Open(Humanoid entity)
-        {
-            if (isOpen == false)
-            {
-                isOpen = true;
-                openBy = entity;
-                return true;
-            }
-            return false;
-        }
-        //상자 닫기
-        public void Close()
-        {
-            if (isOpen == false)
-            {
-                Console.WriteLine("Container - Close 열려있지 않은 컨터이너를 닫으려고 시도");
-                return;
-            }
+    //        if (zeroToDestruct == true && durableNow <= 0.0001f)
+    //        {
+    //            Dispose();
+    //        }
+    //    }
+    //}
 
-            isOpen = false;
-            openBy = null;
-        }
-    }
 
 
 }

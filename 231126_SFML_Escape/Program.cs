@@ -16,12 +16,12 @@ namespace _231109_SFML_Test
     internal class Program
     {
         public static RenderWindow window;
-
+        public static TotalManager tm;
         static void Main(string[] args)
         {
             VideoManager.SetWindow();
 
-            TotalManager tm = new TotalManager();
+            tm = new TotalManager();
 
             
 

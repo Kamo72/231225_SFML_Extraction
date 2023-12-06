@@ -16,12 +16,14 @@ using Vm = _231109_SFML_Test.VideoManager;
 using static _231109_SFML_Test.Storage;
 using System.Windows.Forms;
 using SFML.Graphics;
+using System.IO.Ports;
+using System.Drawing;
 
 namespace _231109_SFML_Test
 {
-    internal class Humanoid : Entity
+    internal class Humanoid : Entity//, IInteractable 대화 시스템~
     {
-        public Humanoid(Gamemode gamemode, Vector2f position) : base(gamemode, position, new Circle(position, 10f))
+        public Humanoid(Gamemode gamemode, Vector2f position) : base(gamemode, position, new Circle(position, 30f))
         { }
 
         public const float accel = 3000f;    //가속
@@ -54,64 +56,93 @@ namespace _231109_SFML_Test
         }
 
 
-
-
         public Inventory inventory;
         public class Inventory
         {
             public Humanoid master;
-
-            #region [장착 슬롯]
-            public class EquipSlot<T> where T : Equipable
-            {
-                public T item;
-                public virtual bool DoEquipItem(T item)
-                {
-                    if (this.item == null)
-                    {
-                        this.item = item;
-                        return true;
-                    }
-                    return false;
-                }
-                public bool UnEquipItem()
-                {
-                    if (this.item != null)
-                    {
-                        this.item = null;
-                        return true;
-                    }
-                    return false;
-                }
-            }
-            public class EquipWeaponSub : EquipSlot<Weapon>
-            {
-                public override bool DoEquipItem(Weapon item)
-                {
-                    if (item.size.X <= 2) { return true; }
-
-                    return base.DoEquipItem(item);
-                }
-            }
-
-            public EquipSlot<Weapon> weaponPrimary = new EquipSlot<Weapon>();
-            public EquipSlot<Weapon> weaponSub = new EquipWeaponSub();
-
-            public EquipSlot<Helmet> helmet = new EquipSlot<Helmet>();
-            public EquipSlot<Weapon> weaponSecondary = new EquipSlot<Weapon>();
-            public EquipSlot<Headgear> headgear = new EquipSlot<Headgear>();
-            public EquipSlot<PlateCarrier> plateCarrier = new EquipSlot<PlateCarrier>();
-            public EquipSlot<Backpack> backpack = new EquipSlot<Backpack>();
-
-            public Storage pocket = new Storage(new Vector2i(5, 2));
-            #endregion
-
 
             public Inventory(Humanoid master)
             {
                 this.master = master;
             }
 
+            #region [장착 슬롯]
+            public class EquipSlot 
+            {
+                public EquipSlot(EquipmentType equipmentType)
+                {
+                    this.equipmentType = equipmentType;
+                }
+
+                public IEquipable item;
+                public EquipmentType equipmentType;
+
+                public virtual bool DoEquipItem(Item item)
+                {
+                    switch (equipmentType)
+                    {
+                        case EquipmentType.HEADGEAR:        if (item is Headgear == false) return false; break;
+                        case EquipmentType.WEAPON:          if (item is Weapon ==   false) return false; break;
+                        case EquipmentType.BACKPACK:        if (item is Headgear == false) return false; break;
+                        case EquipmentType.PLATE_CARRIER:   if (item is Headgear == false) return false; break;
+                        case EquipmentType.HELMET:          if (item is Headgear == false) return false; break;
+                    }
+
+                    if (this.item == null)
+                    {
+                        this.item = (IEquipable)item;
+                        return true;
+                    }
+                    return false;
+                }
+                public Item UnEquipItem()
+                {
+                    if (this.item != null)
+                    {
+                        Item item = (Item)this.item;
+                        this.item = null;
+                        return item;
+                    }
+                    return null;
+                }
+            }
+            public class EquipSlotWeapon : EquipSlot
+            {
+                public EquipSlotWeapon(bool isMain) : base(EquipmentType.WEAPON) { this.isMain = isMain; }
+
+                bool isMain;
+
+                public override bool DoEquipItem(Item item)
+                {
+                    if (base.DoEquipItem(item) == false)
+                        return false;
+
+                    if (item is Weapon weapon)
+                    {
+                        if (weapon.AbleMain() != isMain)
+                        {
+                            return false;
+                        }
+                    }
+                    else { return false; }
+
+                    return true;
+                }
+            }
+
+            public EquipSlot weaponPrimary =    new EquipSlotWeapon(true);
+            public EquipSlot weaponSecondary =  new EquipSlotWeapon(true);
+            public EquipSlot weaponSub =        new EquipSlotWeapon(false);
+                             
+            public EquipSlot helmet =       new EquipSlot(EquipmentType.HELMET);
+            public EquipSlot headgear =     new EquipSlot(EquipmentType.HEADGEAR);
+            public EquipSlot plateCarrier = new EquipSlot(EquipmentType.PLATE_CARRIER);
+            public EquipSlot backpack =     new EquipSlot(EquipmentType.BACKPACK);
+
+            public Storage pocket = new Storage(new Vector2i(5, 2));
+            #endregion
+
+            #region [제공 함수]
             //드랍된 아이템 줍기
             public bool TakeItem(Item item)
             {
@@ -131,16 +162,17 @@ namespace _231109_SFML_Test
                 }
 
                 //가방에 삽입
-                newPlace = backpack.item.storage.GetPosInsert(item);
-                if (newPlace != null)
-                {
-                    if (item.onStorage != null)
+                if (backpack.item is Backpack bp) {
+                    newPlace = bp.storage.GetPosInsert(item);
+                    if (newPlace != null)
                     {
-                        item.onStorage.RemoveItem(item);
+                        if (item.onStorage != null)
+                            item.onStorage.RemoveItem(item);
+
+                        item.onStorage = bp.storage;
+                        bp.storage.Insert((StorageNode)newPlace);
+                        return true;
                     }
-                    item.onStorage = backpack.item.storage;
-                    backpack.item.storage.Insert((StorageNode)newPlace);
-                    return true;
                 }
 
                 return false;
@@ -217,18 +249,18 @@ namespace _231109_SFML_Test
             }
 
             //슬롯 지정 장착
-            public bool EquipItemTarget<T>(EquipSlot<T> slot, T item) where T : Equipable
+            public bool EquipItemTarget(EquipSlot slot, IEquipable item) 
             {
-                if (slot.DoEquipItem(item))
+                if (slot.DoEquipItem((Item)item))
                 {
-                    item.BeEquip(master);
+                    item.UnEquip(master);
                     return true;
                 }
                 return false;
             }
 
             //아이템 장착 해제
-            public bool UnEquipItem<T>(EquipSlot<T> slot, bool doThrow) where T : Equipable
+            public bool UnEquipItem(EquipSlot slot, bool doThrow)
             {
                 //해당 슬롯에 아이템이 없음.
                 if (slot.item == null) { return false; }
@@ -236,16 +268,16 @@ namespace _231109_SFML_Test
                 //인벤토리로
                 if (!doThrow)
                 {
-                    bool isSuceed = TakeItem(slot.item);
+                    bool isSuceed = TakeItem((Item)slot.item);
                     if (!isSuceed) { return false; }
                 }
                 else //필드로
                 {
-                    ThrowItem(slot.item);
+                    ThrowItem((Item)slot.item);
                 }
 
                 slot.UnEquipItem();
-                slot.item.UnEquip();
+                slot.item.UnEquip(master);
 
                 return true;
             }
@@ -260,9 +292,49 @@ namespace _231109_SFML_Test
 
                 //item.ControllerInitiate(master.position, master.Direction);
             }
-
+            #endregion
         }
 
+        public Hands animator;
+        public class Hands
+        {
+            public Humanoid master;
+            public Hands(Humanoid master)
+            {
+                this.master = master;
+                interactables = new List<IInteractable>();
+            }
+
+            #region [상호작용]
+            public const float interactableRange = 1000f;
+            public List<IInteractable> interactables;
+            public void InteractableListRefresh() 
+            {
+                GamemodeIngame igm = (GamemodeIngame)master.gamemode;
+
+                List<IInteractable> interactables = new List<IInteractable>();
+
+                foreach (Entity ent in igm.entitys) 
+                {
+                    float dis = (ent.Position - master.Position).Magnitude();
+                    if (dis > interactableRange) continue;
+
+                    if (ent is IInteractable interactable)
+                        interactables.Add(interactable);
+                }
+
+                lock(this.interactables)
+                    this.interactables = interactables;
+            }
+            public void Interact(Entity entity) 
+            {
+                if (entity is IInteractable interactable) 
+                    interactable.BeInteract(master);
+            
+            }
+            #endregion
+
+        }
 
 
 
@@ -343,6 +415,8 @@ namespace _231109_SFML_Test
             Position += speed * (float)deltaTime;
 
         }
+
+
     }
     
 }

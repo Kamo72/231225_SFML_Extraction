@@ -8,12 +8,14 @@ namespace _231109_SFML_Test
 {
 
     //장비 가능한 아이템
-    internal abstract class Equipable : Item
+    internal abstract class Equipable : Item, IEquipable
     {
-        public Entity equipedBy;
+
+        public EquipmentType equipmentType { get; set; }
+        public Humanoid equipedBy { get; set; }
 
         //장착 및 장착 해제
-        public void BeEquip(Entity entity)
+        public void BeEquip(Humanoid entity)
         {
             if (onStorage != null)
             {
@@ -22,13 +24,32 @@ namespace _231109_SFML_Test
 
             equipedBy = entity;
         }
-        public void UnEquip()
+        public void UnEquip(Humanoid entity)
         {
+            if (equipedBy is Humanoid human)
+            {
 
+            }
         }
-
-
     }
+
+    public enum EquipmentType 
+    {
+        HEADGEAR,
+        PLATE_CARRIER,
+        BACKPACK,
+        HELMET,
+        WEAPON,
+    }
+
+    internal interface IEquipable
+    {
+        Humanoid equipedBy { get; set; }
+        EquipmentType equipmentType { get; set; }
+        void BeEquip(Humanoid entity);
+        void UnEquip(Humanoid entity);
+    }
+
 
     //헤드기어 - 중간 조상
     internal abstract class Headgear : Equipable { }

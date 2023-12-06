@@ -44,10 +44,11 @@ namespace _231109_SFML_Test
         }
 
         IngameBackgroundDrawer ibd;
-        
-        public List<Structure> structures = new List<Structure>();
 
-        
+        public List<Structure> structures = new List<Structure>();
+        public List<Entity> entitys = new List<Entity>();
+
+
         protected override void DrawProcess()
         {
             Font font = ResourceManager.fonts["Jalnan"];

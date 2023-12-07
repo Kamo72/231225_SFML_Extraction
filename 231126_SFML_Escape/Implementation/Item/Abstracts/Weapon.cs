@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace _231109_SFML_Test
 {
@@ -15,11 +16,8 @@ namespace _231109_SFML_Test
         static Weapon() 
         {
         }
-        public Weapon(string weaponCode, string spriteString, Vector2f spriteOffSet)
+        public Weapon(string weaponCode)
         {
-            this.spriteString = spriteString;
-            this.spriteOffSet = spriteOffSet;
-
             this.weaponCode = weaponCode;
             status = statusOrigin;
         }
@@ -28,48 +26,32 @@ namespace _231109_SFML_Test
         public WeaponStatus status;
         string weaponCode;
 
-
+        #region [탑뷰 스프라이트]
         //인게임 총기 스프라이트를 생성형으로 반환
-        public abstract RenderTexture GetIngameSprite();
+        public abstract RenderTexture GetTopSprite();
 
+        //탑뷰 드로우를 위한 Rects
+        protected RectangleShape[] topParts;
+        protected Vector2i topSpriteSize;
 
-        #region [총기 전용 스프라이트]
-        //변수들
-        string spriteString;
-        Vector2f spriteOffSet;
-        RectangleShape drawShape;
-
-        //총기 전용 스프라이트를 준비
-        public void Equip() 
+        protected void InitTopParts(Vector2i topSpriteSize, params Texture[] textures)
         {
-            if (drawShape != null) throw new Exception("Weapon - Equip 이미 장비된 아이템입니다.");
+            RectangleShape[] rects = new RectangleShape[textures.Length];
+            for (int i = 0; i < textures.Length; i++)
+            {
+                rects[i] = new RectangleShape((Vector2f)topSpriteSize);
+                rects[i].Texture = textures[i];
+            }
 
-            Texture texture = ResourceManager.textures[spriteString];
-            if (texture == null) throw new Exception("리소스 로드 오류 - " + spriteString);
-
-            Vector2f size = new Vector2f(100f, 100f);
-            drawShape = new RectangleShape(size);
-            drawShape.Origin = spriteOffSet;
-            drawShape.Texture = texture;
-
+            topParts = rects;
         }
-        //총기 전용 스프라이트를 해제
-        public void Disarm()
-        {
-            if (drawShape == null) throw new Exception("Weapon - Equip 이미 장비된 아이템입니다.");
+        #endregion
 
-            drawShape.Dispose();
-        }
-        //총기 전용 스프라이트 드로우
-        public void Draw(RenderTexture texture, Vector2f position, float direction, RenderStates? renderStatesNullable = null)
-        {
-            RenderStates renderState = renderStatesNullable ?? RenderStates.Default;
+        #region [사이드뷰 스프라이트]
+        //인게임 총기 스프라이트를 생성형으로 반환
+        public abstract RenderTexture GetSideSprite();
 
-            drawShape.Position = position;
-            drawShape.Rotation = direction;
-
-            texture.Draw(drawShape, renderState);
-        }
+        protected RectangleShape sidePart;
         #endregion
 
         #region [주무기, 보조무기 장착 조건]
@@ -99,7 +81,8 @@ namespace _231109_SFML_Test
         p45,
         mm9x18,
         mm9x19,
-        mm5p56x45
+        mm5p56x45,
+        mm7p62x51,
     }
     public enum SelectorType
     {
@@ -278,7 +261,7 @@ namespace _231109_SFML_Test
         static void WeaponDataLoad() 
         {
             //정적 생성자를 불러오는 역할?
-            TestWeapon testWeapon;
+            FN_FAL fn_fal;
         }
         public static WeaponStatus Get(string weaponName)
         {

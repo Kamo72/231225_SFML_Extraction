@@ -96,7 +96,7 @@
     <Compile Include="Implementation\Entitys\Humanoid.cs" />
     <Compile Include="Implementation\Entitys\Player.cs" />
     <Compile Include="Implementation\Entitys\Property\IInteractable.cs" />
-    <Compile Include="Implementation\Item\TestWeapon.cs" />
+    <Compile Include="Implementation\Item\FN_FAL.cs" />
     <Compile Include="Implementation\Particles\Particles.cs" />
     <Compile Include="Implementation\Projectiles\Bullet.cs" />
     <Compile Include="Implementation\Structures\Materials\Concrete.cs" />
@@ -124,6 +124,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="openal32.dll" />
+    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_grip.png" />
+    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_middle.png" />
+    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_upper.png" />
+    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_lower.png" />
+    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_handle.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

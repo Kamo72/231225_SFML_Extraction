@@ -3,20 +3,21 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace _231109_SFML_Test
 {
-    internal class TestWeapon : Weapon
+    internal class FN_FAL : Weapon
     {
-        static TestWeapon() 
+        static FN_FAL() 
         {
             WeaponStatus status = new WeaponStatus()
             {
                 typeDt = new WeaponStatus.TypeData()
                 {
-                    caliberType = CaliberType.mm9x18,
+                    caliberType = CaliberType.mm7p62x51,
                     mechanismType = MechanismType.CLOSED_BOLT,
                     magazineType = MagazineType.MAGAZINE,
                     boltLockerType = BoltLockerType.ACTIVATE,
@@ -52,20 +53,49 @@ namespace _231109_SFML_Test
                     
                     },
                     muzzleVelocity = 2080f,
-                    roundPerMinute = 950f,
+                    roundPerMinute = 700f,
                 },
             };
 
-            WeaponLibrary.Set("TestWeapon", status);
+            WeaponLibrary.Set("FN_FAL", status);
         }
-        public TestWeapon() : base("TestWeapon", "TestWeaponTop", new Vector2f(30f, 30f))
+        public FN_FAL() : base("FN_FAL")
         {
             SetupBasicData("시험형 무기", "시험형 무기입니다.", 3.5f, new Vector2i(3, 2), Rarerity.COMMON, 20000f);
+            InitTopParts(new Vector2i(200, 75), new Texture[]
+            {
+                ResourceManager.textures["FN_FAL_body_handle"],
+                ResourceManager.textures["FN_FAL_body_upper"],
+                ResourceManager.textures["FN_FAL_body_middle"],
+                ResourceManager.textures["FN_FAL_body_lower"],
+                ResourceManager.textures["FN_FAL_body_grip"],
+            });
         }
 
-        public override RenderTexture GetIngameSprite()
+
+
+        public override RenderTexture GetSideSprite()
         {
-            RenderTexture wTexture = new RenderTexture(100, 100);
+            RenderTexture wTexture = new RenderTexture(200, 200);
+            /* TO DRAW */
+
+            /* TO DRAW */
+            return wTexture;
+        }
+        
+        public override RenderTexture GetTopSprite()
+        {
+            Vector2i size = new Vector2i(200,75);
+            RenderTexture wTexture = new RenderTexture((uint)size.X, (uint)size.Y);
+            /* TO DRAW */
+
+            float time = VideoManager.GetTimeTotal();
+            Vector2f rot = new Vector2f((float)Math.Cos(time) * 10f, (float)Math.Sin(time) * 10f);
+            float depth = 0f;
+
+            //wTexture.Draw(ResourceManager.textures["FN_FAL_body_grip"])
+            
+
             /* TO DRAW */
             return wTexture;
         }

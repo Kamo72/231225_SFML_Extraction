@@ -23,10 +23,7 @@ namespace _231109_SFML_Test
 
             tm = new TotalManager();
 
-            
-
             int gcStack = 0;
-            Thread.Sleep(1000);
             while (window.IsOpen)
             {
                 lock (window)

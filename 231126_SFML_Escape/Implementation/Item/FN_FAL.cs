@@ -48,9 +48,9 @@ namespace _231109_SFML_Test
                 detailDt = new WeaponStatus.DetailData()
                 {
                     chamberSize = 1,
-                    magazineWhiteList = new List<object> 
+                    magazineWhiteList = new List<Type> 
                     {
-                    
+                        typeof(FN_FAL),
                     },
                     muzzleVelocity = 2080f,
                     roundPerMinute = 700f,
@@ -72,32 +72,63 @@ namespace _231109_SFML_Test
             });
         }
 
-
-
-        public override RenderTexture GetSideSprite()
-        {
-            RenderTexture wTexture = new RenderTexture(200, 200);
-            /* TO DRAW */
-
-            /* TO DRAW */
-            return wTexture;
+        public override void DrawSideSprite(RenderTexture texture, Vector2f position, float rotation, RenderStates renderStates)
+        { 
+            base.DrawSideSprite(texture, position, rotation, renderStates);
         }
         
-        public override RenderTexture GetTopSprite()
+        public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, RenderStates renderStates)
         {
-            Vector2i size = new Vector2i(200,75);
-            RenderTexture wTexture = new RenderTexture((uint)size.X, (uint)size.Y);
-            /* TO DRAW */
+            //Vector2i size = new Vector2i(200, 75);
+            float rotRatio = 0.04f;
+            float depth;
+            float depthAdjusted = -1f;
+            for (int i = 0; i < topParts.Length; i++)
+            {
+                RectangleShape shape = topParts[i];
+                depth = i - (topParts.Length / 2f) + depthAdjusted;
+                shape.Scale = new Vector2f(
+                    (float)Math.Cos(rotation.X.ToRadian()),
+                    (float)Math.Cos(rotation.Y.ToRadian())
+                    ) * 10f;
+                shape.Position = position + depth * rotation * rotRatio;
 
-            float time = VideoManager.GetTimeTotal();
-            Vector2f rot = new Vector2f((float)Math.Cos(time) * 10f, (float)Math.Sin(time) * 10f);
-            float depth = 0f;
-
-            //wTexture.Draw(ResourceManager.textures["FN_FAL_body_grip"])
-            
-
-            /* TO DRAW */
-            return wTexture;
+                texture.Draw(shape, renderStates);
+            }
         }
     }
+
+    internal class FN_FAL_MAG10 : Magazine
+    {
+        static FN_FAL_MAG10() 
+        {
+            MagazineStatus status = new MagazineStatus()
+            {
+                ammoSize = 10,
+                whiteList = new List<CaliberType>()
+                {
+                    CaliberType.mm7p62x51,
+                },
+                adjusts = new List<WeaponAdjust>()
+                {
+                    new WeaponAdjust("조준 시간 감소", WeaponAdjustType.PROS, (ws)=> ws.timeDt.adsTime *= 0.81f),
+                    new WeaponAdjust("재장전 시간 감소", WeaponAdjustType.PROS,
+                    (ws)=> {
+                        ws.timeDt.reloadTime[0]  *= 0.85f;
+                        ws.timeDt.reloadTime[1]  *= 0.74f;
+                        ws.timeDt.reloadTime[2]  *= 0.92f;
+                    }),
+                    new WeaponAdjust("이동 속도 증가", WeaponAdjustType.PROS, (ws)=> ws.moveDt.basicRatio *= 1.09f),
+                    new WeaponAdjust("탄약 감소", WeaponAdjustType.CONS, (ws)=>{ }),
+                },
+            };
+
+            MagazineLibrary.Set("FN_FAL_MAG10", status); 
+        }
+        public FN_FAL_MAG10() : base("FN_FAL_MAG10")
+        {
+
+        }
+    }
+
 }

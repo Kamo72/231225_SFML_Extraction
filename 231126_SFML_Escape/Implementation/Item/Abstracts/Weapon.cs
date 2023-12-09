@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,15 +12,18 @@ using System.Windows.Forms.VisualStyles;
 
 namespace _231109_SFML_Test
 {
-    internal abstract class Weapon : Equipable
+    internal abstract class Weapon : Equipable, IEquipable
     {
         static Weapon() 
         {
         }
         public Weapon(string weaponCode)
         {
+            //기존 스텟 가져오기
             this.weaponCode = weaponCode;
             status = statusOrigin;
+
+
         }
 
         public WeaponStatus statusOrigin { get { return WeaponLibrary.Get(weaponCode); } }
@@ -28,14 +32,34 @@ namespace _231109_SFML_Test
 
         #region [탑뷰 스프라이트]
         //인게임 총기 스프라이트를 생성형으로 반환
-        public abstract RenderTexture GetTopSprite();
+        public virtual void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, RenderStates renderStates) 
+        {
+            float rotRatio = 0.04f;
+            float depth;
 
+            for (int i = 0; i < topParts.Length; i++)
+            {
+                RectangleShape shape = topParts[i];
+                depth = i - topParts.Length / 2f;
+                shape.Scale = new Vector2f(
+                    (float)Math.Cos(rotation.X.ToRadian()),
+                    (float)Math.Cos(rotation.Y.ToRadian())
+                    );
+                shape.Position = position + depth * rotation * rotRatio;
+
+                texture.Draw(shape, renderStates);
+            }
+        }
+        public void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation) { DrawTopSprite(texture, position, rotation, RenderStates.Default); }
+        
         //탑뷰 드로우를 위한 Rects
         protected RectangleShape[] topParts;
-        protected Vector2i topSpriteSize;
+        public Vector2i topSpriteSize;
 
         protected void InitTopParts(Vector2i topSpriteSize, params Texture[] textures)
         {
+            this.topSpriteSize = topSpriteSize;
+
             RectangleShape[] rects = new RectangleShape[textures.Length];
             for (int i = 0; i < textures.Length; i++)
             {
@@ -49,7 +73,12 @@ namespace _231109_SFML_Test
 
         #region [사이드뷰 스프라이트]
         //인게임 총기 스프라이트를 생성형으로 반환
-        public abstract RenderTexture GetSideSprite();
+        public virtual void DrawSideSprite(RenderTexture texture, Vector2f position, float rotation, RenderStates renderStates)
+        {
+            sidePart.Position = position;
+            sidePart.Rotation = rotation;
+            texture.Draw(sidePart, renderStates);
+        }
 
         protected RectangleShape sidePart;
         #endregion
@@ -71,8 +100,101 @@ namespace _231109_SFML_Test
             return false;
         }
         #endregion
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            foreach(RectangleShape r in topParts)
+                r?.Dispose();
+            sidePart?.Dispose();
+
+        }
     }
 
+    internal abstract class Magazine 
+    {
+        public Magazine(string magazineCode) 
+        {
+            this.magazineCode = magazineCode;
+            status = statusOrigin;
+            ammoStack = new Stack<Ammo> { };
+        }
+        public Magazine(string magazineCode, Type ammoType) : this(magazineCode)
+        {
+            //입력한 탄 유형으로 탄약 채우기
+            bool isAmmo = TypeEx.IsSubclassOfRawGeneric(ammoType, typeof(Ammo));
+
+            if (isAmmo == false) return;
+
+            while (true)
+            {
+                try
+                {
+                    AmmoPush(Activator.CreateInstance(ammoType) as Ammo);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message + e.StackTrace);
+                    break;
+                }
+            }
+        }
+
+        string magazineCode;
+        public MagazineStatus statusOrigin { get { return MagazineLibrary.Get(magazineCode); } }
+        public MagazineStatus status;
+
+        Stack<Ammo> ammoStack; //탄창 내 탄약 <스택>
+
+        public bool AmmoPush(Ammo ammo)
+        {
+            try
+            {
+                //예외
+                if (status.whiteList.Contains(ammo.caliber) == false) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "호환되지 않는 탄종");
+                if (ammoStack.Count >= status.ammoSize) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "탄창이 가득 찼음");
+                if (ammo.stackNow <= 0) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "탄약의 Stack값이 정상적이지 않음");
+
+                //처리
+                ammo.stackNow--;
+                Ammo splitted = Activator.CreateInstance(ammo.GetType()) as Ammo;
+                ammoStack.Push(splitted);
+
+                return true;
+            }
+            catch(Exception e) 
+            {
+                Console.WriteLine(e.ToString() + "\n\n" +e.StackTrace);
+                return false;
+            }
+        }
+        public Ammo AmmoPop()
+        {
+            if(ammoStack.Count <= 0) return null;
+
+            return ammoStack.Pop();
+        }
+
+    }
+
+    internal abstract class Ammo : Item, IStackable
+    {
+        public Ammo(string ammoCode)
+        {
+            this.ammoCode = ammoCode;
+        }
+
+        public string ammoCode;
+
+
+        public CaliberType caliber; //구경
+
+
+        //IStackable
+        public int stackNow { get; set; }
+        public int stackMax { get; set; }
+    }
 
     #region [총기 기본 정보]
     public enum CaliberType
@@ -205,7 +327,7 @@ namespace _231109_SFML_Test
         public DetailData detailDt;
         public struct DetailData 
         {
-            public DetailData(float roundPerMinute, int chamberSize, List<object> magazineWhiteList, float muzzleVelocity) 
+            public DetailData(float roundPerMinute, int chamberSize, List<Type> magazineWhiteList, float muzzleVelocity) 
             {
                 this.roundPerMinute = roundPerMinute;
                 this.chamberSize = chamberSize;
@@ -216,7 +338,7 @@ namespace _231109_SFML_Test
             public float RoundDelay { get { return 60f / roundPerMinute; } }
             public float roundPerMinute;
             public int chamberSize; //약실 크기
-            public List<object> magazineWhiteList;  //장착 가능한 탄창리스트
+            public List<Type> magazineWhiteList;  //장착 가능한 탄창리스트
             public float muzzleVelocity;    //총구 속도
         }
 
@@ -248,6 +370,43 @@ namespace _231109_SFML_Test
 
     #endregion
 
+    #region [탄창$탄약 기본 정보]
+    internal struct MagazineStatus 
+    {
+        public MagazineStatus(int ammoSize, List<CaliberType> whiteList, List<WeaponAdjust> adjusts) 
+        {
+            this.ammoSize = ammoSize;
+            this.whiteList = whiteList;
+            this.adjusts = adjusts;
+        }
+
+        public int ammoSize; //탄창 크기
+        public List<CaliberType> whiteList; //허용 탄종
+        public List<WeaponAdjust> adjusts;  //스텟 보정
+
+    }
+
+    internal struct AmmoStatus
+    {
+        public CaliberType caliber; //구경
+
+        public struct Lethality
+        {
+            public int damage;          //피해량
+            public float pierceLevel;   //관통계수
+            public int pellitCount;   //펠릿 갯수
+        }
+        public Lethality lethality;
+
+        public struct Adjustment {
+            public float accuracyRatio; //정확도 배율
+            public float recoilRatio;   //반동 배율
+            public float speedRatio;    //탄속 배율
+        }
+        public Adjustment adjustment;
+    }
+    #endregion
+
     #region [총기 데이터셋 제공자]
     internal static class WeaponLibrary
     {
@@ -274,8 +433,43 @@ namespace _231109_SFML_Test
         }
 
     }
-    public static class MegazineLibrary
+    internal static class MagazineLibrary
     {
+        static MagazineLibrary() 
+        {
+            magazineLib = new Dictionary<string, MagazineStatus>();
+        }
+
+        static Dictionary<string, MagazineStatus> magazineLib;
+
+        public static MagazineStatus Get(string magazineName)
+        {
+            return magazineLib[magazineName];
+        }
+        public static void Set(string magazineName, MagazineStatus magazineStatus)
+        {
+            if (magazineLib.ContainsKey(magazineName)) throw new Exception("magazineLib - 중복된 키 삽입!");
+            magazineLib.Add(magazineName, magazineStatus);
+        }
+    }
+    internal static class AmmoLibrary
+    {
+        static AmmoLibrary()
+        {
+            ammoLib = new Dictionary<string, AmmoStatus>();
+        }
+
+        static Dictionary<string, AmmoStatus> ammoLib;
+
+        public static AmmoStatus Get(string magazineName)
+        {
+            return ammoLib[magazineName];
+        }
+        public static void Set(string magazineName, AmmoStatus magazineStatus)
+        {
+            if (ammoLib.ContainsKey(magazineName)) throw new Exception("ammoLib - 중복된 키 삽입!");
+            ammoLib.Add(magazineName, magazineStatus);
+        }
     }
     #endregion
 

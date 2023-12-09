@@ -35,18 +35,38 @@ namespace _231109_SFML_Test
             InputManager.mouseAllow = false;
 
 
-
+            //벽 테스트
             structures.Add(new ConcreteBox(this, new Vector2f(+300f, +300f), new Vector2f(300f, 300f)));
             structures.Add(new ConcreteBox(this, new Vector2f(+300f, -300f), new Vector2f(300f, 300f)));
             structures.Add(new ConcreteBox(this, new Vector2f(-300f, +300f), new Vector2f(300f, 300f)));
             structures.Add(new ConcreteBox(this, new Vector2f(-300f, -300f), new Vector2f(300f, 300f)));
 
+
+
+            //상속 
+            Console.WriteLine("P : B  C : A" + TypeEx.IsSubclassOfRawGeneric(typeof(Bbb), typeof(Aaa)));
+            Console.WriteLine("P : A  C : B" + TypeEx.IsSubclassOfRawGeneric(typeof(Aaa), typeof(Bbb)));
+            Console.WriteLine("P : A  C : A" + TypeEx.IsSubclassOfRawGeneric(typeof(Aaa), typeof(Aaa)));
+
+
+
+
+
+
+            //무기 테스트
+            fnfal = new FN_FAL();
         }
+
+        class Aaa { }
+        class Bbb : Aaa { }
+
+
 
         IngameBackgroundDrawer ibd;
 
         public List<Structure> structures = new List<Structure>();
         public List<Entity> entitys = new List<Entity>();
+        public Weapon fnfal;
 
 
         protected override void DrawProcess()
@@ -68,6 +88,15 @@ namespace _231109_SFML_Test
             //text.Origin = new Vector2f(-110f, 0f);
             DrawManager.texUiInterface.Draw(ntext);
 
+            fnfal.DrawTopSprite(DrawManager.texUiInterface, new Vector2f(500f, 500f), Vector2fEx.Zero);
+            
+            
+
+
+
+
+
+
 
             ibd.DrawBackgroundProcess();
         }
@@ -75,6 +104,7 @@ namespace _231109_SFML_Test
         int i = 0;
         protected override void LogicProcess()
         {
+
             if (i++ > 40)
             {
                 i -= 40;

@@ -334,6 +334,12 @@ namespace _231109_SFML_Test
             }
             #endregion
 
+            #region [장비 착용]
+            public IHandable handling = null;
+
+            #endregion
+
+
         }
 
 

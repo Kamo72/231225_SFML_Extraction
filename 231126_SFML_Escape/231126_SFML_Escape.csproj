@@ -96,6 +96,7 @@
     <Compile Include="Implementation\Entitys\Humanoid.cs" />
     <Compile Include="Implementation\Entitys\Player.cs" />
     <Compile Include="Implementation\Entitys\Property\IInteractable.cs" />
+    <Compile Include="Implementation\Item\Ammunition.cs" />
     <Compile Include="Implementation\Item\FN_FAL.cs" />
     <Compile Include="Implementation\Particles\Particles.cs" />
     <Compile Include="Implementation\Projectiles\Bullet.cs" />

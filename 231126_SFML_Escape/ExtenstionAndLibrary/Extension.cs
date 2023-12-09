@@ -54,4 +54,21 @@ namespace _231109_SFML_Test
     }
 
 
+    public class TypeEx 
+    {
+        public static bool IsSubclassOfRawGeneric(Type derivedType, Type baseGenericType)
+        {
+            while (derivedType != null && derivedType != typeof(object))
+            {
+                var currentType = derivedType.IsGenericType ? derivedType.GetGenericTypeDefinition() : derivedType;
+                if (baseGenericType == currentType)
+                    return true;
+
+                derivedType = derivedType.BaseType;
+            }
+            return false;
+        }
+    }
+
+
 }

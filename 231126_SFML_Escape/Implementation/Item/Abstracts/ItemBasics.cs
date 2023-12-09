@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -293,9 +294,9 @@ namespace _231109_SFML_Test
         }
 
         ~Item () { Dispose(); }
-        public void Dispose()
+        public virtual void Dispose()
         {
-            droppedItem.Dispose();
+            droppedItem?.Dispose();
 
             //onStorage에서 제거
             if (onStorage != null)
@@ -305,22 +306,35 @@ namespace _231109_SFML_Test
         }
     }
 
+    //스택 가능한가?
     internal interface IStackable
     {
         int stackNow { get; set; }
         int stackMax { get; set; }
     }
+
+    //내구도를 가지는가?
     internal interface IDurable
     {
         float durableNow { get; set; }
         float durableMax { get; set; }
         bool zeroToDestruct { get; set; }
     }
-    internal interface IHandable 
-    {
-        float equipTime { get; }
 
+    //Humanoid의 손에 장비될 수 있는가?
+    internal interface IHandable
+    {
+        //장비 소요 속도, 장비 진행도
+        float equipTime { get; }
+        float equipValue { get; }
+
+        
+        void DrawHandling(Humanoid handler);
+        void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, RenderStates renderStates);
     }
+
+    //Humanoid가 인벤토리 상에서 사용 가능.
+    internal interface IClickable { }
 
     //internal abstract class ItemStackable : Item
     //{

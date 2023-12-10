@@ -43,10 +43,13 @@ namespace _231109_SFML_Test
         const double shakeReduction = 5d;
 
 
+        //Tragging시스템 바꿀 필요...? 절대 좌표로 따라오는게 아니라 변위를 제어하는 방식으로?
         public static Vector2f targetPos = Vector2fEx.Zero;
         const float targetPosSpeed = 0.2f;
         public static float targetRot = 0f;
         const float targetRotSpeed = 0.4f;
+
+        public static Action traggingProcess;
 
         static void ChangedResolution(Vector2i resolution)
         {

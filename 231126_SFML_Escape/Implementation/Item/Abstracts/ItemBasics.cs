@@ -306,6 +306,8 @@ namespace _231109_SFML_Test
         }
     }
 
+
+    #region [아이템 인터페이스]
     //스택 가능한가?
     internal interface IStackable
     {
@@ -328,13 +330,14 @@ namespace _231109_SFML_Test
         float equipTime { get; }
         float equipValue { get; }
 
-        
-        void DrawHandling(Humanoid handler);
-        void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, RenderStates renderStates);
+
+        void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float scaleRatio, RenderStates renderStates);
     }
 
     //Humanoid가 인벤토리 상에서 사용 가능.
     internal interface IClickable { }
+
+    #endregion
 
     //internal abstract class ItemStackable : Item
     //{

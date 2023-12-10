@@ -1,17 +1,8 @@
 ﻿using SFML.Graphics;
-using SFML.Graphics.Glsl;
 using SFML.System;
 using SFML.Window;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 using Rm = _231109_SFML_Test.ResourceManager;
 using Cm = _231109_SFML_Test.CameraManager;
@@ -26,7 +17,7 @@ namespace _231109_SFML_Test
     {
         static VideoManager() 
         {
-            resolutionNow = resolutionPreset[7];
+            resolutionNow = resolutionPreset[4];
             drawfpsNow = drawfpsPreset[3];          //144
 
             clockTotal = new Clock();

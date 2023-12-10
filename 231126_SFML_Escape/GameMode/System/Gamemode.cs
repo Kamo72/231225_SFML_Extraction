@@ -26,7 +26,7 @@ namespace _231109_SFML_Test
             this.logicFps = logicFps;
 
             //로직 타이머 시작
-            timer = new Timer(1000d / logicFps);
+            timer = new Timer(1000d / logicFps / 10d);
             timer.Elapsed += (s, e) => {
                 logicEvent?.Invoke();   //로직 처리 호출
             };

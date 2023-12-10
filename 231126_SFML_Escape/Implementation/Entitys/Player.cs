@@ -20,21 +20,28 @@ namespace _231109_SFML_Test
     {
         public Player(Gamemode gamemode, Vector2f position) : base(gamemode, position)
         {
+            CameraManager.traggingProcess = () =>
+            {
+                CameraManager.position = Position + (-Direction - 90f).ToRadian().ToVector() * VideoManager.resolutionNow.Y * 0.4f * CameraManager.zoomValue;
+                //카메라 회전 = 캐릭터 회전
+                CameraManager.rotation = Direction;
+            };
 
+            hands.handling = new FN_FAL();
         }
 
         protected override void DrawProcess()
         {
+            hands.DrawHandling();
+
             //마스크 그리기 (임시)
             DrawManager.texUiInterface.Draw(mask, CameraManager.worldRenderState);
-
 
             //마우스 변위만큼 조준점 이동
             AimVector = new Vector2f(AimVector.X, Mathf.Clamp(40f, AimVector.Y, 5000f));
             AimVector += new Vector2f(InputManager.mouseDelta.X , -InputManager.mouseDelta.Y);
 
-
-            CameraManager.zoomValue = Mathf.Clamp(0.5f, aimDistance /  900f, 3.0f);
+            CameraManager.zoomValue = Mathf.Clamp(0.5f, aimDistance /  650f, 3.0f);
 
             Console.WriteLine(aimDistance);
             CircleShape cir = new CircleShape(5f);
@@ -43,6 +50,7 @@ namespace _231109_SFML_Test
             cir.Position = AimPosition;
             DrawManager.texWrAugment.Draw(cir, CameraManager.worldRenderState);
             cir.Dispose();
+
 
         }
 
@@ -64,6 +72,10 @@ namespace _231109_SFML_Test
             if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD)) moveDir += (-Direction + 090f).ToRadian().ToVector();
 
             base.PhysicsProcess();
+
+            CameraManager.targetPos = Position + (-Direction - 90f).ToRadian().ToVector() * VideoManager.resolutionNow.Y * 0.4f * CameraManager.zoomValue;
+            //카메라 회전 = 캐릭터 회전
+            CameraManager.targetRot = Direction;
         }
 
 

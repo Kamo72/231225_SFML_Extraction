@@ -24,7 +24,10 @@ namespace _231109_SFML_Test
     internal class Humanoid : Entity//, IInteractable 대화 시스템~
     {
         public Humanoid(Gamemode gamemode, Vector2f position) : base(gamemode, position, new Circle(position, 30f))
-        { }
+        {
+            inventory = new Inventory(this);
+            hands = new Hands(this);
+        }
 
         public const float accel = 3000f;    //가속
         public float accelPer = 1.00f;      //가속 배율
@@ -295,7 +298,7 @@ namespace _231109_SFML_Test
             #endregion
         }
 
-        public Hands animator;
+        public Hands hands;
         public class Hands
         {
             public Humanoid master;
@@ -337,6 +340,17 @@ namespace _231109_SFML_Test
             #region [장비 착용]
             public IHandable handling = null;
 
+            public void DrawHandling()
+            {
+                handling.DrawTopSprite(
+                    DrawManager.texWrHigher,
+                    master.Position + (-master.Direction + 40f - 90f).ToRadian().ToVector() * 50f,
+                    Vector2fEx.Zero,
+                    -master.Direction - 90f,
+                    1f,
+                    CameraManager.worldRenderState
+                    );
+            }
             #endregion
 
 

@@ -56,15 +56,15 @@ namespace _231109_SFML_Test
 
     public class TypeEx 
     {
-        public static bool IsSubclassOfRawGeneric(Type derivedType, Type baseGenericType)
+        public static bool IsChildByParent(Type childClass, Type parentClass)
         {
-            while (derivedType != null && derivedType != typeof(object))
+            while (childClass != null && childClass != typeof(object))
             {
-                var currentType = derivedType.IsGenericType ? derivedType.GetGenericTypeDefinition() : derivedType;
-                if (baseGenericType == currentType)
+                var currentType = childClass.IsGenericType ? childClass.GetGenericTypeDefinition() : childClass;
+                if (parentClass == currentType)
                     return true;
 
-                derivedType = derivedType.BaseType;
+                childClass = childClass.BaseType;
             }
             return false;
         }

@@ -12,23 +12,31 @@ using System.Windows.Forms.VisualStyles;
 
 namespace _231109_SFML_Test
 {
-    internal abstract class Weapon : Equipable, IEquipable
+    internal abstract class Weapon : Equipable, IHandable, IDurable
     {
-        static Weapon() 
-        {
-        }
+        static Weapon() { }
         public Weapon(string weaponCode)
         {
             //기존 스텟 가져오기
             this.weaponCode = weaponCode;
             status = statusOrigin;
 
-
+            equipValue = 0f;
         }
 
+        #region [변수 목록]
+        //인터페이스 구현
+        public float equipTime => status.timeDt.swapTime;
+        public float equipValue { get; set; } = 0f;
+        public float durableNow { get; set; } = 100f;
+        public float durableMax { get; set; } = 0f;
+        public bool zeroToDestruct { get; set; } = true;
+
+        //스테이터스
         public WeaponStatus statusOrigin { get { return WeaponLibrary.Get(weaponCode); } }
         public WeaponStatus status;
         string weaponCode;
+        #endregion
 
         #region [탑뷰 스프라이트]
         protected void InitTopParts(Vector2i topSpriteSize, params Texture[] textures)
@@ -51,9 +59,8 @@ namespace _231109_SFML_Test
         public Vector2i topSpriteSize;
 
         //인게임 총기 스프라이트를 생성형으로 반환
-        public virtual void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates)
+        public virtual void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float scaleRatio, RenderStates renderStates)
         {
-            float rotRatio = 0.40f;
             float depth;
             float depthAdjusted = -1f;
 
@@ -62,19 +69,21 @@ namespace _231109_SFML_Test
                 depth = i - (topParts.Length / 2f) + depthAdjusted;
 
                 RectangleShape shape = topParts[i];
-                DrawTopSpritePart(texture, shape, position, rotation, direction, renderStates, depth, rotRatio);
+                DrawTopSpritePart(texture, shape, position, rotation, direction, renderStates, depth, scaleRatio);
             }
         }
-        public void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction) { DrawTopSprite(texture, position, rotation, direction, RenderStates.Default); }
+        public void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float scaleRatio) { DrawTopSprite(texture, position, rotation, direction, scaleRatio, RenderStates.Default); }
 
-        protected void DrawTopSpritePart(RenderTexture texture, RectangleShape shape, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depth, float rotRatio)
+        protected void DrawTopSpritePart(RenderTexture texture, RectangleShape shape, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depth, float scaleRatio)
         {
+            float rotRatio = 0.07f * scaleRatio;
+
             shape.Scale = new Vector2f(
                 (float)Math.Cos(rotation.X.ToRadian()),
                 (float)Math.Cos(rotation.Y.ToRadian())
-                ) * 10f;
-            shape.Position = position + depth * (rotation.ToDirection() + direction.ToRadian() * 10f).ToVector() * rotation.Magnitude() * rotRatio;
-            shape.Rotation = direction * 10f;
+                ) * scaleRatio;
+            shape.Position = position + depth * (rotation.ToDirection() + direction.ToRadian()).ToVector() * rotation.Magnitude() * rotRatio;
+            shape.Rotation = direction;
 
             texture.Draw(shape, renderStates);
         }

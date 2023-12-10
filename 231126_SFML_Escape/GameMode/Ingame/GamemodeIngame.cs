@@ -35,40 +35,21 @@ namespace _231109_SFML_Test
             //마우스 허용 안됨.
             InputManager.mouseAllow = false;
 
-
             //벽 테스트
             structures.Add(new ConcreteBox(this, new Vector2f(+300f, +300f), new Vector2f(300f, 300f)));
             structures.Add(new ConcreteBox(this, new Vector2f(+300f, -300f), new Vector2f(300f, 300f)));
             structures.Add(new ConcreteBox(this, new Vector2f(-300f, +300f), new Vector2f(300f, 300f)));
             structures.Add(new ConcreteBox(this, new Vector2f(-300f, -300f), new Vector2f(300f, 300f)));
 
-
-
-            //상속 
-            Console.WriteLine("P : B  C : A" + TypeEx.IsSubclassOfRawGeneric(typeof(Bbb), typeof(Aaa)));
-            Console.WriteLine("P : A  C : B" + TypeEx.IsSubclassOfRawGeneric(typeof(Aaa), typeof(Bbb)));
-            Console.WriteLine("P : A  C : A" + TypeEx.IsSubclassOfRawGeneric(typeof(Aaa), typeof(Aaa)));
-
-
-
-
-
-
-            //무기 테스트
-            fnfal = new FN_FAL();
         }
-
-        class Aaa { }
-        class Bbb : Aaa { }
-
-
 
         IngameBackgroundDrawer ibd;
 
         public List<Structure> structures = new List<Structure>();
         public List<Entity> entitys = new List<Entity>();
-        public Weapon fnfal;
 
+
+        int DEBUG_COUNT = 0;
 
         protected override void DrawProcess()
         {
@@ -83,29 +64,24 @@ namespace _231109_SFML_Test
             DrawManager.texUiInterface.Draw(text);
 
             string msgFps =
-                $"fps : {VideoManager.fpsNow} ";
+                $"fps : {VideoManager.fpsNow} {DEBUG_COUNT} {DEBUG_COUNT/90f} {VideoManager.GetTimeTotal()}";
             Text ntext = new Text(msgFps, font);
             ntext.Position = new Vector2f(VideoManager.resolutionNow.X - 600f, 300f);
             //text.Origin = new Vector2f(-110f, 0f);
             DrawManager.texUiInterface.Draw(ntext);
 
-            fnfal.DrawTopSprite(DrawManager.texUiInterface, entitys[0].Position, Vector2fEx.Zero, entitys[0].Direction.ToRadian(), CameraManager.worldRenderState);
+
+            FN_FAL fN_FAL = new FN_FAL();
+            fN_FAL.DrawTopSprite(DrawManager.texUiInterface, new Vector2f(500f, 500), Vector2fEx.Zero, 0f, 10f);
+
             
-            
-
-
-
-
-
-
-
             ibd.DrawBackgroundProcess();
         }
 
         int i = 0;
         protected override void LogicProcess()
         {
-
+            DEBUG_COUNT++;
             if (i++ > 40)
             {
                 i -= 40;

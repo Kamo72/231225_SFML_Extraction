@@ -42,6 +42,7 @@ namespace _231109_SFML_Test
             //카메라 흔들림 적용
             CameraManager.ShakeProcess();
             CameraManager.TraggingProcess();
+            //CameraManager.traggingProcess?.Invoke();
 
             //그릴거 다 그리기
             gmNow?.DoDraw();

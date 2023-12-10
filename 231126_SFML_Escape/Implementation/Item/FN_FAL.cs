@@ -90,14 +90,10 @@ namespace _231109_SFML_Test
             base.DrawSideSprite(texture, position, rotation, renderStates);
         }
 
-        public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates)
+        public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float scaleRatio, RenderStates renderStates)
         {
-            float rotRatio = 0.40f;
-            float depth;
             float depthAdjusted = -1f;
 
-            direction *= 10f;
-            
             float time = VideoManager.GetTimeTotal();
             rotation = new Vector2f((float)Math.Cos(time), (float)Math.Sin(time)) * 20f;
             //rotation = new Vector2f(20f, 20f);
@@ -105,19 +101,19 @@ namespace _231109_SFML_Test
             if (magazineAttached != null)
             {
                 //magazineAttached.DrawTopSprite(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
-                magazineAttached.DrawTopSprite(texture, position + (direction * 10f).ToRadian().ToVector() * 100f, rotation, direction, renderStates, 2.5f);
+                magazineAttached.DrawTopSprite(texture, position + (direction).ToRadian().ToVector() * 10f * scaleRatio, rotation, direction, renderStates, 2.5f, scaleRatio);
             }
 
 
             for (int i = topParts.Length-1; i >= 0; i--)
             {
-                depth = i - (topParts.Length / 2f) + depthAdjusted;
+                float depth = i - (topParts.Length / 2f) + depthAdjusted;
 
                 RectangleShape shape = topParts[i];
-                DrawTopSpritePart(texture, shape, position, rotation, direction, renderStates, depth, rotRatio);
+                DrawTopSpritePart(texture, shape, position, rotation, direction, renderStates, depth, scaleRatio);
 
                 if (i == 2)
-                    DrawTopSpritePart(texture, topPartsBolt, position, rotation, direction, renderStates, depth, rotRatio);
+                    DrawTopSpritePart(texture, topPartsBolt, position, rotation, direction, renderStates, depth, scaleRatio);
             }
 
             
@@ -162,10 +158,10 @@ namespace _231109_SFML_Test
         }
 
 
-        public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depthAdjusted)
-        {
-            base.DrawTopSprite(texture, position, rotation, direction, renderStates, depthAdjusted);
-        }
+        //public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depthAdjusted)
+        //{
+        //    base.DrawTopSprite(texture, position, rotation, direction, renderStates, depthAdjusted);
+        //}
 
     }
 

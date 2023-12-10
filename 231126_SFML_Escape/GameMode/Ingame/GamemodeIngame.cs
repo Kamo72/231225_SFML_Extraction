@@ -27,6 +27,7 @@ namespace _231109_SFML_Test
             //플레이어 객체 생성
             Entity entity = new Player(this, new Vector2f(0, 0));
             SoundManager.listener = entity;
+            entitys.Add(entity);
             
             //배경 그리기 객체
             ibd = new IngameBackgroundDrawer();
@@ -88,7 +89,7 @@ namespace _231109_SFML_Test
             //text.Origin = new Vector2f(-110f, 0f);
             DrawManager.texUiInterface.Draw(ntext);
 
-            fnfal.DrawTopSprite(DrawManager.texUiInterface, new Vector2f(500f, 500f), Vector2fEx.Zero);
+            fnfal.DrawTopSprite(DrawManager.texUiInterface, entitys[0].Position, Vector2fEx.Zero, entitys[0].Direction.ToRadian(), CameraManager.worldRenderState);
             
             
 

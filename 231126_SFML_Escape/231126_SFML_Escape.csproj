@@ -91,6 +91,7 @@
     <Compile Include="Implementation\Entitys\Container.cs" />
     <Compile Include="Implementation\Item\Abstracts\ItemBasics.cs" />
     <Compile Include="Implementation\Item\Abstracts\Equipment.cs" />
+    <Compile Include="Implementation\Item\Abstracts\MagazineAndAmmo.cs" />
     <Compile Include="Implementation\Item\Abstracts\Weapon.cs" />
     <Compile Include="Implementation\Entitys\DroppedItem.cs" />
     <Compile Include="Implementation\Entitys\Humanoid.cs" />
@@ -125,11 +126,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="openal32.dll" />
-    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_grip.png" />
-    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_middle.png" />
-    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_upper.png" />
-    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_lower.png" />
-    <Content Include="SpritesIde\FN_FAL\FN_FAL_body_handle.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_body_bolt.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_body_grip.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_body_handle.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_body_lower.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_body_middle.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_body_upper.png" />
+    <Content Include="Sprites\FN_FAL_MAG10\FN_FAL_MAG10_3.png" />
+    <Content Include="Sprites\FN_FAL_MAG10\FN_FAL_MAG10_2.png" />
+    <Content Include="Sprites\FN_FAL_MAG10\FN_FAL_MAG10_1.png" />
+    <Content Include="Sprites\FN_FAL_MAG10\FN_FAL_MAG10_0.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -57,6 +57,14 @@ namespace _231109_SFML_Test
                     textures.Add("FN_FAL_body_middle", new Texture(header + "FN_FAL_body_middle.png"));
                     textures.Add("FN_FAL_body_upper", new Texture(header + "FN_FAL_body_upper.png"));
                     textures.Add("FN_FAL_body_handle", new Texture(header + "FN_FAL_body_handle.png"));
+
+                    textures.Add("FN_FAL_body_bolt", new Texture(header + "FN_FAL_body_bolt.png"));
+                }
+                {
+                    textures.Add("FN_FAL_MAG10_0", new Texture(header + "FN_FAL_MAG10_0.png"));
+                    textures.Add("FN_FAL_MAG10_1", new Texture(header + "FN_FAL_MAG10_1.png"));
+                    textures.Add("FN_FAL_MAG10_2", new Texture(header + "FN_FAL_MAG10_2.png"));
+                    textures.Add("FN_FAL_MAG10_3", new Texture(header + "FN_FAL_MAG10_3.png"));
                 }
             }
 
@@ -85,17 +93,28 @@ namespace _231109_SFML_Test
             slnPath = System.IO.Path.GetDirectoryName(slnPath);
             //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape
             {
-                dirPath = slnPath + @"\SpritesIde\FN_FAL\";
+                dirPath = slnPath + @"\Sprites\FN_FAL\";
                 //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL\
 
                 CopyFile(dirPath + @"FN_FAL_body_grip.png",     @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_body_lower.png",    @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_body_middle.png",   @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_body_upper.png",    @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_body_handle.png",   @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_body_handle.png", @"Assets\Textures\");
+
+                CopyFile(dirPath + @"FN_FAL_body_bolt.png", @"Assets\Textures\");
+            }
+            {
+                dirPath = slnPath + @"\Sprites\FN_FAL_MAG10\";
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL_10MAG\
+
+                CopyFile(dirPath + @"FN_FAL_MAG10_0.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_MAG10_1.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_MAG10_2.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_MAG10_3.png", @"Assets\Textures\");
+
             }
 
-            
         }
 
         static void CopyFile(string filePath, string toPath)

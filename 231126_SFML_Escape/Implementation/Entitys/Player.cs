@@ -34,7 +34,7 @@ namespace _231109_SFML_Test
             AimVector += new Vector2f(InputManager.mouseDelta.X , -InputManager.mouseDelta.Y);
 
 
-            CameraManager.zoomValue = Mathf.Clamp(0.5f, aimDistance /  500f, 3.0f);
+            CameraManager.zoomValue = Mathf.Clamp(0.5f, aimDistance /  900f, 3.0f);
 
             Console.WriteLine(aimDistance);
             CircleShape cir = new CircleShape(5f);

@@ -7,16 +7,8 @@ using System.Threading.Tasks;
 
 namespace _231109_SFML_Test
 {
-    class aaaa 
-    {
-        aaaa() 
-        {
-            Socket so = new Socket(SocketType.Raw, ProtocolType.IP);
-        }
-    }
 
-
-    #region
+    #region [7.39x51mm NATO]
     internal class mm7p39x51_AP : Ammo
     {
         static mm7p39x51_AP()

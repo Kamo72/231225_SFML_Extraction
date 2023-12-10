@@ -3,6 +3,7 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,7 +63,7 @@ namespace _231109_SFML_Test
         public FN_FAL() : base("FN_FAL")
         {
             SetupBasicData("시험형 무기", "시험형 무기입니다.", 3.5f, new Vector2i(3, 2), Rarerity.COMMON, 20000f);
-            InitTopParts(new Vector2i(200, 75), new Texture[]
+            InitTopParts(new Vector2i(200, 100), new Texture[]
             {
                 ResourceManager.textures["FN_FAL_body_handle"],
                 ResourceManager.textures["FN_FAL_body_upper"],
@@ -70,31 +71,56 @@ namespace _231109_SFML_Test
                 ResourceManager.textures["FN_FAL_body_lower"],
                 ResourceManager.textures["FN_FAL_body_grip"],
             });
+
+            topPartsBolt = new RectangleShape((Vector2f)topSpriteSize);
+            topPartsBolt.Texture = ResourceManager.textures["FN_FAL_body_bolt"];
+            topPartsBolt.Origin = new Vector2f(50, 50);
+
+
+            //테스트
+            magazineAttached = new FN_FAL_MAG10();
         }
+
+        RectangleShape topPartsBolt;
+        Magazine magazineAttached;
+
 
         public override void DrawSideSprite(RenderTexture texture, Vector2f position, float rotation, RenderStates renderStates)
         { 
             base.DrawSideSprite(texture, position, rotation, renderStates);
         }
-        
-        public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, RenderStates renderStates)
+
+        public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates)
         {
-            //Vector2i size = new Vector2i(200, 75);
-            float rotRatio = 0.04f;
+            float rotRatio = 0.40f;
             float depth;
             float depthAdjusted = -1f;
-            for (int i = 0; i < topParts.Length; i++)
-            {
-                RectangleShape shape = topParts[i];
-                depth = i - (topParts.Length / 2f) + depthAdjusted;
-                shape.Scale = new Vector2f(
-                    (float)Math.Cos(rotation.X.ToRadian()),
-                    (float)Math.Cos(rotation.Y.ToRadian())
-                    ) * 10f;
-                shape.Position = position + depth * rotation * rotRatio;
 
-                texture.Draw(shape, renderStates);
+            direction *= 10f;
+            
+            float time = VideoManager.GetTimeTotal();
+            rotation = new Vector2f((float)Math.Cos(time), (float)Math.Sin(time)) * 20f;
+            //rotation = new Vector2f(20f, 20f);
+
+            if (magazineAttached != null)
+            {
+                //magazineAttached.DrawTopSprite(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
+                magazineAttached.DrawTopSprite(texture, position + (direction * 10f).ToRadian().ToVector() * 100f, rotation, direction, renderStates, 2.5f);
             }
+
+
+            for (int i = topParts.Length-1; i >= 0; i--)
+            {
+                depth = i - (topParts.Length / 2f) + depthAdjusted;
+
+                RectangleShape shape = topParts[i];
+                DrawTopSpritePart(texture, shape, position, rotation, direction, renderStates, depth, rotRatio);
+
+                if (i == 2)
+                    DrawTopSpritePart(texture, topPartsBolt, position, rotation, direction, renderStates, depth, rotRatio);
+            }
+
+            
         }
     }
 
@@ -122,13 +148,48 @@ namespace _231109_SFML_Test
                     new WeaponAdjust("탄약 감소", WeaponAdjustType.CONS, (ws)=>{ }),
                 },
             };
-
             MagazineLibrary.Set("FN_FAL_MAG10", status); 
         }
         public FN_FAL_MAG10() : base("FN_FAL_MAG10")
         {
+            InitTopParts(new Vector2i(45,45), new Texture[]
+            {
+                ResourceManager.textures["FN_FAL_MAG10_0"],
+                ResourceManager.textures["FN_FAL_MAG10_1"],
+                ResourceManager.textures["FN_FAL_MAG10_2"],
+                ResourceManager.textures["FN_FAL_MAG10_3"],
+            });
+        }
+
+
+        public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depthAdjusted)
+        {
+            base.DrawTopSprite(texture, position, rotation, direction, renderStates, depthAdjusted);
+        }
+
+    }
+
+    internal class FN_FAL_MAG20 : Magazine
+    {
+        static FN_FAL_MAG20()
+        {
+            MagazineStatus status = new MagazineStatus()
+            {
+                ammoSize = 20,
+                whiteList = new List<CaliberType>()
+                {
+                    CaliberType.mm7p62x51,
+                },
+                adjusts = new List<WeaponAdjust>()
+                {
+                },
+            };
+
+            MagazineLibrary.Set("FN_FAL_MAG20", status);
+        }
+        public FN_FAL_MAG20() : base("FN_FAL_MAG20")
+        {
 
         }
     }
-
 }

@@ -53,6 +53,7 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="231018_닷넷 서버 클라">
@@ -89,6 +90,7 @@
     <Compile Include="GameMode\Ingame\GamemodeIngame.cs" />
     <Compile Include="GameMode\Ingame\IngameBackgroundDrawer.cs" />
     <Compile Include="Implementation\Entitys\Container.cs" />
+    <Compile Include="Implementation\Entitys\HumanoidExtention.cs" />
     <Compile Include="Implementation\Item\Abstracts\ItemBasics.cs" />
     <Compile Include="Implementation\Item\Abstracts\Equipment.cs" />
     <Compile Include="Implementation\Item\Abstracts\MagazineAndAmmo.cs" />

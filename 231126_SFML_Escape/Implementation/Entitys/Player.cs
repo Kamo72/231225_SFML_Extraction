@@ -32,7 +32,7 @@ namespace _231109_SFML_Test
 
         protected override void DrawProcess()
         {
-            hands.DrawHandling();
+            hands.DrawHandlingProcess();
 
             //마스크 그리기 (임시)
             DrawManager.texUiInterface.Draw(mask, CameraManager.worldRenderState);
@@ -59,23 +59,30 @@ namespace _231109_SFML_Test
             CameraManager.targetPos = Position + (-Direction - 90f).ToRadian().ToVector() *  VideoManager.resolutionNow.Y * 0.4f * CameraManager.zoomValue;
             //카메라 회전 = 캐릭터 회전
             CameraManager.targetRot = Direction;
+
         }
 
         protected override void PhysicsProcess()
         {
-            //Console.WriteLine(Position);
+            try
+            {
+                //이동 방향 지정
+                moveDir = Vector2fEx.Zero;
+                if (Im.CommandCheck(Im.CommandType.MOVE_LEFT)) moveDir += (-Direction + 180f).ToRadian().ToVector();
+                if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT)) moveDir += (-Direction + 000f).ToRadian().ToVector();
+                if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD)) moveDir += (-Direction + 270f).ToRadian().ToVector();
+                if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD)) moveDir += (-Direction + 090f).ToRadian().ToVector();
 
-            moveDir = Vector2fEx.Zero;
-            if (Im.CommandCheck(Im.CommandType.MOVE_LEFT)) moveDir +=     (-Direction + 180f).ToRadian().ToVector();
-            if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT)) moveDir +=    (-Direction + 000f).ToRadian().ToVector();
-            if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD)) moveDir +=  (-Direction + 270f).ToRadian().ToVector();
-            if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD)) moveDir += (-Direction + 090f).ToRadian().ToVector();
+                base.PhysicsProcess();
 
-            base.PhysicsProcess();
+                //갖고 있는 아이템의 조작
+                hands.LogicHandlingProcess();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
 
-            CameraManager.targetPos = Position + (-Direction - 90f).ToRadian().ToVector() * VideoManager.resolutionNow.Y * 0.4f * CameraManager.zoomValue;
-            //카메라 회전 = 캐릭터 회전
-            CameraManager.targetRot = Direction;
         }
 
 

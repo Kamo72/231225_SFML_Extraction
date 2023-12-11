@@ -38,9 +38,21 @@ namespace _231109_SFML_Test
         static Vector2f screenSize { get { return (Vector2f)VideoManager.resolutionNow; } }
         public static bool CommandCheck(CommandType cmdType)
         {
-            if (Program.window.HasFocus() == false)
-                return false;
-            return commandDic[cmdType].Check();
+            try
+            {
+                if (Program.window.HasFocus() == false)
+                    return false;
+                return commandDic[cmdType].Check();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("입력된 명령 코드 : " + cmdType.ToString());
+                Console.WriteLine("저장된 명령 코드 : " );
+                foreach (var kvp in commandDic.Keys)
+                    Console.WriteLine(kvp.ToString());
+
+                return false; 
+            }
         }
 
         #region [입력 장치 제어]
@@ -81,6 +93,12 @@ namespace _231109_SFML_Test
             RELEASE,    //전 프레임  활성화 / 이번 프레임 비활성화
             DOUBLE,     //최근 Press클릭 시점을 저장. Press 시, 가깝다면 활성화
             TOGGLE,     //Press와 같긴 한데, 토글이라는 개념이 중간에 추가됨.
+
+            /* PRESS는 PRESSing으로 작동
+             * RELEASE는 작동 X
+             * TOGGLE는 PRESSING 작동
+             * DOUBLE는 작동 X
+             */
         }
         //조작 정보
         public struct CommandData
@@ -222,10 +240,12 @@ namespace _231109_SFML_Test
         }
 
         //조작 리스트
-        public static Dictionary<CommandType, CommandData> commandDic = new Dictionary<CommandType, CommandData>();
+        public static Dictionary<CommandType, CommandData> commandDic;
 
         public static void ResetCommandTable()
         {
+            commandDic = new Dictionary<CommandType, CommandData>();
+
             commandDic[CommandType.MOVE_FORWARD] = new CommandData("앞으로 이동", KeyReadType.PRESSING, new KeyData(Keyboard.Key.W));
             commandDic[CommandType.MOVE_BACKWARD] = new CommandData("뒤로 이동", KeyReadType.PRESSING, new KeyData(Keyboard.Key.S));
             commandDic[CommandType.MOVE_LEFT] = new CommandData("왼쪽으로 이동", KeyReadType.PRESSING, new KeyData(Keyboard.Key.A));

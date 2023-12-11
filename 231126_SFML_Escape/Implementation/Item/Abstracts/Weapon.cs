@@ -21,7 +21,17 @@ namespace _231109_SFML_Test
             this.weaponCode = weaponCode;
             status = statusOrigin;
 
-            equipValue = 0f;
+
+            commandsReact = new Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>>()
+            {
+                { InputManager.CommandType.FIRE, (hands, isTrue) => {
+                    if(isTrue) CameraManager.GetShake(10f);
+                } },
+                { InputManager.CommandType.AIM, (hands, isTrue) => { } },
+                //{ InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => { } },
+                //{ InputManager.CommandType.SPRINT, (hands, isTrue) => { } },
+                //{ InputManager.CommandType.MELEE, (hand, isTrue) => { } }
+            };
         }
 
         #region [변수 목록]
@@ -31,6 +41,10 @@ namespace _231109_SFML_Test
         public float durableNow { get; set; } = 100f;
         public float durableMax { get; set; } = 0f;
         public bool zeroToDestruct { get; set; } = true;
+        
+        //허용된 조작 목록
+        public Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>> commandsReact { get; set; }
+            
 
         //스테이터스
         public WeaponStatus statusOrigin { get { return WeaponLibrary.Get(weaponCode); } }

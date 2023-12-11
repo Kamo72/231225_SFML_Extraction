@@ -332,7 +332,10 @@ namespace _231109_SFML_Test
 
 
         void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float scaleRatio, RenderStates renderStates);
+
+        Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>> commandsReact { get; set; }
     }
+
 
     //Humanoid가 인벤토리 상에서 사용 가능.
     internal interface IClickable { }

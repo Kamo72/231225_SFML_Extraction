@@ -26,10 +26,12 @@ namespace _231109_SFML_Test
         }
         public void UnEquip(Humanoid entity)
         {
+            if(equipedBy == null) throw new Exception("Equipable - UnEquip - ERROR : 장착하지 않은 아이템을 장착 해제하려고 합니다!")
             if (equipedBy is Humanoid human)
             {
 
             }
+            equipedBy = null;
         }
     }
 

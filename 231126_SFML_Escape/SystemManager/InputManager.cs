@@ -38,26 +38,14 @@ namespace _231109_SFML_Test
         static Vector2f screenSize { get { return (Vector2f)VideoManager.resolutionNow; } }
         public static bool CommandCheck(CommandType cmdType)
         {
-            try
-            {
-                if (Program.window.HasFocus() == false)
-                    return false;
-                return commandDic[cmdType].Check();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("입력된 명령 코드 : " + cmdType.ToString());
-                Console.WriteLine("저장된 명령 코드 : " );
-                foreach (var kvp in commandDic.Keys)
-                    Console.WriteLine(kvp.ToString());
-
-                return false; 
-            }
+            if (Program.window.HasFocus() == false)
+                return false;
+            return commandDic[cmdType].Check();
         }
 
         #region [입력 장치 제어]
         //키값
-        public struct KeyData
+        public class KeyData
         {
             public bool isKey;      //키인지 마우스인지
             public Keyboard.Key? keyCode; //키 코드
@@ -101,12 +89,12 @@ namespace _231109_SFML_Test
              */
         }
         //조작 정보
-        public struct CommandData
+        public class CommandData
         {
             public string commandName;
 
-            public KeyData? firstKey;
-            public KeyData? secondKey;
+            public KeyData firstKey;
+            public KeyData secondKey;
 
             public KeyReadType keyReadType;
             public List<KeyReadType> keyReadWhiteList;
@@ -119,7 +107,7 @@ namespace _231109_SFML_Test
             private bool toggleActivated;
 
 
-            public CommandData(string commandName, KeyReadType keyReadType, KeyData? firstKey = null, KeyData? secondKey = null, List<KeyReadType> whiteList = null)
+            public CommandData(string commandName, KeyReadType keyReadType, KeyData firstKey = null, KeyData secondKey = null, List<KeyReadType> whiteList = null)
             {
                 this.keyReadType = keyReadType;
                 this.commandName = commandName;
@@ -127,7 +115,6 @@ namespace _231109_SFML_Test
                 this.secondKey = secondKey;
 
                 keyReadWhiteList = whiteList;
-
 
                 doubleClickPast = 9999f;
                 toggleActivated = false;
@@ -143,6 +130,7 @@ namespace _231109_SFML_Test
                 bool result;
                 KeyData keyToTry = secondKey != null ? (KeyData)secondKey : (KeyData)firstKey;
 
+                if (keyReadType == KeyReadType.RELEASE) Console.WriteLine("Release Test : tryResult " + keyToTry.IsActivated() + " && keyToTry.isActivatedBefore " + keyToTry.isActivatedBefore);
                 //키 없음
                 if (firstKey == null && secondKey == null)
                 {
@@ -179,13 +167,15 @@ namespace _231109_SFML_Test
                         break;
 
                     case KeyReadType.RELEASE:
-                        result = !tryResult && keyToTry.isActivatedBefore == true;
+                        result = tryResult == false && keyToTry.isActivatedBefore;
                         break;
 
                     case KeyReadType.TOGGLE:
-                        if (tryResult) toggleActivated = !toggleActivated;
+                        if (tryResult && keyToTry.isActivatedBefore == false)
+                            toggleActivated = !toggleActivated;
                         result = toggleActivated;
                         break;
+                    
                     default:
                         result = false;
                         break;
@@ -193,22 +183,21 @@ namespace _231109_SFML_Test
 
                 return result;
             }
+
             //Check실행 후에 이전 키의 입력을 최신화
             public void AfterCheckProcess()
             {
                 if (firstKey != null)
-                {
-                    KeyData firstKeyData = (KeyData)firstKey;
-                    firstKeyData.isActivatedBefore = firstKeyData.IsActivated();
-                }
+                    firstKey.isActivatedBefore = firstKey.IsActivated();
                 if (secondKey != null)
-                {
-                    KeyData secondKeyData = (KeyData)secondKey;
-                    secondKeyData.isActivatedBefore = secondKeyData.IsActivated();
-                }
+                    secondKey.isActivatedBefore = secondKey.IsActivated();
 
-                doubleClickPast += 1000f/60f;
+                doubleClickPast += 1f / 60f;
+
+                KeyData keyToCheck = secondKey ?? firstKey;
+                if (keyToCheck.IsActivated()) doubleClickPast = doubleClickPast < doubleClickDelay? 0f : 0f;
             }
+
         }
         //조작값
         public enum CommandType
@@ -257,7 +246,7 @@ namespace _231109_SFML_Test
 
             //commandDic[CommandType.INTERACT] = new CommandData("상호작용", KeyReadType.PRESS, new KeyData(KeyCode.F));
 
-            commandDic[CommandType.FIRE] = new CommandData("격발", KeyReadType.PRESSING, new KeyData(Mouse.Button.Left));
+            commandDic[CommandType.FIRE] = new CommandData("격발", KeyReadType.DOUBLE, new KeyData(Mouse.Button.Left));
             commandDic[CommandType.AIM] = new CommandData("조준", KeyReadType.PRESSING, new KeyData(Mouse.Button.Right));
             //commandDic[CommandType.MAGAZINE_CHANGE] = new CommandData("재장전", KeyReadType.PRESS, new KeyData(KeyCode.R));
             //commandDic[CommandType.MAGAZINE_INSPECT] = new CommandData("잔탄 확인", KeyReadType.PRESS, new KeyData(KeyCode.LeftControl), new KeyData(KeyCode.R));
@@ -270,13 +259,12 @@ namespace _231109_SFML_Test
 
         #endregion
 
-
         public static void RefreshProcess()
         {
             try
             {
-                foreach (CommandData command in commandDic.Values)
-                    command.AfterCheckProcess();
+                foreach (CommandType cmdType in commandDic.Keys)
+                    commandDic[cmdType].AfterCheckProcess();
             }
             catch (Exception ex)
             {
@@ -332,7 +320,7 @@ namespace _231109_SFML_Test
 
 
         }
-        public static void MouseProcess() 
+        public static void MouseProcess()
         {
             Vector2f mouseSpeed = new Vector2f(
                 0.1f * InputManager.mouseSpeed.X,
@@ -358,6 +346,14 @@ namespace _231109_SFML_Test
             mousePositionPre = (Vector2f)Mouse.GetPosition();
         }
 
-
+        public static Action inputManagerProcess = ()=>
+        {
+            if (Program.window.HasFocus())
+            {
+                InputManager.RefreshProcess();
+                InputManager.MouseProcess();
+                InputManager.DebugProcess();
+            }
+        };
     }
 }

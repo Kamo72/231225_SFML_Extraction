@@ -49,9 +49,10 @@ namespace _231109_SFML_Test
                 detailDt = new WeaponStatus.DetailData()
                 {
                     chamberSize = 1,
-                    magazineWhiteList = new List<Type> 
+                    magazineWhiteList = new List<Type>
                     {
-                        typeof(FN_FAL),
+                        typeof(FN_FAL_MAG10),
+                        typeof(FN_FAL_MAG20),
                     },
                     muzzleVelocity = 2080f,
                     roundPerMinute = 700f,
@@ -82,7 +83,6 @@ namespace _231109_SFML_Test
         }
 
         RectangleShape topPartsBolt;
-        Magazine magazineAttached;
 
 
         public override void DrawSideSprite(RenderTexture texture, Vector2f position, float rotation, RenderStates renderStates)

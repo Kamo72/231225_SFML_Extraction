@@ -35,18 +35,12 @@ namespace _231109_SFML_Test
                     window.Clear(Color.Black);
 
                     {
+
                         //Do Something
                         tm.DrawAll();
 
                         VideoManager.FrameReset();
 
-
-                        if (Program.window.HasFocus())
-                        {
-                            InputManager.MouseProcess();
-                            InputManager.DebugProcess();
-                            InputManager.RefreshProcess();
-                        }
                     }
                     // 화면 업데이트
                     window.Display();

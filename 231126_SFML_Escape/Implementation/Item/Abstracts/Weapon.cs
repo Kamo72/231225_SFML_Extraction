@@ -25,7 +25,7 @@ namespace _231109_SFML_Test
             commandsReact = new Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>>()
             {
                 { InputManager.CommandType.FIRE, (hands, isTrue) => {
-                    if(isTrue) CameraManager.GetShake(10f);
+                    if(isTrue) CameraManager.GetShake(50f);
                 } },
                 { InputManager.CommandType.AIM, (hands, isTrue) => { } },
                 //{ InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => { } },
@@ -114,6 +114,12 @@ namespace _231109_SFML_Test
         }
 
         protected RectangleShape sidePart;
+        #endregion
+
+        #region [파츠 시스템]
+        protected Magazine magazineAttached;
+
+
         #endregion
 
         #region [주무기, 보조무기 장착 조건]

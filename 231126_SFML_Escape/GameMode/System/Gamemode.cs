@@ -29,11 +29,11 @@ namespace _231109_SFML_Test
             timer = new Timer(1000d / logicFps / 10d);
             timer.Elapsed += (s, e) => {
                 logicEvent?.Invoke();   //로직 처리 호출
+                InputManager.inputManagerProcess();
             };
             timer.Start();
 
             clock = new Clock();
-           
             logicEvent += LogicProcess;
             drawEvent += DrawProcess;
         }

@@ -40,7 +40,7 @@ namespace _231109_SFML_Test
 
         static Random shakeRand;
         static double shakeValue = 0d;
-        const double shakeReduction = 5d;
+        const double shakeReduction = 7d;
 
 
         //Tragging시스템 바꿀 필요...? 절대 좌표로 따라오는게 아니라 변위를 제어하는 방식으로?

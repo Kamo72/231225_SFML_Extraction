@@ -85,22 +85,23 @@ namespace _231109_SFML_Test
 
             Circle maskC = (Circle)mask;
             Vector2f originPos = maskC.Position;
-            Vector2f toMove = speed * (float)deltaTime;
+            Vector2f toMove = speed * (float)deltaTime * 10f;
             
-            Action<Vector2f> collisionAct = (springVec) =>
+            Action<Vector2f> collisionAct = (newSpeed) =>
             {
                 maskC.Position = originPos;
-                speed = springVec; //양축 속도를 조진다. 탄성 때문에 살짝 밀림
+                speed = newSpeed; //양축 속도를 조진다. 탄성 때문에 살짝 밀림
             };
 
             foreach (Structure structure in ((GamemodeIngame)gamemode).structures)
             {
+
                 maskC.Position = originPos + toMove;
 
                 //(x,y)충돌 없음.
-                if (structure.mask.IsCollision(mask) == false) { /*Console.WriteLine("0,0");*/ continue; }
+                if (structure.mask.IsCollision(mask) == false) { maskC.Position = originPos; continue; }
 
-                Vector2f springVec = (Position - structure.Position).Normalize() * 20f;
+                //Vector2f springVec = (Position - structure.Position).Normalize() * 20f;
                 //Console.WriteLine(pullBack);
 
                 //충돌이 있다는건 알았음. 이제 y축 충돌인지 x축 충돌인지 둘 다 인지 검사
@@ -108,34 +109,47 @@ namespace _231109_SFML_Test
                 maskC.Position = originPos + new Vector2f(0f, toMove.Y);
                 if (structure.mask.IsCollision(mask) == false)
                 {
-                    //x축 문제라는걸 유추 가능
-                    //Console.WriteLine("x, 0");
-                    collisionAct(new Vector2f(0f, springVec.Y));
+                    maskC.Position = originPos + new Vector2f(-toMove.X, toMove.Y);
+                    if (structure.mask.IsCollision(mask) == false)
+                    {
+                        collisionAct(new Vector2f(-toMove.X, toMove.Y));
+                        continue;
+                    }
+
+                    collisionAct(new Vector2f(0, toMove.Y));
                     continue;
                 }
 
                 //y축에 문제 있는 상태. x축에도 문제 있는지 확인하고 처리
                 //(x, 0)
-                maskC.Position = originPos + new Vector2f(toMove.X, 0f);
+                maskC.Position = originPos + new Vector2f(toMove.X , 0f);
                 if (structure.mask.IsCollision(mask) == false)
                 {
-                    //y축의 문제라는걸 유추 가능.
-                    //Console.WriteLine("0, y");
-                    collisionAct(new Vector2f(springVec.X, 0f));
+                    maskC.Position = originPos + new Vector2f(toMove.X, -toMove.Y);
+                    if (structure.mask.IsCollision(mask) == false)
+                    {
+                        collisionAct(new Vector2f(toMove.X, -toMove.Y));
+                        continue;
+                    }
+
+                    collisionAct(new Vector2f(toMove.X, 0f));
                     continue;
                 }
 
                 //x, y축 모두의 문제
                 //(x, y)
                 //Console.WriteLine("x, y");
-                collisionAct(springVec);
+                collisionAct(new Vector2f(
+                    Math.Abs(toMove.X) * Math.Sign(Position.X - structure.Position.X),
+                    Math.Abs(toMove.Y) * Math.Sign(Position.Y - structure.Position.Y)
+                    ));
                 continue;
 
             }
             #endregion
 
             //속도에 의한 변위
-            Position += speed * (float)deltaTime;
+            Position += speed * (float)deltaTime ;
 
         }
 

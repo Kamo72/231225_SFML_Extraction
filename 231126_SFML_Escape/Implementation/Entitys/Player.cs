@@ -43,7 +43,6 @@ namespace _231109_SFML_Test
 
             CameraManager.zoomValue = Mathf.Clamp(0.5f, aimDistance /  650f, 3.0f);
 
-            Console.WriteLine(aimDistance);
             CircleShape cir = new CircleShape(5f);
             cir.FillColor = Color.Red;
             cir.Origin = new Vector2f(cir.Radius, cir.Radius);

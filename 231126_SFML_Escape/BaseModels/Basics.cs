@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Threading.Tasks;
@@ -296,7 +297,7 @@ namespace _231109_SFML_Test
         protected Gamemode gamemode;
         public bool isDisposed = false;
 
-        public Structure(Gamemode gamemode, Vector2f position, ICollision collision, DestructLevel destructLevel, float transparency, float hardness)
+        public Structure(Gamemode gamemode, Vector2f position, ICollision collision, DestructLevel destructLevel, bool isTransparent, float hardness)
         {
             mask = collision;
             this.Position = position;
@@ -305,7 +306,8 @@ namespace _231109_SFML_Test
             gamemode.DisposablesAdd(this);
             gamemode.drawEvent += DrawProcess;
 
-            this.transparency = transparency;
+            this.destructLevel = destructLevel;
+            this.isTransparent = isTransparent;
             this.hardness = hardness;
         }
 
@@ -337,7 +339,7 @@ namespace _231109_SFML_Test
         }
 
         //물질 성질
-        public float transparency = 0.0f;   //물질 투명도
+        public bool isTransparent = false;   //물질 투명도
         public float hardness = 0.0f;       //물질 경도
         public DestructLevel destructLevel = DestructLevel.NONE; //물질 파괴 조건
         public float destructValue = 1.0f;  //물질 파괴 정도
@@ -351,6 +353,7 @@ namespace _231109_SFML_Test
         }
 
         protected abstract void DrawProcess();
+        public abstract List<Vector2f> GetPoligon();
 
         ~Structure() { Dispose(); }
         public void Dispose()

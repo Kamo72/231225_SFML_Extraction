@@ -89,8 +89,10 @@
     <Compile Include="ExtenstionAndLibrary\Noise.cs" />
     <Compile Include="GameMode\Ingame\GamemodeIngame.cs" />
     <Compile Include="GameMode\Ingame\IngameBackgroundDrawer.cs" />
+    <Compile Include="GameMode\Ingame\IngameLightDrawer.cs" />
     <Compile Include="Implementation\Entitys\Container.cs" />
     <Compile Include="Implementation\Entitys\HumanoidExtention.cs" />
+    <Compile Include="Implementation\Entitys\Property\ILightSource.cs" />
     <Compile Include="Implementation\Item\Abstracts\ItemBasics.cs" />
     <Compile Include="Implementation\Item\Abstracts\Equipment.cs" />
     <Compile Include="Implementation\Item\Abstracts\MagazineAndAmmo.cs" />
@@ -104,7 +106,7 @@
     <Compile Include="Implementation\Particles\Particles.cs" />
     <Compile Include="Implementation\Projectiles\Bullet.cs" />
     <Compile Include="Implementation\Structures\Materials\Concrete.cs" />
-    <Compile Include="Implementation\Structures\Concretes\Materials.cs" />
+    <Compile Include="Implementation\Structures\Concretes\Concretes.cs" />
     <Compile Include="Implementation\Uis\TextLabel.cs" />
     <Compile Include="Implementation\Uis\TextMainMenu.cs" />
     <Compile Include="Implementation\Uis\Uis.cs" />

@@ -19,7 +19,7 @@ namespace _231109_SFML_Test
 {
     internal abstract class Concrete : Structure
     {
-        public Concrete(Gamemode gamemode, Vector2f position, ICollision mask) : base(gamemode, position, mask, DestructLevel.NONE, 0.0f, 4.8f)
+        public Concrete(Gamemode gamemode, Vector2f position, ICollision mask) : base(gamemode, position, mask, DestructLevel.NONE, false, 4.8f)
         {
             if (mask is Shape shape)
             {

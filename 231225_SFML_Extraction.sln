@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "231126_SFML_Escape", "231126_SFML_Escape\231126_SFML_Escape.csproj", "{02E8D4EA-ACE2-47D5-B1F3-AFC6EC444985}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "231225_SFML_Extraction", "231225_SFML_Extraction\231225_SFML_Extraction.csproj", "{02E8D4EA-ACE2-47D5-B1F3-AFC6EC444985}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

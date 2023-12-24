@@ -36,6 +36,7 @@ namespace _231109_SFML_Test
             clock = new Clock();
             logicEvent += LogicProcess;
             drawEvent += DrawProcess;
+            drawEvent += InputManager.MouseProcess;
         }
 
         //로직 타이머 관련 변수

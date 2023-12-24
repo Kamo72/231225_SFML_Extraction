@@ -97,7 +97,7 @@ namespace _231109_SFML_Test
         public Vector2i topSpriteSize;
 
         //인게임 총기 스프라이트를 생성형으로 반환
-        public virtual void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depthAdjusted, float scaleRatio = 1f)
+        public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, RenderStates renderStates, float depthAdjusted, float scaleRatio = 1f)
         {
             float depth;
 
@@ -106,20 +106,17 @@ namespace _231109_SFML_Test
                 depth = i - (topParts.Length / 2f) + depthAdjusted;
 
                 RectangleShape shape = topParts[i];
-                DrawTopSpritePart(texture, shape, position, rotation, direction, renderStates, depth, scaleRatio);
+                DrawHandablePart(texture, shape, position, direction, renderStates, scaleRatio);
             }
         }
-        public void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float depthAdjusted, float scaleRatio = 1f) { DrawTopSprite(texture, position, rotation, direction, RenderStates.Default, depthAdjusted, scaleRatio); }
+        public void DrawHandable(RenderTexture texture, Vector2f position, float direction, float depthAdjusted, float scaleRatio = 1f) { DrawHandable(texture, position, direction, RenderStates.Default, depthAdjusted, scaleRatio); }
 
-        protected void DrawTopSpritePart(RenderTexture texture, RectangleShape shape, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depth,  float scaleRatio = 1f)
+        protected void DrawHandablePart(RenderTexture texture, RectangleShape shape, Vector2f position, float direction, RenderStates renderStates, float scaleRatio = 1f)
         {
             float rotRatio = 0.07f * scaleRatio;
 
-            shape.Scale = new Vector2f(
-                (float)Math.Cos(rotation.X.ToRadian()),
-                (float)Math.Cos(rotation.Y.ToRadian())
-                ) * scaleRatio;
-            shape.Position = position + depth * (rotation.ToDirection() + direction.ToRadian()).ToVector() * rotation.Magnitude() * rotRatio;
+            shape.Scale = new Vector2f(1f, 1f) * scaleRatio;
+            shape.Position = position;
             shape.Rotation = direction;
 
             texture.Draw(shape, renderStates);
@@ -137,9 +134,7 @@ namespace _231109_SFML_Test
 
         public string ammoCode;
 
-
         public CaliberType caliber; //구경
-
 
         //IStackable
         public int stackNow { get; set; }

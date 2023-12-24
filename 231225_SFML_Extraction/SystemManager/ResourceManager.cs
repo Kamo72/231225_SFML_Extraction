@@ -52,19 +52,17 @@ namespace _231109_SFML_Test
                 textures.Add("texConcrete", new Texture(header + "texConcrete.jpg"));
 
                 {
-                    textures.Add("FN_FAL_body_grip", new Texture(header + "FN_FAL_body_grip.png"));
-                    textures.Add("FN_FAL_body_lower", new Texture(header + "FN_FAL_body_lower.png"));
-                    textures.Add("FN_FAL_body_middle", new Texture(header + "FN_FAL_body_middle.png"));
-                    textures.Add("FN_FAL_body_upper", new Texture(header + "FN_FAL_body_upper.png"));
-                    textures.Add("FN_FAL_body_handle", new Texture(header + "FN_FAL_body_handle.png"));
-
-                    textures.Add("FN_FAL_body_bolt", new Texture(header + "FN_FAL_body_bolt.png"));
+                    textures.Add("FN_FAL_body", new Texture(header + "FN_FAL_body.png"));
+                    textures.Add("FN_FAL_pistolGrip_basic", new Texture(header + "FN_FAL_pistolGrip_basic.png"));
+                    textures.Add("FN_FAL_stock_basic", new Texture(header + "FN_FAL_stock_basic.png"));
+                    textures.Add("FN_FAL_barrel_533mm", new Texture(header + "FN_FAL_barrel_533mm.png"));
+                    textures.Add("FN_FAL_handGuard_dsArms", new Texture(header + "FN_FAL_handGuard_dsArms.png"));
+                    textures.Add("FN_FAL_body_bolt", new Texture(header + "FN_FAL_bolt.png"));
                 }
                 {
-                    textures.Add("FN_FAL_MAG10_0", new Texture(header + "FN_FAL_MAG10_0.png"));
-                    textures.Add("FN_FAL_MAG10_1", new Texture(header + "FN_FAL_MAG10_1.png"));
-                    textures.Add("FN_FAL_MAG10_2", new Texture(header + "FN_FAL_MAG10_2.png"));
-                    textures.Add("FN_FAL_MAG10_3", new Texture(header + "FN_FAL_MAG10_3.png"));
+                    textures.Add("FN_FAL_MAG10", new Texture(header + "FN_FAL_MAG10.png"));
+                    textures.Add("FN_FAL_MAG20", new Texture(header + "FN_FAL_MAG20.png"));
+                    textures.Add("FN_FAL_MAG50", new Texture(header + "FN_FAL_MAG50.png"));
                 }
             }
 
@@ -96,22 +94,22 @@ namespace _231109_SFML_Test
                 dirPath = slnPath + @"\Sprites\FN_FAL\";
                 //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL\
 
-                CopyFile(dirPath + @"FN_FAL_body_grip.png",     @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_body_lower.png",    @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_body_middle.png",   @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_body_upper.png",    @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_body_handle.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_body.png",     @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_pistolGrip_basic.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_stock_basic.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_barrel_533mm.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_muzzle_Israeli.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_handGuard_dsArms.png",   @"Assets\Textures\");
 
-                CopyFile(dirPath + @"FN_FAL_body_bolt.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_bolt.png", @"Assets\Textures\");
             }
             {
-                dirPath = slnPath + @"\Sprites\FN_FAL_MAG10\";
+                dirPath = slnPath + @"\Sprites\FN_FAL_MAG\";
                 //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL_10MAG\
 
-                CopyFile(dirPath + @"FN_FAL_MAG10_0.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_MAG10_1.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_MAG10_2.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_MAG10_3.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_MAG10.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_MAG20.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_MAG50.png", @"Assets\Textures\");
 
             }
 

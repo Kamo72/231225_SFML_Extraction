@@ -53,7 +53,7 @@ namespace _231109_SFML_Test
         #endregion
 
         #region [탑뷰 스프라이트]
-        protected void InitTopParts(Vector2i topSpriteSize, params Texture[] textures)
+        protected void InitHandableParts(Vector2i topSpriteSize, params Texture[] textures)
         {
             this.topSpriteSize = topSpriteSize;
 
@@ -73,48 +73,27 @@ namespace _231109_SFML_Test
         public Vector2i topSpriteSize;
 
         //인게임 총기 스프라이트를 생성형으로 반환
-        public virtual void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float scaleRatio, RenderStates renderStates)
+        public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio, RenderStates renderStates)
         {
-            float depth;
-            float depthAdjusted = -1f;
 
             for (int i = topParts.Length - 1; i >= 0; i--)
             {
-                depth = i - (topParts.Length / 2f) + depthAdjusted;
-
                 RectangleShape shape = topParts[i];
-                DrawTopSpritePart(texture, shape, position, rotation, direction, renderStates, depth, scaleRatio);
+                DrawHandablePart(texture, shape, position, direction, scaleRatio, renderStates);
             }
         }
-        public void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float scaleRatio) { DrawTopSprite(texture, position, rotation, direction, scaleRatio, RenderStates.Default); }
+        public void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio) { DrawHandable(texture, position, direction, scaleRatio, RenderStates.Default); }
 
-        protected void DrawTopSpritePart(RenderTexture texture, RectangleShape shape, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depth, float scaleRatio)
+        protected void DrawHandablePart(RenderTexture texture, RectangleShape shape, Vector2f position, float direction, float scaleRatio, RenderStates renderStates)
         {
-            float rotRatio = 0.07f * scaleRatio;
-
-            shape.Scale = new Vector2f(
-                (float)Math.Cos(rotation.X.ToRadian()),
-                (float)Math.Cos(rotation.Y.ToRadian())
-                ) * scaleRatio;
-            shape.Position = position + depth * (rotation.ToDirection() + direction.ToRadian()).ToVector() * rotation.Magnitude() * rotRatio;
+            shape.Scale = new Vector2f(1f, 1f) * scaleRatio;
+            shape.Position = position + direction.ToRadian().ToVector() * 1f;
             shape.Rotation = direction;
 
             texture.Draw(shape, renderStates);
         }
-
         #endregion
 
-        #region [사이드뷰 스프라이트]
-        //인게임 총기 스프라이트를 생성형으로 반환
-        public virtual void DrawSideSprite(RenderTexture texture, Vector2f position, float rotation, RenderStates renderStates)
-        {
-            sidePart.Position = position;
-            sidePart.Rotation = rotation;
-            texture.Draw(sidePart, renderStates);
-        }
-
-        protected RectangleShape sidePart;
-        #endregion
 
         #region [파츠 시스템]
         protected Magazine magazineAttached;
@@ -146,7 +125,6 @@ namespace _231109_SFML_Test
 
             foreach(RectangleShape r in topParts)
                 r?.Dispose();
-            sidePart?.Dispose();
 
         }
     }

@@ -130,16 +130,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="openal32.dll" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_body_bolt.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_body_grip.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_body_handle.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_body_lower.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_body_middle.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_body_upper.png" />
-    <Content Include="Sprites\FN_FAL_MAG10\FN_FAL_MAG10_3.png" />
-    <Content Include="Sprites\FN_FAL_MAG10\FN_FAL_MAG10_2.png" />
-    <Content Include="Sprites\FN_FAL_MAG10\FN_FAL_MAG10_1.png" />
-    <Content Include="Sprites\FN_FAL_MAG10\FN_FAL_MAG10_0.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_bolt.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_pistolGrip_basic.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_barrel_533mm.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_body.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_handGuard_dsArms.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_muzzle_Israeli.png" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_stock_basic.png" />
+    <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG50.png" />
+    <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG20.png" />
+    <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG10.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -1,0 +1,13 @@
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\Debug\231109_SFML_Test.exe.config
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\Debug\231109_SFML_Test.exe
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\Debug\231109_SFML_Test.pdb
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\Debug\sfmlnet-audio-2.dll
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\Debug\sfmlnet-graphics-2.dll
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\Debug\sfmlnet-system-2.dll
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\Debug\sfmlnet-window-2.dll
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\Debug\231225_SFML_Extraction.csproj.AssemblyReference.cache
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\Debug\231225_SFML_Extraction.csproj.SuggestedBindingRedirects.cache
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\Debug\231225_SFML_Extraction.csproj.CoreCompileInputs.cache
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\Debug\231225_SFML_Extraction.csproj.CopyComplete
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\Debug\231109_SFML_Test.exe
+F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\Debug\231109_SFML_Test.pdb

@@ -72,7 +72,7 @@ namespace _231109_SFML_Test
 
 
             FN_FAL fN_FAL = new FN_FAL();
-            fN_FAL.DrawTopSprite(DrawManager.texUiInterface, new Vector2f(500f, 500), Vector2fEx.Zero, 0f, 10f);
+            fN_FAL.DrawHandable(DrawManager.texUiInterface, new Vector2f(500f, 500),  0f, 10f);
 
 
 

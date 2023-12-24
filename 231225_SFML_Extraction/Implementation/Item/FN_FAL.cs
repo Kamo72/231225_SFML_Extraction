@@ -63,15 +63,20 @@ namespace _231109_SFML_Test
         }
         public FN_FAL() : base("FN_FAL")
         {
-            SetupBasicData("시험형 무기", "시험형 무기입니다.", 3.5f, new Vector2i(3, 2), Rarerity.COMMON, 20000f);
-            InitTopParts(new Vector2i(200, 100), new Texture[]
+            SetupBasicData(
+                "FN FAL",
+                "7.62x51mm NATO탄을 사용하는 벨기에제 지정사수 소총입니다. 튼튼하고 다루기 쉬운데도 불구하고 강력한 전자동 사격 기능을 가지고 있습니다.",
+                3.5f, new Vector2i(3, 2), Rarerity.COMMON, 20000f);
+            InitHandableParts(new Vector2i(200, 100), new Texture[]
             {
-                ResourceManager.textures["FN_FAL_body_handle"],
-                ResourceManager.textures["FN_FAL_body_upper"],
-                ResourceManager.textures["FN_FAL_body_middle"],
-                ResourceManager.textures["FN_FAL_body_lower"],
-                ResourceManager.textures["FN_FAL_body_grip"],
+                ResourceManager.textures["FN_FAL_body"],
+                ResourceManager.textures["FN_FAL_pistolGrip_basic"],
+                ResourceManager.textures["FN_FAL_stock_basic"],
+                ResourceManager.textures["FN_FAL_barrel_533mm"],
+                ResourceManager.textures["FN_FAL_handGuard_dsArms"],
+                ResourceManager.textures["FN_FAL_body_bolt"],
             });
+
 
             topPartsBolt = new RectangleShape((Vector2f)topSpriteSize);
             topPartsBolt.Texture = ResourceManager.textures["FN_FAL_body_bolt"];
@@ -85,35 +90,27 @@ namespace _231109_SFML_Test
         RectangleShape topPartsBolt;
 
 
-        public override void DrawSideSprite(RenderTexture texture, Vector2f position, float rotation, RenderStates renderStates)
-        { 
-            base.DrawSideSprite(texture, position, rotation, renderStates);
-        }
 
-        public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, float scaleRatio, RenderStates renderStates)
+        public override void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio, RenderStates renderStates)
         {
-            float depthAdjusted = -1f;
 
             float time = VideoManager.GetTimeTotal();
-            rotation = new Vector2f((float)Math.Cos(time), (float)Math.Sin(time)) * 20f;
             //rotation = new Vector2f(20f, 20f);
 
             if (magazineAttached != null)
             {
-                //magazineAttached.DrawTopSprite(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
-                magazineAttached.DrawTopSprite(texture, position + (direction).ToRadian().ToVector() * 10f * scaleRatio, rotation, direction, renderStates, 2.5f, scaleRatio);
+                //magazineAttached.DrawHandable(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
+                magazineAttached.DrawHandable(texture, position + (direction).ToRadian().ToVector() * 10f * scaleRatio, direction, renderStates, scaleRatio);
             }
 
 
             for (int i = topParts.Length-1; i >= 0; i--)
             {
-                float depth = i - (topParts.Length / 2f) + depthAdjusted;
-
                 RectangleShape shape = topParts[i];
-                DrawTopSpritePart(texture, shape, position, rotation, direction, renderStates, depth, scaleRatio);
+                DrawHandablePart(texture, shape, position,  direction, scaleRatio, renderStates);
 
                 if (i == 2)
-                    DrawTopSpritePart(texture, topPartsBolt, position, rotation, direction, renderStates, depth, scaleRatio);
+                    DrawHandablePart(texture, topPartsBolt, position, direction, scaleRatio, renderStates);
             }
 
             
@@ -150,17 +147,14 @@ namespace _231109_SFML_Test
         {
             InitTopParts(new Vector2i(45,45), new Texture[]
             {
-                ResourceManager.textures["FN_FAL_MAG10_0"],
-                ResourceManager.textures["FN_FAL_MAG10_1"],
-                ResourceManager.textures["FN_FAL_MAG10_2"],
-                ResourceManager.textures["FN_FAL_MAG10_3"],
+                ResourceManager.textures["FN_FAL_MAG10"],
             });
         }
 
 
-        //public override void DrawTopSprite(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depthAdjusted)
+        //public override void DrawHandable(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depthAdjusted)
         //{
-        //    base.DrawTopSprite(texture, position, rotation, direction, renderStates, depthAdjusted);
+        //    base.DrawHandable(texture, position, rotation, direction, renderStates, depthAdjusted);
         //}
 
     }

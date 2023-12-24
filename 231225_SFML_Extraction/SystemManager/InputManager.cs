@@ -323,7 +323,7 @@ namespace _231109_SFML_Test
         public static void MouseProcess()
         {
             Vector2f mouseSpeed = new Vector2f(
-                0.1f * InputManager.mouseSpeed.X,
+                1.0f * InputManager.mouseSpeed.X,
                 1.0f * InputManager.mouseSpeed.Y
                 ); //감도 보정
 
@@ -331,7 +331,7 @@ namespace _231109_SFML_Test
 
             //마우스 변위 대입
             mouseDelta = new Vector2f(
-                -(mousePosition.X - mousePositionPre.X) * mouseSpeed.X,
+                (mousePosition.X - mousePositionPre.X) * mouseSpeed.X,
                 (mousePosition.Y - mousePositionPre.Y) * mouseSpeed.Y
                 );
 
@@ -351,7 +351,6 @@ namespace _231109_SFML_Test
             if (Program.window.HasFocus())
             {
                 InputManager.RefreshProcess();
-                InputManager.MouseProcess();
                 InputManager.DebugProcess();
             }
         };

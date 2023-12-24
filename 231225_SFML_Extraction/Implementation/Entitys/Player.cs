@@ -13,6 +13,7 @@ using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
 using SFML.Graphics;
 using SFML.Window;
+using System.Security.Claims;
 
 namespace _231109_SFML_Test
 {
@@ -38,16 +39,15 @@ namespace _231109_SFML_Test
             DrawManager.texUiInterface.Draw(mask, CameraManager.worldRenderState);
 
             //마우스 변위만큼 조준점 이동
-            AimVector = new Vector2f(AimVector.X, Mathf.Clamp(40f, AimVector.Y, 5000f));
-            AimVector += new Vector2f(InputManager.mouseDelta.X , -InputManager.mouseDelta.Y);
+            AimPosition += new Vector2f(InputManager.mouseDelta.X , InputManager.mouseDelta.Y);
 
-            CameraManager.zoomValue = Mathf.Clamp(0.5f, aimDistance /  650f, 3.0f);
+            //CameraManager.zoomValue = Mathf.Clamp(0.5f, (aimPosition - Position).Magnitude() /  650f, 3.0f);
 
             CircleShape cir = new CircleShape(5f);
             cir.FillColor = Color.Red;
             cir.Origin = new Vector2f(cir.Radius, cir.Radius);
-            cir.Position = AimPosition;
-            DrawManager.texWrAugment.Draw(cir, CameraManager.worldRenderState);
+            cir.Position = aimPosition;
+            DrawManager.texUiInterface.Draw(cir);
             cir.Dispose();
 
 
@@ -55,9 +55,8 @@ namespace _231109_SFML_Test
 
         protected override void LogicProcess()
         {
-            CameraManager.targetPos = Position + (-Direction - 90f).ToRadian().ToVector() *  VideoManager.resolutionNow.Y * 0.4f * CameraManager.zoomValue;
+            CameraManager.targetPos = Position;
             //카메라 회전 = 캐릭터 회전
-            CameraManager.targetRot = Direction;
 
         }
 

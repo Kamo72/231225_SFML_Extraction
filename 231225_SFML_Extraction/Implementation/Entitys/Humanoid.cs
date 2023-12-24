@@ -38,27 +38,12 @@ namespace _231109_SFML_Test
         //가속 벡터 (최대 1)
         public Vector2f moveDir = Vector2fEx.Zero;
 
-        public float aimDistance = 100f;
-
-        public Vector2f AimVector 
-        {
-            get { return new Vector2f(Direction, aimDistance); }
-            set { 
-                Direction = value.X;
-                aimDistance = value.Y;
-            }
+        public Vector2f aimPosition = Vector2fEx.Zero;
+        public Vector2f AimPosition {
+            get { return aimPosition + Position; }
+            set { aimPosition = value - Position; }
         }
-        public Vector2f AimPosition
-        {
-            get { return Position + (-Direction-90).ToRadian().ToVector() * aimDistance; }
-            set {
-                Vector2f aimPosRel = value - Position;
-                Direction = aimPosRel.ToDirection();
-                aimDistance = aimPosRel.Magnitude();
-            }
-        }
-
-
+        public float aimRange = 2000f;
 
 
         protected override void DrawProcess()

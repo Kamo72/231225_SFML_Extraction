@@ -12,3 +12,17 @@ F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231225
 F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231225_SFML_Extraction.csproj.CopyComplete
 F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231109_SFML_Test.exe
 F:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231109_SFML_Test.pdb
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\231109_SFML_Test.exe.config
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\231109_SFML_Test.exe
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\231109_SFML_Test.pdb
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\231018_닷넷 서버 클라.dll
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\sfmlnet-audio-2.dll
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\sfmlnet-graphics-2.dll
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\sfmlnet-system-2.dll
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\sfmlnet-window-2.dll
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\bin\x64\Release\231018_닷넷 서버 클라.pdb
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231225_SFML_Extraction.csproj.AssemblyReference.cache
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231225_SFML_Extraction.csproj.CoreCompileInputs.cache
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231225_SFML_Extraction.csproj.CopyComplete
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231109_SFML_Test.exe
+S:\[GitHub]\231225_SFML_Extraction\231225_SFML_Extraction\obj\x64\Release\231109_SFML_Test.pdb

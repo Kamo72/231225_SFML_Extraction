@@ -57,14 +57,14 @@ namespace _231109_SFML_Test
             string msg =
                 $"cameraPos : {CameraManager.position.X} : {CameraManager.position.Y}\n" +
                 $"cameraScl : {CameraManager.size.X} : {CameraManager.size.Y}\n" +
-                $"cameraRot : {CameraManager.rotation}";
+                $"cameraRot : {CameraManager.rotation}\n";
             Text text = new Text(msg, font);
             text.Position = new Vector2f(VideoManager.resolutionNow.X - 600f, 0f);
             //text.Origin = new Vector2f(-110f, 0f);
             DrawManager.texUiInterface.Draw(text);
 
             string msgFps =
-                $"fps : {VideoManager.fpsNow} {DEBUG_COUNT} {DEBUG_COUNT/90f} {VideoManager.GetTimeTotal()}";
+                $"fps : {VideoManager.fpsNow}";
             Text ntext = new Text(msgFps, font);
             ntext.Position = new Vector2f(VideoManager.resolutionNow.X - 600f, 300f);
             //text.Origin = new Vector2f(-110f, 0f);

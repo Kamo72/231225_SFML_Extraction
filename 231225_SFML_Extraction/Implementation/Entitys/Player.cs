@@ -39,12 +39,16 @@ namespace _231109_SFML_Test
             DrawManager.texUiInterface.Draw(mask, CameraManager.worldRenderState);
 
             //마우스 변위만큼 조준점 이동
+            aimPosition = new Vector2f(
+                Mathf.Clamp(0f, aimPosition.X, Vm.resolutionNow.X),
+                Mathf.Clamp(0f, aimPosition.Y, Vm.resolutionNow.Y)
+                );
             AimPosition += new Vector2f(InputManager.mouseDelta.X , InputManager.mouseDelta.Y);
 
             //CameraManager.zoomValue = Mathf.Clamp(0.5f, (aimPosition - Position).Magnitude() /  650f, 3.0f);
 
             CircleShape cir = new CircleShape(5f);
-            cir.FillColor = Color.Red;
+            cir.FillColor = Color.White;
             cir.Origin = new Vector2f(cir.Radius, cir.Radius);
             cir.Position = aimPosition;
             DrawManager.texUiInterface.Draw(cir);
@@ -55,7 +59,7 @@ namespace _231109_SFML_Test
 
         protected override void LogicProcess()
         {
-            CameraManager.targetPos = Position;
+            CameraManager.targetPos = Position + (aimPosition - (Vector2f)Vm.resolutionNow / 2f) * 0.5f;
             //카메라 회전 = 캐릭터 회전
 
         }

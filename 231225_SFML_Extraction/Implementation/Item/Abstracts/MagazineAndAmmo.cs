@@ -97,24 +97,19 @@ namespace _231109_SFML_Test
         public Vector2i topSpriteSize;
 
         //인게임 총기 스프라이트를 생성형으로 반환
-        public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, RenderStates renderStates, float depthAdjusted, float scaleRatio = 1f)
+        public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, RenderStates renderStates, float scaleRatio = 1f)
         {
-            float depth;
-
             for (int i = topParts.Length - 1; i >= 0; i--)
             {
-                depth = i - (topParts.Length / 2f) + depthAdjusted;
 
                 RectangleShape shape = topParts[i];
                 DrawHandablePart(texture, shape, position, direction, renderStates, scaleRatio);
             }
         }
-        public void DrawHandable(RenderTexture texture, Vector2f position, float direction, float depthAdjusted, float scaleRatio = 1f) { DrawHandable(texture, position, direction, RenderStates.Default, depthAdjusted, scaleRatio); }
+        public void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio = 1f) { DrawHandable(texture, position, direction, RenderStates.Default, scaleRatio); }
 
         protected void DrawHandablePart(RenderTexture texture, RectangleShape shape, Vector2f position, float direction, RenderStates renderStates, float scaleRatio = 1f)
         {
-            float rotRatio = 0.07f * scaleRatio;
-
             shape.Scale = new Vector2f(1f, 1f) * scaleRatio;
             shape.Position = position;
             shape.Rotation = direction;

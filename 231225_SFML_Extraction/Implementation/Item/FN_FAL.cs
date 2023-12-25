@@ -69,25 +69,20 @@ namespace _231109_SFML_Test
                 3.5f, new Vector2i(3, 2), Rarerity.COMMON, 20000f);
             InitHandableParts(new Vector2i(200, 100), new Texture[]
             {
+                ResourceManager.textures["FN_FAL_bolt"],
                 ResourceManager.textures["FN_FAL_body"],
                 ResourceManager.textures["FN_FAL_pistolGrip_basic"],
                 ResourceManager.textures["FN_FAL_stock_basic"],
+
                 ResourceManager.textures["FN_FAL_barrel_533mm"],
+                ResourceManager.textures["FN_FAL_muzzle_Israeli"],
                 ResourceManager.textures["FN_FAL_handGuard_dsArms"],
-                ResourceManager.textures["FN_FAL_body_bolt"],
+                ResourceManager.textures["FN_FAL_chargingHandle"],
             });
-
-
-            topPartsBolt = new RectangleShape((Vector2f)topSpriteSize);
-            topPartsBolt.Texture = ResourceManager.textures["FN_FAL_body_bolt"];
-            topPartsBolt.Origin = new Vector2f(50, 50);
-
-
             //테스트
-            magazineAttached = new FN_FAL_MAG10();
+            magazineAttached = new FN_FAL_MAG20();
         }
 
-        RectangleShape topPartsBolt;
 
 
 
@@ -99,8 +94,11 @@ namespace _231109_SFML_Test
 
             if (magazineAttached != null)
             {
+                Vector2f magazinePos = new Vector2f(13.5f, -0.5f);
+                magazinePos = magazinePos.X * (direction).ToRadian().ToVector() +  magazinePos.Y * (direction-90f).ToRadian().ToVector();
+
                 //magazineAttached.DrawHandable(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
-                magazineAttached.DrawHandable(texture, position + (direction).ToRadian().ToVector() * 10f * scaleRatio, direction, renderStates, scaleRatio);
+                magazineAttached.DrawHandable(texture, position + magazinePos * scaleRatio, direction, renderStates, scaleRatio);
             }
 
 
@@ -108,9 +106,6 @@ namespace _231109_SFML_Test
             {
                 RectangleShape shape = topParts[i];
                 DrawHandablePart(texture, shape, position,  direction, scaleRatio, renderStates);
-
-                if (i == 2)
-                    DrawHandablePart(texture, topPartsBolt, position, direction, scaleRatio, renderStates);
             }
 
             
@@ -179,7 +174,10 @@ namespace _231109_SFML_Test
         }
         public FN_FAL_MAG20() : base("FN_FAL_MAG20")
         {
-
+            InitTopParts(new Vector2i(45, 45), new Texture[]
+            {
+                ResourceManager.textures["FN_FAL_MAG20"],
+            });
         }
     }
 }

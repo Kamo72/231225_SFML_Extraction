@@ -130,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="openal32.dll" />
+    <Content Include="Sprites\FN_FAL\FN_FAL_chargingHandle.png" />
     <Content Include="Sprites\FN_FAL\FN_FAL_bolt.png" />
     <Content Include="Sprites\FN_FAL\FN_FAL_pistolGrip_basic.png" />
     <Content Include="Sprites\FN_FAL\FN_FAL_barrel_533mm.png" />

@@ -15,6 +15,8 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace _231109_SFML_Test
 {
@@ -32,7 +34,6 @@ namespace _231109_SFML_Test
         static Vector2f mousePositionPre = new Vector2f(0, 0);
 
         static Vector2f mouseSpeed = new Vector2f(0.5f, 0.5f);
-
 
         public static bool mouseAllow = true;
         static Vector2f screenSize { get { return (Vector2f)VideoManager.resolutionNow; } }
@@ -336,9 +337,14 @@ namespace _231109_SFML_Test
                 );
 
             //마우스 고정 중이라면 중앙에 고정 
-            if (mouseAllow == false)
+            if (mouseAllow == false && Program.window.HasFocus())
             {
                 Mouse.SetPosition(VideoManager.resolutionNow / 2);
+                Program.window.SetMouseCursorVisible(false);
+            }
+            else
+            {
+                Program.window.SetMouseCursorVisible(true);
             }
 
 

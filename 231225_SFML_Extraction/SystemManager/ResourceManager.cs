@@ -52,12 +52,14 @@ namespace _231109_SFML_Test
                 textures.Add("texConcrete", new Texture(header + "texConcrete.jpg"));
 
                 {
+                    textures.Add("FN_FAL_bolt", new Texture(header + "FN_FAL_bolt.png"));
                     textures.Add("FN_FAL_body", new Texture(header + "FN_FAL_body.png"));
                     textures.Add("FN_FAL_pistolGrip_basic", new Texture(header + "FN_FAL_pistolGrip_basic.png"));
                     textures.Add("FN_FAL_stock_basic", new Texture(header + "FN_FAL_stock_basic.png"));
                     textures.Add("FN_FAL_barrel_533mm", new Texture(header + "FN_FAL_barrel_533mm.png"));
+                    textures.Add("FN_FAL_muzzle_Israeli", new Texture(header + "FN_FAL_muzzle_Israeli.png"));
                     textures.Add("FN_FAL_handGuard_dsArms", new Texture(header + "FN_FAL_handGuard_dsArms.png"));
-                    textures.Add("FN_FAL_body_bolt", new Texture(header + "FN_FAL_bolt.png"));
+                    textures.Add("FN_FAL_chargingHandle", new Texture(header + "FN_FAL_chargingHandle.png"));
                 }
                 {
                     textures.Add("FN_FAL_MAG10", new Texture(header + "FN_FAL_MAG10.png"));
@@ -94,14 +96,14 @@ namespace _231109_SFML_Test
                 dirPath = slnPath + @"\Sprites\FN_FAL\";
                 //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL\
 
+                CopyFile(dirPath + @"FN_FAL_bolt.png", @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_body.png",     @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_pistolGrip_basic.png", @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_stock_basic.png", @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_barrel_533mm.png", @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_muzzle_Israeli.png", @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_handGuard_dsArms.png",   @"Assets\Textures\");
-
-                CopyFile(dirPath + @"FN_FAL_bolt.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"FN_FAL_chargingHandle.png", @"Assets\Textures\");
             }
             {
                 dirPath = slnPath + @"\Sprites\FN_FAL_MAG\";

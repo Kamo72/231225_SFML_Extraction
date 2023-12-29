@@ -66,6 +66,9 @@ namespace _231109_SFML_Test
                     textures.Add("FN_FAL_MAG20", new Texture(header + "FN_FAL_MAG20.png"));
                     textures.Add("FN_FAL_MAG50", new Texture(header + "FN_FAL_MAG50.png"));
                 }
+                {
+                    textures.Add("LIGHT_radial", new Texture(header + "RadialAlphaGradient.png"));
+                }
             }
 
             //bgm
@@ -115,6 +118,13 @@ namespace _231109_SFML_Test
 
             }
 
+            {
+                dirPath = slnPath + @"\Sprites\light\";
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL_10MAG\
+
+                CopyFile(dirPath + @"RadialAlphaGradient.png", @"Assets\Textures\");
+
+            }
         }
 
         static void CopyFile(string filePath, string toPath)

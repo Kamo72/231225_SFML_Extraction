@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFML.System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,9 @@ namespace _231109_SFML_Test
     //장비 가능한 아이템
     internal abstract class Equipable : Item, IEquipable
     {
+
+        public Equipable() : base() { }
+        public Equipable(Vector2f pos) : base(pos) { }
 
         public EquipmentType equipmentType { get; set; }
         public Humanoid equipedBy { get; set; }
@@ -54,24 +58,72 @@ namespace _231109_SFML_Test
 
 
     //헤드기어 - 중간 조상
-    internal abstract class Headgear : Equipable { }
+    internal abstract class Headgear : Equipable
+    {
+        public Headgear() : base() { }
+        public Headgear(Vector2f pos) : base(pos) { }
+
+    }
 
     //플레이트 캐리어
     internal class PlateCarrier : Equipable
     {
-        public int plateLevel;  //장착 가능한 장갑판 등급
+        public PlateCarrier(float equipablePlateLevel) : base()
+        {
+            this.equipablePlateLevel = equipablePlateLevel;
+        }
+        public PlateCarrier(float equipablePlateLevel, Vector2f pos) : base(pos)
+        {
+            this.equipablePlateLevel = equipablePlateLevel;
+        }
+
+        public float equipablePlateLevel;  //장착 가능한 장갑판 등급
+        public ArmourPlate armourPlate = null;
     }
 
     //가방
     internal class Backpack : Equipable
     {
+        public Backpack(Vector2i storageSize) : base()
+        {
+            storage = new Storage(storageSize);
+        }
+        public Backpack(Vector2i storageSize, Vector2f pos) : base(pos)
+        {
+            storage = new Storage(storageSize);
+        }
+
         public Storage storage;
     }
 
     //헬멧
-    internal class Helmet : Equipable { }
+    internal class Helmet : Equipable
+    {
+        public Helmet(float armourLevel) : base()
+        {
+            this.armourLevel = armourLevel;
+        }
+        public Helmet(float armourLevel, Vector2f pos) : base(pos)
+        {
+            this.armourLevel = armourLevel;
+        }
+
+        public float armourLevel;
+    }
 
     //장갑판
-    internal class ArmourPlate : Item { }
+    internal class ArmourPlate : Item
+    {
+        public ArmourPlate(float armourLevel) : base()
+        {
+            this.armourLevel = armourLevel;
+        }
+        public ArmourPlate(float armourLevel, Vector2f pos) : base(pos)
+        {
+            this.armourLevel = armourLevel;
+        }
+
+        public float armourLevel;
+    }
 
 }

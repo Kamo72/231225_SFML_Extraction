@@ -2,6 +2,7 @@
 using SFML.System;
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -14,18 +15,62 @@ namespace _231109_SFML_Test
 {
     internal abstract class Weapon : Equipable, IHandable, IDurable
     {
+        static Random random = new Random();
         static Weapon() { }
         public Weapon(string weaponCode)
         {
             //기존 스텟 가져오기
             this.weaponCode = weaponCode;
             status = statusOrigin;
-
+            selectorNow = status.typeDt.selectorList[1];
 
             commandsReact = new Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>>()
             {
                 { InputManager.CommandType.FIRE, (hands, isTrue) => {
-                    if(isTrue) CameraManager.GetShake(50f);
+
+                    GamemodeIngame gm = Program.tm.gmNow as GamemodeIngame;
+                    delayNow -= 1f/(float)gm.logicFps;
+
+                    switch (selectorNow)
+                    {
+                        case SelectorType.SEMI:
+                            if(isTrue == false) break;
+                            if(delayNow > 0f) break;
+                            if(triggeredBefore == true) break;
+
+                            Fire(hands);
+
+                            break;
+                        case SelectorType.AUTO:
+                            if(isTrue == false) break;
+                            if(delayNow > 0f) break;
+
+                            Fire(hands);
+
+                            break;
+                        case SelectorType.BURST2:
+                            Console.WriteLine("SelectorType.BURST2 구현안됨");
+                            break;
+                        case SelectorType.BURST3:
+                            Console.WriteLine("SelectorType.BURST3 구현안됨");
+                            break;
+                    }
+
+                    triggeredBefore = isTrue;
+
+
+                    muzzleHeat -= VideoManager.GetTimeDelta();
+                    muzzleHeat = Mathf.Clamp(0f, muzzleHeat, muzzleHeatMax);
+
+                    float muzzleSmokeRatio = Math.Max(muzzleHeat, 0f) * 1f;
+                    if(muzzleSmokeRatio > (float)random.NextDouble())
+                    {
+                        Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos["muzzlePos"] : new Vector2f(specialPos["muzzlePos"].X, -specialPos["muzzlePos"].Y);
+                        Vector2f muzzlePos = hands.master.Position + hands.handPos + muzzleSep.RotateFromZero(hands.handRot);
+                        new MuzzleSmoke(gm, muzzlePos, hands.handRot);
+                    }
+
+
                 } },
                 { InputManager.CommandType.AIM, (hands, isTrue) => { } },
                 //{ InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => { } },
@@ -73,7 +118,7 @@ namespace _231109_SFML_Test
         public Vector2i topSpriteSize;
 
         //인게임 총기 스프라이트를 생성형으로 반환
-        public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio, RenderStates renderStates)
+        public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
         {
 
             for (int i = topParts.Length - 1; i >= 0; i--)
@@ -82,11 +127,11 @@ namespace _231109_SFML_Test
                 DrawHandablePart(texture, shape, position, direction, scaleRatio, renderStates);
             }
         }
-        public void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio) { DrawHandable(texture, position, direction, scaleRatio, RenderStates.Default); }
+        public void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio) { DrawHandable(texture, position, direction, scaleRatio, RenderStates.Default); }
 
-        protected void DrawHandablePart(RenderTexture texture, RectangleShape shape, Vector2f position, float direction, float scaleRatio, RenderStates renderStates)
+        protected void DrawHandablePart(RenderTexture texture, RectangleShape shape, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
         {
-            shape.Scale = new Vector2f(1f, 1f) * scaleRatio;
+            shape.Scale = scaleRatio;
             shape.Position = position + direction.ToRadian().ToVector() * 1f;
             shape.Rotation = direction;
 
@@ -94,11 +139,65 @@ namespace _231109_SFML_Test
         }
         #endregion
 
+        #region [격발 시스템]
+
+        float delayMax { get { return status.detailDt.RoundDelay; } }
+        float delayNow = 0f;
+        bool triggeredBefore = false;
+        SelectorType selectorNow;
+        float muzzleHeat = 0f, muzzleHeatDelta = 0.12f, muzzleHeatMax = 1f;
+
+        void Fire(Humanoid.Hands hands) 
+        {
+            CameraManager.GetShake(10f);
+
+            GamemodeIngame gm = Program.tm.gmNow as GamemodeIngame;
+            //Y값이 뒤집힌경우 총구 편차 보정
+            Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos["muzzlePos"] : new Vector2f(specialPos["muzzlePos"].X, -specialPos["muzzlePos"].Y);
+
+            //총구 위치를 세계 좌표로 변환
+            Vector2f muzzlePos = hands.master.Position + hands.handPos + muzzleSep.RotateFromZero(hands.handRot);
+
+            //AmmoStatus ammoStatus = status.typeDt.mechanismType == MechanismType.CLOSED_BOLT? magazineAttached.AmmoPeek() : chamber[0];
+            Ammo ammo = magazineAttached.AmmoPeek();
+            if (ammo == null) return;
+
+            for (int i = 0; i < ammo.status.lethality.pellitCount; i++)
+            {
+                //총탄 생성 및 저장
+                float moaSpray = ((float)random.NextDouble() - 0.5f) * status.aimDt.moa;
+
+                Projectile bullet = new Bullet(gm, ammo.status, muzzlePos, hands.handRot + moaSpray, status.detailDt.muzzleVelocity / 240f);
+                gm.projs.Add(bullet);
+            }
+            delayNow = delayMax;
+
+            for (int i = 0; i < 30; i++)
+                new MuzzleSmoke(gm, muzzlePos, hands.handRot);
+
+            new MuzzleFlash(gm, muzzlePos, 300);
+
+            //Y값이 뒤집힌경우 배출구 편차 보정
+            Vector2f chamberSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos["ejectPos"] : new Vector2f(specialPos["ejectPos"].X, -specialPos["ejectPos"].Y);
+
+            //배출구 위치를 세계 좌표로 변환
+            Vector2f chamberPos = hands.master.Position + hands.handPos + chamberSep.RotateFromZero(hands.handRot);
+
+            new CartridgeBig(gm, chamberPos, 50f);
+            for (int i = 0; i < 5; i++)
+                new MuzzleSmoke(gm, chamberPos, hands.handRot - 180f);
+
+
+            muzzleHeat += muzzleHeatDelta;
+        }
+
+        #endregion
 
         #region [파츠 시스템]
         protected Magazine magazineAttached;
 
-
+        protected Dictionary<string, Vector2f> specialPos;
+        //Vector2f magPos, muzzlePos, ejectPos, pistolPos, secGripPos, boltPos;
         #endregion
 
         #region [주무기, 보조무기 장착 조건]
@@ -303,42 +402,6 @@ namespace _231109_SFML_Test
 
     #endregion
 
-    #region [탄창$탄약 기본 정보]
-    internal struct MagazineStatus 
-    {
-        public MagazineStatus(int ammoSize, List<CaliberType> whiteList, List<WeaponAdjust> adjusts) 
-        {
-            this.ammoSize = ammoSize;
-            this.whiteList = whiteList;
-            this.adjusts = adjusts;
-        }
-
-        public int ammoSize; //탄창 크기
-        public List<CaliberType> whiteList; //허용 탄종
-        public List<WeaponAdjust> adjusts;  //스텟 보정
-
-    }
-
-    internal struct AmmoStatus
-    {
-        public CaliberType caliber; //구경
-
-        public struct Lethality
-        {
-            public int damage;          //피해량
-            public float pierceLevel;   //관통계수
-            public int pellitCount;   //펠릿 갯수
-        }
-        public Lethality lethality;
-
-        public struct Adjustment {
-            public float accuracyRatio; //정확도 배율
-            public float recoilRatio;   //반동 배율
-            public float speedRatio;    //탄속 배율
-        }
-        public Adjustment adjustment;
-    }
-    #endregion
 
     #region [총기 데이터셋 제공자]
     internal static class WeaponLibrary
@@ -368,8 +431,4 @@ namespace _231109_SFML_Test
     }
 
     #endregion
-
-
-
-
 }

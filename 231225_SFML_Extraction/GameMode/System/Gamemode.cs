@@ -37,6 +37,9 @@ namespace _231109_SFML_Test
             logicEvent += LogicProcess;
             drawEvent += DrawProcess;
             drawEvent += InputManager.MouseProcess;
+
+
+            InputManager.mouseAllow = true;
         }
 
         //로직 타이머 관련 변수
@@ -68,7 +71,7 @@ namespace _231109_SFML_Test
         {
             Dispose();
         }
-        public void Dispose()
+        public virtual void Dispose()
         {
             Console.WriteLine("Debug - Gamemode Dipose Init");
             if (totalManager.gmNow == this) { totalManager.gmNow = null; }
@@ -76,6 +79,11 @@ namespace _231109_SFML_Test
             Console.WriteLine("Debug - To Diposable heap - " + disposables.Count);
             while (disposables.Count > 0)
             {
+                if (disposables[0] == null) 
+                {
+                    disposables.RemoveAt(0);
+                    continue;
+                }
                 Console.WriteLine("Debug - Dipose  heap - " + disposables[0].ToString());
                 IDisposable disposable = disposables[0];
 
@@ -83,6 +91,7 @@ namespace _231109_SFML_Test
                 else disposables[0].Dispose();
 
                 //disposables.RemoveAt(0);
+
             }
 
             Console.WriteLine("Debug - To Diposable heap - " + disposables.Count);

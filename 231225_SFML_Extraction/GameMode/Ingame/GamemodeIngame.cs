@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace _231109_SFML_Test
 {
@@ -27,10 +28,16 @@ namespace _231109_SFML_Test
             //플레이어 객체 생성
             Entity entity = new Player(this, new Vector2f(0, 0));
             SoundManager.listener = entity;
-            entitys.Add(entity);
-            
+
+
+            new TestEnemy(this, new Vector2f(1000, 1000));
+            new TestEnemy(this, new Vector2f(-1000, 1000));
+            new TestEnemy(this, new Vector2f(1000, -1000));
+            new TestEnemy(this, new Vector2f(-1000, -1000));
+
             //배경 그리기 객체
             ibd = new IngameBackgroundDrawer();
+            ild = new IngameLightDrawer(lights, structures);
 
             //마우스 허용 안됨.
             InputManager.mouseAllow = false;
@@ -41,15 +48,24 @@ namespace _231109_SFML_Test
             structures.Add(new ConcreteBox(this, new Vector2f(-300f, +300f), new Vector2f(300f, 300f)));
             structures.Add(new ConcreteBox(this, new Vector2f(-300f, -300f), new Vector2f(300f, 300f)));
 
+            spawner = new Timer(2000f);
+            spawner.Elapsed += (s,e)=>
+            {
+                if (entitys.Count < 5) new TestEnemy(this, new Vector2f(0, 0));
+            };
+            spawner.Start();
         }
 
+        Timer spawner;
+
         IngameBackgroundDrawer ibd;
+        IngameLightDrawer ild;
+        public List<ILightSource> lights = new List<ILightSource>();
 
         public List<Structure> structures = new List<Structure>();
         public List<Entity> entitys = new List<Entity>();
+        public List<Projectile> projs = new List<Projectile>();
 
-
-        int DEBUG_COUNT = 0;
 
         protected override void DrawProcess()
         {
@@ -71,32 +87,32 @@ namespace _231109_SFML_Test
             DrawManager.texUiInterface.Draw(ntext);
 
 
-            FN_FAL fN_FAL = new FN_FAL();
-            fN_FAL.DrawHandable(DrawManager.texUiInterface, new Vector2f(500f, 500),  0f, 10f);
+            //FN_FAL fN_FAL = new FN_FAL();
+            //fN_FAL.DrawHandable(DrawManager.texUiInterface, new Vector2f(500f, 500), VideoManager.GetTimeTotal() * 100f, new Vector2f(1f, -1f) * 10f);
 
 
-
-
-
-            CircleShape circle = new CircleShape(30f);
-            circle.SetPointCount((uint)VideoManager.GetTimeTotal() % 30);
-            circle.Draw(DrawManager.texWrEffect, CameraManager.worldRenderState);
-
-
-
+           
 
             ibd.DrawBackgroundProcess();
+            ild.Draw();
         }
 
         int i = 0;
         protected override void LogicProcess()
         {
-            DEBUG_COUNT++;
             if (i++ > 40)
             {
                 i -= 40;
                 ibd.RefreshBackgroundProcess();
+
             }
+
+        }
+
+        public override void Dispose()
+        {
+            if (ibd != null) ibd.Dispose();
+            base.Dispose();
         }
     }
 }

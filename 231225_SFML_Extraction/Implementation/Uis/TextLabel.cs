@@ -114,6 +114,8 @@ namespace _231109_SFML_Test
 
         protected override void DrawProcess()
         {
+            if (isDisposed) return;
+
             this.mask.OutlineColor = Color.White;
             this.mask.OutlineThickness = 10;
             this.mask.FillColor = new Color(0, 0, 0, 0);

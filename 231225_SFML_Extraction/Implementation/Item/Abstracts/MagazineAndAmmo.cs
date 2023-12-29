@@ -24,17 +24,18 @@ namespace _231109_SFML_Test
 
             if (isAmmo == false) return;
 
-            while (true)
+            try
             {
-                try
+                while (true)
                 {
-                    AmmoPush(Activator.CreateInstance(ammoType) as Ammo);
+                    Ammo ammo = Activator.CreateInstance(ammoType) as Ammo;
+                    ammo.stackNow = 9999;
+                    AmmoPush(ammo);
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message + e.StackTrace);
-                    break;
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message + e.StackTrace);
             }
         }
 
@@ -47,31 +48,29 @@ namespace _231109_SFML_Test
 
         public bool AmmoPush(Ammo ammo)
         {
-            try
-            {
-                //예외
-                if (status.whiteList.Contains(ammo.caliber) == false) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "호환되지 않는 탄종");
-                if (ammoStack.Count >= status.ammoSize) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "탄창이 가득 찼음");
-                if (ammo.stackNow <= 0) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "탄약의 Stack값이 정상적이지 않음");
+            //예외
+            if (status.whiteList.Contains(ammo.status.caliber) == false) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "호환되지 않는 탄종" + $"{ammo.status.caliber.ToString()} != {status.whiteList.ToArray()}");
+            if (ammoStack.Count >= status.ammoSize) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "탄창이 가득 찼음");
+            if (ammo.stackNow <= 0) throw new Exception("Magazine - AmmoPush - 불가능한 작업 : " + "탄약의 Stack값이 정상적이지 않음");
 
-                //처리
-                ammo.stackNow--;
-                Ammo splitted = Activator.CreateInstance(ammo.GetType()) as Ammo;
-                ammoStack.Push(splitted);
+            //처리
+            ammo.stackNow--;
+            Ammo splitted = Activator.CreateInstance(ammo.GetType()) as Ammo;
+            ammoStack.Push(splitted);
 
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString() + "\n\n" + e.StackTrace);
-                return false;
-            }
+            return true;
         }
         public Ammo AmmoPop()
         {
             if (ammoStack.Count <= 0) return null;
 
             return ammoStack.Pop();
+        }
+        public Ammo AmmoPeek() 
+        {
+            if (ammoStack.Count <= 0) return null;
+
+            return ammoStack.Peek();
         }
         #endregion
 
@@ -97,7 +96,7 @@ namespace _231109_SFML_Test
         public Vector2i topSpriteSize;
 
         //인게임 총기 스프라이트를 생성형으로 반환
-        public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, RenderStates renderStates, float scaleRatio = 1f)
+        public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, RenderStates renderStates, Vector2f scaleRatio)
         {
             for (int i = topParts.Length - 1; i >= 0; i--)
             {
@@ -106,11 +105,11 @@ namespace _231109_SFML_Test
                 DrawHandablePart(texture, shape, position, direction, renderStates, scaleRatio);
             }
         }
-        public void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio = 1f) { DrawHandable(texture, position, direction, RenderStates.Default, scaleRatio); }
+        public void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio) { DrawHandable(texture, position, direction, RenderStates.Default, scaleRatio); }
 
-        protected void DrawHandablePart(RenderTexture texture, RectangleShape shape, Vector2f position, float direction, RenderStates renderStates, float scaleRatio = 1f)
+        protected void DrawHandablePart(RenderTexture texture, RectangleShape shape, Vector2f position, float direction, RenderStates renderStates, Vector2f scaleRatio)
         {
-            shape.Scale = new Vector2f(1f, 1f) * scaleRatio;
+            shape.Scale = scaleRatio;
             shape.Position = position;
             shape.Rotation = direction;
 
@@ -125,16 +124,65 @@ namespace _231109_SFML_Test
         public Ammo(string ammoCode)
         {
             this.ammoCode = ammoCode;
+            status = AmmoLibrary.Get(ammoCode);
         }
 
         public string ammoCode;
 
-        public CaliberType caliber; //구경
+        public AmmoStatus status;
 
         //IStackable
         public int stackNow { get; set; }
         public int stackMax { get; set; }
     }
+
+
+    #region [탄창$탄약 기본 정보]
+    internal struct MagazineStatus
+    {
+        public MagazineStatus(int ammoSize, List<CaliberType> whiteList, List<WeaponAdjust> adjusts)
+        {
+            this.ammoSize = ammoSize;
+            this.whiteList = whiteList;
+            this.adjusts = adjusts;
+        }
+
+        public int ammoSize; //탄창 크기
+        public List<CaliberType> whiteList; //허용 탄종
+        public List<WeaponAdjust> adjusts;  //스텟 보정
+
+    }
+
+    internal struct AmmoStatus
+    {
+        public CaliberType caliber; //구경
+
+        public struct Lethality
+        {
+            public float damage;          //피해량
+            public float pierceLevel;   //관통계수
+            public float bleeding;   //출혈 발생
+            public int pellitCount;   //펠릿 갯수
+        }
+        public Lethality lethality;
+
+        public struct Adjustment
+        {
+            public float accuracyRatio; //정확도 배율
+            public float recoilRatio;   //반동 배율
+            public float speedRatio;    //탄속 배율
+        }
+        public Adjustment adjustment;
+
+        public struct Tracer 
+        {
+            public bool isTraced;  //예광탄 여부
+            public float radius;   //예광탄 크기
+            public Color color;   //예광탄 색
+        }
+        public Tracer tracer;
+    }
+    #endregion
 
     #region [탄창&탄약 데이터셋 제공자]
     internal static class MagazineLibrary

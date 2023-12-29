@@ -247,7 +247,7 @@ namespace _231109_SFML_Test
 
             //commandDic[CommandType.INTERACT] = new CommandData("상호작용", KeyReadType.PRESS, new KeyData(KeyCode.F));
 
-            commandDic[CommandType.FIRE] = new CommandData("격발", KeyReadType.DOUBLE, new KeyData(Mouse.Button.Left));
+            commandDic[CommandType.FIRE] = new CommandData("격발", KeyReadType.PRESSING, new KeyData(Mouse.Button.Left));
             commandDic[CommandType.AIM] = new CommandData("조준", KeyReadType.PRESSING, new KeyData(Mouse.Button.Right));
             //commandDic[CommandType.MAGAZINE_CHANGE] = new CommandData("재장전", KeyReadType.PRESS, new KeyData(KeyCode.R));
             //commandDic[CommandType.MAGAZINE_INSPECT] = new CommandData("잔탄 확인", KeyReadType.PRESS, new KeyData(KeyCode.LeftControl), new KeyData(KeyCode.R));
@@ -282,6 +282,13 @@ namespace _231109_SFML_Test
                 }
             }
 
+            if (Keyboard.IsKeyPressed(Keyboard.Key.F5))
+            {
+                lock (Program.window)
+                {
+                    Program.tm.SetGamemodeType(GamemodeType.LOGO);
+                }
+            }
             //if (Keyboard.IsKeyPressed(Keyboard.Key.W))
             //{
             //    CameraManager.position.Y -= 10;
@@ -300,24 +307,6 @@ namespace _231109_SFML_Test
             //{
             //    CameraManager.position.X+=10;
             //}
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.Q))
-            {
-                CameraManager.rotation--;
-            }
-            if (Keyboard.IsKeyPressed(Keyboard.Key.E))
-            {
-                CameraManager.rotation++;
-            }
-
-            if (Keyboard.IsKeyPressed(Keyboard.Key.R))
-            {
-                CameraManager.zoomValue *= 1.001f;
-            }
-            if (Keyboard.IsKeyPressed(Keyboard.Key.F))
-            {
-                CameraManager.zoomValue /= 1.001f;
-            }
 
 
         }

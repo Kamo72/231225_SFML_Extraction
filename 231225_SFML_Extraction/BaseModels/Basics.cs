@@ -184,10 +184,17 @@ namespace _231109_SFML_Test
         public Vector2f scale;
         public float rotation;
 
+
+        protected static Random random = new Random();
+
         void LifeProcess() 
         {
             lifeNow--;
             if(lifeNow == 0) Dispose();
+
+            float dis = (position - CameraManager.position).Magnitude();
+            float range = (CameraManager.size * 0.5f).Magnitude();
+            if (dis > range) Dispose(); 
         }
 
         public abstract void DrawProcess();
@@ -195,7 +202,7 @@ namespace _231109_SFML_Test
 
 
         ~Particle() { Dispose(); }
-        public void Dispose()
+        public virtual void Dispose()
         {
             isDisposed = true;
             gamemode.DisposablesRemove(this);
@@ -217,7 +224,7 @@ namespace _231109_SFML_Test
             this.mask = mask;
             this.position = position;
             this.rotation = rotation;
-            this.speed = rotation.ToVector() * speed;
+            this.speed = rotation.ToRadian().ToVector() * speed;
 
             lifeMax = lifeTime;
             lifeNow = lifeTime;
@@ -233,6 +240,8 @@ namespace _231109_SFML_Test
         public int lifeMax, lifeNow;
         public float lifeRatio { get { return (float)lifeMax / lifeNow; } }
 
+        public Action collisionCheck;
+
         public Vector2f position
         {
             set
@@ -243,6 +252,12 @@ namespace _231109_SFML_Test
                     circle.Position = value;
                 else if (mask is Point point)
                     point.position = value;
+                else if (mask is Line line)
+                {
+                    Vector2f differ = value - position;
+                    line.positionFrom += differ;
+                    line.positionTo += differ;
+                }
                 else
                     throw new NotImplementedException();
             }
@@ -254,6 +269,8 @@ namespace _231109_SFML_Test
                     return circle.Position;
                 else if (mask is Point point)
                     return point.position;
+                else if (mask is Line line)
+                    return line.positionFrom;
                 else
                     throw new NotImplementedException();
             }
@@ -262,7 +279,7 @@ namespace _231109_SFML_Test
         public Vector2f speed;
 
         public ICollision mask;
-
+        static Random random = new Random();
         void LifeProcess()
         {
             lifeNow--;
@@ -270,8 +287,15 @@ namespace _231109_SFML_Test
         }
         void PhysicProcess()
         {
+            int collisionDensity = 5;
             float deltaTime = 1000f / (float)gamemode.logicFps;
-            position += speed * (float)deltaTime;
+
+            for (int i = 0; i < collisionDensity; i++)
+            {
+                if (isDisposed) break;
+                collisionCheck?.Invoke();
+                position += speed * (float)deltaTime / collisionDensity * ((float)random.NextDouble() * 0.2f + 0.9f);
+            }
         }
 
         public abstract void DrawProcess();
@@ -279,9 +303,9 @@ namespace _231109_SFML_Test
 
 
         ~Projectile(){ Dispose(); }
-        public void Dispose()
+        public virtual void Dispose()
         {
-            isDisposed = true;
+            if (gamemode == null) gamemode = Program.tm.gmNow;
             gamemode.DisposablesRemove(this);
             gamemode.drawEvent -= DrawProcess;
             gamemode.logicEvent -= LogicProcess;
@@ -289,6 +313,8 @@ namespace _231109_SFML_Test
             gamemode.logicEvent -= LifeProcess;
 
             GC.SuppressFinalize(this);
+
+            isDisposed = true;
         }
     }
 
@@ -356,7 +382,7 @@ namespace _231109_SFML_Test
         public abstract List<Vector2f> GetPoligon();
 
         ~Structure() { Dispose(); }
-        public void Dispose()
+        public virtual void Dispose()
         {
             isDisposed = true;
             gamemode.DisposablesRemove(this);

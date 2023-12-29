@@ -331,7 +331,7 @@ namespace _231109_SFML_Test
         float equipValue { get; }
 
 
-        void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio, RenderStates renderStates);
+        void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates);
 
         Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>> commandsReact { get; set; }
     }

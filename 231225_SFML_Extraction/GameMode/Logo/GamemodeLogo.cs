@@ -51,7 +51,30 @@ namespace _231109_SFML_Test
                 totalManager.SetGamemodeType(GamemodeType.MAIN_MENU);
             }
 
-            
+
+            List<Keyboard.Key> keysWhiteList = new List<Keyboard.Key>
+                {
+                    Keyboard.Key.Escape,
+                    Keyboard.Key.F1,
+                    Keyboard.Key.F2,
+                    Keyboard.Key.F3,
+                    Keyboard.Key.F4,
+                    Keyboard.Key.F5,
+                    Keyboard.Key.F6,
+                    Keyboard.Key.F7,
+                    Keyboard.Key.F8,
+                    Keyboard.Key.F9,
+                    Keyboard.Key.F10,
+                    Keyboard.Key.F11,
+                    Keyboard.Key.F12,
+                };
+            foreach (Keyboard.Key key in System.Enum.GetValues(typeof(Keyboard.Key)))
+            {
+                if (keysWhiteList.Contains(key)) continue;
+                if (Keyboard.IsKeyPressed(key))
+                    totalManager.SetGamemodeType(GamemodeType.MAIN_MENU);
+            }
+
         }
 
 

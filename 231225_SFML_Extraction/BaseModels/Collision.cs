@@ -3,7 +3,6 @@ using SFML.System;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,11 +87,19 @@ namespace _231109_SFML_Test
         public Vector2f positionFrom;
         public Vector2f positionTo;
 
+        public Color fillColor = Color.White;
+        public float thickness = 1f;
+
         public void Draw(RenderTarget target, RenderStates states)
         {
-            ConvexShape convexShape = new ConvexShape(2);
+            ConvexShape convexShape = new ConvexShape(3);
+            convexShape.FillColor = fillColor;
+            float dir = (positionTo - positionFrom).ToDirection();
+            float dis = (positionTo - positionFrom).Magnitude();
+
             convexShape.SetPoint(0, positionFrom);
-            convexShape.SetPoint(1, positionTo);
+            convexShape.SetPoint(1, positionTo + (dir+90f).ToVector() * Math.Min(dis, thickness));
+            convexShape.SetPoint(2, positionTo + (dir-90f).ToVector() * Math.Min(dis, thickness));
             convexShape.Draw(target, states);
             convexShape.Dispose();
         }
@@ -121,10 +128,15 @@ namespace _231109_SFML_Test
     }
     public class Point : Drawable, ICollision
     {
+        public Point(Vector2f p)
+        {
+            position = p;
+        }
         public Point(float x, float y) 
         {
             position = new Vector2f(x, y);
         }
+
         public Vector2f position;
 
         public void Draw(RenderTarget target, RenderStates states)
@@ -181,7 +193,7 @@ namespace _231109_SFML_Test
             return false; // No collision
         }
 
-        public static bool CheckCollision(Line line, Box rectangle)
+        public static bool CheckCollision1(Line line, Box rectangle)
         {
             FloatRect rectBounds = rectangle.GetGlobalBounds();
 
@@ -193,6 +205,32 @@ namespace _231109_SFML_Test
             if (line.positionTo.X > rectBounds.Left && line.positionTo.X < rectBounds.Left + rectBounds.Width &&
                 line.positionTo.Y > rectBounds.Top && line.positionTo.Y < rectBounds.Top + rectBounds.Height)
                 return true;
+
+            return false;
+        }
+        public static bool CheckCollision(Line line, Box rectangle)
+        {
+            Func<float, float, float, float, float, float, float, float, bool> LineIntersects = (float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) =>
+            {
+                float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+                if (den == 0) return false; // 선분이 평행하면 교차하지 않음
+
+                float t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
+                float u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
+
+                return t >= 0 && t <= 1 && u >= 0 && u <= 1;
+            };
+
+            FloatRect rectBounds = rectangle.GetGlobalBounds();
+
+            // Check if the line intersects with any of the four sides of the rectangle
+            if (LineIntersects(rectBounds.Left, rectBounds.Top, rectBounds.Left + rectBounds.Width, rectBounds.Top, line.positionFrom.X, line.positionFrom.Y, line.positionTo.X, line.positionTo.Y) ||
+                LineIntersects(rectBounds.Left + rectBounds.Width, rectBounds.Top, rectBounds.Left + rectBounds.Width, rectBounds.Top + rectBounds.Height, line.positionFrom.X, line.positionFrom.Y, line.positionTo.X, line.positionTo.Y) ||
+                LineIntersects(rectBounds.Left, rectBounds.Top + rectBounds.Height, rectBounds.Left + rectBounds.Width, rectBounds.Top + rectBounds.Height, line.positionFrom.X, line.positionFrom.Y, line.positionTo.X, line.positionTo.Y) ||
+                LineIntersects(rectBounds.Left, rectBounds.Top, rectBounds.Left, rectBounds.Top + rectBounds.Height, line.positionFrom.X, line.positionFrom.Y, line.positionTo.X, line.positionTo.Y))
+            {
+                return true;
+            }
 
             return false;
         }

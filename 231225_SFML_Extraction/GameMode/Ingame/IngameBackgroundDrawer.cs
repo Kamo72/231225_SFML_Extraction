@@ -4,6 +4,7 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,11 +23,13 @@ namespace _231109_SFML_Test
             bgTexDic[BackgroundType.CONCRETE] = new RectangleShape(new Vector2f(backgroundSep, backgroundSep));
             bgTexDic[BackgroundType.CONCRETE].Texture = ResourceManager.textures["texConcrete"];
 
-            backgroundLoaded = new Dictionary<Vector2i, BackgroundType>();
-            backgroundLoaded.Add(new Vector2i(0, 3), BackgroundType.CONCRETE);
-            backgroundLoaded.Add(new Vector2i(0, -3), BackgroundType.CONCRETE);
-            backgroundLoaded.Add(new Vector2i(3, 0), BackgroundType.CONCRETE);
-            backgroundLoaded.Add(new Vector2i(-3, 0), BackgroundType.CONCRETE);
+            backgroundLoaded = new Dictionary<Vector2i, BackgroundType>
+            {
+                { new Vector2i(0, 3), BackgroundType.CONCRETE },
+                { new Vector2i(0, -3), BackgroundType.CONCRETE },
+                { new Vector2i(3, 0), BackgroundType.CONCRETE },
+                { new Vector2i(-3, 0), BackgroundType.CONCRETE }
+            };
 
         }
         public IngameBackgroundDrawer(BackgroundType basicType = BackgroundType.NONE) 
@@ -78,8 +81,6 @@ namespace _231109_SFML_Test
         static Dictionary<BackgroundType, RectangleShape> bgTexDic;
         //활성화에 무관한 모든 노드 목록(좌표, 유형)
         static Dictionary<Vector2i, BackgroundType> backgroundLoaded;
-
-        Mutex mutex = new Mutex(true);
 
         //활성화된 모든 노드를 Draw();
         public void DrawBackgroundProcess()
@@ -173,8 +174,8 @@ namespace _231109_SFML_Test
 
         public void Dispose()
         {
-
-
+            refreshTask?.Abort();
+            GC.SuppressFinalize(this);
         }
     }
 }

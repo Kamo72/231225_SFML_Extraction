@@ -51,9 +51,17 @@ namespace _231109_SFML_Test
         }
 
         public static Vector2f Zero { get { return new Vector2f(0f, 0f); } }
+
     }
 
-
+    public static class Vector3fEx
+    {
+        // Magnitude (length) of a Vector3f
+        public static float Magnitude(this Vector3f vector)
+        {
+            return (float)System.Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+        }
+    }
     public class TypeEx 
     {
         public static bool IsChildByParent(Type childClass, Type parentClass)

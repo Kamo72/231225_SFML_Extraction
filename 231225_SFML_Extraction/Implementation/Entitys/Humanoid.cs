@@ -23,13 +23,18 @@ namespace _231109_SFML_Test
 {
     internal partial class Humanoid : Entity//, IInteractable 대화 시스템~
     {
-        public Humanoid(Gamemode gamemode, Vector2f position) : base(gamemode, position, new Circle(position, 30f))
+        public Humanoid(Gamemode gamemode, Vector2f position, float healthMax = 400) : base(gamemode, position, new Circle(position, 30f))
         {
             inventory = new Inventory(this);
             hands = new Hands(this);
+            health = new Health(this, healthMax);
+
+
+            GamemodeIngame ingm = gamemode as GamemodeIngame;
+            ingm.entitys.Add(this);
         }
 
-        public const float accel = 3000f;    //가속
+        public float accel = 3000f;    //가속
         public float accelPer = 1.00f;      //가속 배율
         public const float friction = 8.0f;   //마찰
 
@@ -49,11 +54,26 @@ namespace _231109_SFML_Test
         protected override void DrawProcess()
         {
             DrawManager.texWrHigher.Draw(mask, CameraManager.worldRenderState);
+            hands.DrawHandlingProcess();
         }
 
         protected override void LogicProcess()
         {
+            GamemodeIngame gm = gamemode as GamemodeIngame;
+            foreach (Entity ent in gm.entitys) {
+                if (ent.Position == this.Position) continue;
+                if (ent.mask.IsCollision(mask))
+                {
+                    float dis = (Position - ent.Position).Magnitude();
+                    float pushMultipier = 1f / (dis + 1f) * 10000f;
+                    Vector2f push = (Position - ent.Position).Normalize() * pushMultipier;
+                    speed += push;
+                    if (ent is Humanoid human)
+                        human.speed -= push;
+                }
+            }
 
+            hands.InteractableListRefresh();
         }
 
         protected override void PhysicsProcess()
@@ -138,6 +158,14 @@ namespace _231109_SFML_Test
 
         }
 
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            GamemodeIngame ingm = gamemode as GamemodeIngame;
+            ingm.entitys.Remove(this);
+        }
 
     }
     

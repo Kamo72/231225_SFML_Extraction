@@ -146,7 +146,7 @@ namespace _231109_SFML_Test
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    //Console.WriteLine(e.ToString());
                 }
             }
 

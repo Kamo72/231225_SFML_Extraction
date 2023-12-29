@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFML.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -18,7 +19,8 @@ namespace _231109_SFML_Test
                 caliber = CaliberType.mm7p62x51,
                 lethality = new AmmoStatus.Lethality()
                 {
-                    damage = 35,
+                    damage = 59f,
+                    bleeding = 9999f,
                     pierceLevel = 5.3f,
                     pellitCount = 1,
                 },
@@ -28,13 +30,17 @@ namespace _231109_SFML_Test
                     recoilRatio = 1.15f,
                     speedRatio = 1,
                 },
+                tracer = new AmmoStatus.Tracer() 
+                {
+                    isTraced = false,
+                    color = new Color(255, 123, 0, 255),
+                    radius = 120f,
+                },
             };
 
             AmmoLibrary.Set("7.39x51mm_AP", status);
         }
-        public mm7p39x51_AP() : base("7.39x51mm_AP")
-        {
-        }
+        public mm7p39x51_AP() : base("7.39x51mm_AP") { }
     }
     #endregion
 

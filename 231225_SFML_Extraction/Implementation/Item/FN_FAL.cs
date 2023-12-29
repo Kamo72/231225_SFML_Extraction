@@ -37,7 +37,7 @@ namespace _231109_SFML_Test
                 },
                 aimDt = new WeaponStatus.AimData()
                 {
-                    moa = 17.0f,
+                    moa = 1.80f,
                     aimStable = 18f,
                     
                     hipAccuracy = 20f,
@@ -69,36 +69,43 @@ namespace _231109_SFML_Test
                 3.5f, new Vector2i(3, 2), Rarerity.COMMON, 20000f);
             InitHandableParts(new Vector2i(200, 100), new Texture[]
             {
-                ResourceManager.textures["FN_FAL_bolt"],
-                ResourceManager.textures["FN_FAL_body"],
-                ResourceManager.textures["FN_FAL_pistolGrip_basic"],
-                ResourceManager.textures["FN_FAL_stock_basic"],
-
-                ResourceManager.textures["FN_FAL_barrel_533mm"],
-                ResourceManager.textures["FN_FAL_muzzle_Israeli"],
-                ResourceManager.textures["FN_FAL_handGuard_dsArms"],
                 ResourceManager.textures["FN_FAL_chargingHandle"],
+                ResourceManager.textures["FN_FAL_handGuard_dsArms"],
+                ResourceManager.textures["FN_FAL_muzzle_Israeli"],
+                ResourceManager.textures["FN_FAL_barrel_533mm"],
+                ResourceManager.textures["FN_FAL_stock_basic"],
+                ResourceManager.textures["FN_FAL_pistolGrip_basic"],
+                ResourceManager.textures["FN_FAL_body"],
+                ResourceManager.textures["FN_FAL_bolt"],
+
             });
+
+            specialPos = new Dictionary<string, Vector2f>
+            {
+                ["magPos"] = new Vector2f(13.5f, -0.5f),
+                ["muzzlePos"] = new Vector2f(105.0f, -5.5f), 
+                ["ejectPos"] = new Vector2f(13.5f, +0.5f), 
+                ["pistolPos"] = new Vector2f(-2.5f, -6.5f), 
+                ["secGripPos"] = new Vector2f(23.5f, -3.5f),
+                ["boltPos"] = new Vector2f(14.5f, +0.5f),
+            };
+
             //테스트
-            magazineAttached = new FN_FAL_MAG20();
+            magazineAttached = new FN_FAL_MAG10(typeof(mm7p39x51_AP));
         }
 
-
-
-
-        public override void DrawHandable(RenderTexture texture, Vector2f position, float direction, float scaleRatio, RenderStates renderStates)
+        public override void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
         {
-
-            float time = VideoManager.GetTimeTotal();
-            //rotation = new Vector2f(20f, 20f);
-
             if (magazineAttached != null)
             {
-                Vector2f magazinePos = new Vector2f(13.5f, -0.5f);
-                magazinePos = magazinePos.X * (direction).ToRadian().ToVector() +  magazinePos.Y * (direction-90f).ToRadian().ToVector();
+                Vector2f magazinePos =
+                    specialPos["magPos"].X * (direction).ToRadian().ToVector() +
+                    specialPos["magPos"].Y * (direction-90f).ToRadian().ToVector() * (scaleRatio.Y < 0 ? 1f : -1f);
 
                 //magazineAttached.DrawHandable(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
-                magazineAttached.DrawHandable(texture, position + magazinePos * scaleRatio, direction, renderStates, scaleRatio);
+                magazineAttached.DrawHandable(texture,
+                    position + new Vector2f(magazinePos.X * Math.Abs(scaleRatio.X), magazinePos.Y * Math.Abs(scaleRatio.Y)),
+                    direction, renderStates, scaleRatio);
             }
 
 
@@ -145,13 +152,13 @@ namespace _231109_SFML_Test
                 ResourceManager.textures["FN_FAL_MAG10"],
             });
         }
-
-
-        //public override void DrawHandable(RenderTexture texture, Vector2f position, Vector2f rotation, float direction, RenderStates renderStates, float depthAdjusted)
-        //{
-        //    base.DrawHandable(texture, position, rotation, direction, renderStates, depthAdjusted);
-        //}
-
+        public FN_FAL_MAG10(Type ammoType) : base("FN_FAL_MAG10", ammoType)
+        {
+            InitTopParts(new Vector2i(45, 45), new Texture[]
+            {
+                ResourceManager.textures["FN_FAL_MAG10"],
+            });
+        }
     }
 
     internal class FN_FAL_MAG20 : Magazine
@@ -173,6 +180,13 @@ namespace _231109_SFML_Test
             MagazineLibrary.Set("FN_FAL_MAG20", status);
         }
         public FN_FAL_MAG20() : base("FN_FAL_MAG20")
+        {
+            InitTopParts(new Vector2i(45, 45), new Texture[]
+            {
+                ResourceManager.textures["FN_FAL_MAG20"],
+            });
+        }
+        public FN_FAL_MAG20(Type ammoType) : base("FN_FAL_MAG20", ammoType)
         {
             InitTopParts(new Vector2i(45, 45), new Texture[]
             {

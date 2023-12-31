@@ -90,6 +90,7 @@
     <Compile Include="GameMode\Ingame\GamemodeIngame.cs" />
     <Compile Include="GameMode\Ingame\IngameBackgroundDrawer.cs" />
     <Compile Include="GameMode\Ingame\IngameLightDrawer.cs" />
+    <Compile Include="GameMode\Ingame\IngameWeatherManager.cs" />
     <Compile Include="Implementation\Entitys\Container.cs" />
     <Compile Include="Implementation\Entitys\HumanoidExtention.cs" />
     <Compile Include="Implementation\Entitys\Property\ILightSource.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Implementation\Entitys\Property\IInteractable.cs" />
     <Compile Include="Implementation\Item\Ammunition.cs" />
     <Compile Include="Implementation\Item\FN_FAL.cs" />
+    <Compile Include="Implementation\Item\Oddments.cs" />
     <Compile Include="Implementation\Particles\Cartridges.cs" />
     <Compile Include="Implementation\Particles\Particles.cs" />
     <Compile Include="Implementation\Projectiles\Bullet.cs" />
@@ -147,6 +149,7 @@
     <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG50.png" />
     <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG20.png" />
     <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG10.png" />
+    <Content Include="Sprites\Items\Oddment.png" />
     <Content Include="Sprites\light\RadialAlphaGradient.png" />
   </ItemGroup>
   <ItemGroup />

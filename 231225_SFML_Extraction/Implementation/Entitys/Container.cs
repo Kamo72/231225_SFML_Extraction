@@ -20,6 +20,9 @@ namespace _231109_SFML_Test
 
         public Container(Gamemode gamemode, Vector2f position, ICollision collision) : base(gamemode, position, collision)
         {
+
+            //하이라이트 그리기
+            InitHighlight();
         }
 
         //상자 열기
@@ -47,6 +50,36 @@ namespace _231109_SFML_Test
         }
 
 
+        #region [Highlight]
+
+        public void InitHighlight()
+        {
+            Texture hlTexture = ResourceManager.textures["LIGHT_radial"];
+            highlightShape = new RectangleShape(new Vector2f(100f, 100f));
+            highlightShape.Origin = highlightShape.Size / 2f;
+            highlightShape.Texture = hlTexture;
+        }
+        public RectangleShape highlightShape { get; set; }
+        public bool isHighlighed { get; set; } = false;
+        public float highlighValue { get; set; } = 0f;
+
+        public void DrawHighlight()
+        {
+            //하이라이트 여부 > 진행도
+            highlighValue = Mathf.Clamp(0f, highlighValue + (isHighlighed ? +0.03f : -0.03f), 1f);
+
+            //하이라이트 진행도 > 크기
+            highlightShape.Size = new Vector2f(100f, 100f) * highlighValue;
+            highlightShape.Origin = highlightShape.Size / 2f;
+
+            highlightShape.Position = Position;
+
+            DrawManager.texWrLower.Draw(highlightShape, CameraManager.worldRenderState);
+        }
+
+        #endregion
+
+
         public bool IsInteractable(Humanoid caster)
         {
             return true;
@@ -71,9 +104,14 @@ namespace _231109_SFML_Test
 
         protected override void DrawProcess()
         {
-            throw new NotImplementedException();
+            DrawHighlight();
+            //base.DrawProcess();
         }
 
+        public void DrawHighLight()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

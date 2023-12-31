@@ -13,7 +13,6 @@ namespace _231109_SFML_Test
     {
 
         public Equipable() : base() { }
-        public Equipable(Vector2f pos) : base(pos) { }
 
         public EquipmentType equipmentType { get; set; }
         public Humanoid equipedBy { get; set; }
@@ -61,7 +60,6 @@ namespace _231109_SFML_Test
     internal abstract class Headgear : Equipable
     {
         public Headgear() : base() { }
-        public Headgear(Vector2f pos) : base(pos) { }
 
     }
 
@@ -69,10 +67,6 @@ namespace _231109_SFML_Test
     internal class PlateCarrier : Equipable
     {
         public PlateCarrier(float equipablePlateLevel) : base()
-        {
-            this.equipablePlateLevel = equipablePlateLevel;
-        }
-        public PlateCarrier(float equipablePlateLevel, Vector2f pos) : base(pos)
         {
             this.equipablePlateLevel = equipablePlateLevel;
         }
@@ -88,11 +82,6 @@ namespace _231109_SFML_Test
         {
             storage = new Storage(storageSize);
         }
-        public Backpack(Vector2i storageSize, Vector2f pos) : base(pos)
-        {
-            storage = new Storage(storageSize);
-        }
-
         public Storage storage;
     }
 
@@ -100,10 +89,6 @@ namespace _231109_SFML_Test
     internal class Helmet : Equipable
     {
         public Helmet(float armourLevel) : base()
-        {
-            this.armourLevel = armourLevel;
-        }
-        public Helmet(float armourLevel, Vector2f pos) : base(pos)
         {
             this.armourLevel = armourLevel;
         }
@@ -115,10 +100,6 @@ namespace _231109_SFML_Test
     internal class ArmourPlate : Item
     {
         public ArmourPlate(float armourLevel) : base()
-        {
-            this.armourLevel = armourLevel;
-        }
-        public ArmourPlate(float armourLevel, Vector2f pos) : base(pos)
         {
             this.armourLevel = armourLevel;
         }

@@ -69,6 +69,9 @@ namespace _231109_SFML_Test
                 {
                     textures.Add("LIGHT_radial", new Texture(header + "RadialAlphaGradient.png"));
                 }
+                {
+                    textures.Add("ITEM_Oddment", new Texture(header + "Oddment.png"));
+                }
             }
 
             //bgm
@@ -110,7 +113,7 @@ namespace _231109_SFML_Test
             }
             {
                 dirPath = slnPath + @"\Sprites\FN_FAL_MAG\";
-                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL_10MAG\
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL_MAG\
 
                 CopyFile(dirPath + @"FN_FAL_MAG10.png", @"Assets\Textures\");
                 CopyFile(dirPath + @"FN_FAL_MAG20.png", @"Assets\Textures\");
@@ -120,9 +123,16 @@ namespace _231109_SFML_Test
 
             {
                 dirPath = slnPath + @"\Sprites\light\";
-                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL_10MAG\
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\light\
 
                 CopyFile(dirPath + @"RadialAlphaGradient.png", @"Assets\Textures\");
+
+            }
+            {
+                dirPath = slnPath + @"\Sprites\items\";
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\items\
+
+                CopyFile(dirPath + @"Oddment.png", @"Assets\Textures\");
 
             }
         }

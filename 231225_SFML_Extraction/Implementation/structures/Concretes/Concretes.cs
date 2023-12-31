@@ -12,7 +12,6 @@ namespace _231109_SFML_Test
     {
         public ConcreteBox(Gamemode gamemode, Vector2f position, Vector2f size) : base(gamemode, position, new Box(position, size))
         {
-
         }
 
         public override List<Vector2f> GetPoligon()

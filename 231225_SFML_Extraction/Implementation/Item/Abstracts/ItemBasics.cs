@@ -254,14 +254,10 @@ namespace _231109_SFML_Test
         {
         }
 
-        public Item(Vector2f pos)
-        {
-            DroppedItem(pos);
-        }
-
-        public void SetupBasicData(string name, string description, float mass, Vector2i size, Rarerity rare, float value) 
+        public void SetupBasicData(string name, string spriteName, string description, float mass, Vector2i size, Rarerity rare, float value) 
         {
             this.name = name;
+            this.spriteName = spriteName;
             this.description = description;
             this.mass = mass;
             this.size = size;

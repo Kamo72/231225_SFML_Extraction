@@ -34,15 +34,6 @@ namespace _231109_SFML_Test
             ingm.entitys.Add(this);
         }
 
-        public float accel = 3000f;    //가속
-        public float accelPer = 1.00f;      //가속 배율
-        public const float friction = 8.0f;   //마찰
-
-        //속도 벡터
-        public Vector2f speed = Vector2fEx.Zero;
-        //가속 벡터 (최대 1)
-        public Vector2f moveDir = Vector2fEx.Zero;
-
         public Vector2f aimPosition = Vector2fEx.Zero;
         public Vector2f AimPosition {
             get { return aimPosition + Position; }
@@ -59,23 +50,17 @@ namespace _231109_SFML_Test
 
         protected override void LogicProcess()
         {
-            GamemodeIngame gm = gamemode as GamemodeIngame;
-            foreach (Entity ent in gm.entitys) {
-                if (ent.Position == this.Position) continue;
-                if (ent.mask.IsCollision(mask))
-                {
-                    float dis = (Position - ent.Position).Magnitude();
-                    float pushMultipier = 1f / (dis + 1f) * 10000f;
-                    Vector2f push = (Position - ent.Position).Normalize() * pushMultipier;
-                    speed += push;
-                    if (ent is Humanoid human)
-                        human.speed -= push;
-                }
-            }
-
             hands.InteractableListRefresh();
         }
 
+
+        //[물리]
+        public float accel = 3000f;    //가속
+        public float accelPer = 1.00f;      //가속 배율
+        public const float friction = 8.0f;   //마찰
+
+        public Vector2f speed = Vector2fEx.Zero; // 속도 벡터
+        public Vector2f moveDir = Vector2fEx.Zero; // 가속 벡터 (최대 1)
         protected override void PhysicsProcess()
         {
             //마찰에 의한 감속
@@ -86,70 +71,44 @@ namespace _231109_SFML_Test
             Vector2f accelVec = moveDir.Magnitude() > 1f? moveDir.Normalize() : moveDir;
             speed += accelVec * (float)(accel * accelPer * deltaTime);
 
-            #region [벽에 의한 충돌]
+            #region [충돌]
 
-            Circle maskC = (Circle)mask;
-            Vector2f originPos = maskC.Position;
-            Vector2f toMove = speed * (float)deltaTime * 10f;
-            
-            Action<Vector2f> collisionAct = (newSpeed) =>
+            Circle maskHum = mask as Circle;
+            Vector2f posOrigin = Position;
+            Vector2f vecOrigin = speed;// * (float)deltaTime;
+
+            GamemodeIngame gm = gamemode as GamemodeIngame;
+            //벽과의 충돌
+            foreach (Structure stru in gm.structures)
             {
-                maskC.Position = originPos;
-                speed = newSpeed; //양축 속도를 조진다. 탄성 때문에 살짝 밀림
-            };
+                maskHum.Position = posOrigin + new Vector2f(vecOrigin.X * (float)deltaTime, 0f);
+                if (maskHum.IsCollision(stru.mask))
+                    vecOrigin.X = Math.Abs(vecOrigin.X) * Math.Sign(vecOrigin.X) * -0.5f;
 
-            foreach (Structure structure in ((GamemodeIngame)gamemode).structures)
+                maskHum.Position = posOrigin + new Vector2f(0f, vecOrigin.Y * (float)deltaTime);
+                if (maskHum.IsCollision(stru.mask))
+                    vecOrigin.Y = Math.Abs(vecOrigin.Y) * Math.Sign(vecOrigin.Y) * -0.5f;
+
+                maskHum.Position = posOrigin;
+                speed = vecOrigin;
+            }
+
+            //엔티티와의 충돌
+            foreach (Entity ent in gm.entitys)
             {
-
-                maskC.Position = originPos + toMove;
-
-                //(x,y)충돌 없음.
-                if (structure.mask.IsCollision(mask) == false) { maskC.Position = originPos; continue; }
-
-                //Vector2f springVec = (Position - structure.Position).Normalize() * 20f;
-                //Console.WriteLine(pullBack);
-
-                //충돌이 있다는건 알았음. 이제 y축 충돌인지 x축 충돌인지 둘 다 인지 검사
-                //(0, y)
-                maskC.Position = originPos + new Vector2f(0f, toMove.Y);
-                if (structure.mask.IsCollision(mask) == false)
+                if (ent == null) continue;
+                if (ent.isDisposed == true) continue;
+                if (ent.Position == this.Position) continue;
+                if (ent is Humanoid == false) continue;
+                if (ent.mask.IsCollision(mask))
                 {
-                    maskC.Position = originPos + new Vector2f(-toMove.X, toMove.Y);
-                    if (structure.mask.IsCollision(mask) == false)
-                    {
-                        collisionAct(new Vector2f(-toMove.X, toMove.Y));
-                        continue;
-                    }
-
-                    collisionAct(new Vector2f(0, toMove.Y));
-                    continue;
+                    float dis = (Position - ent.Position).Magnitude();
+                    float pushMultipier = 1f / (dis + 1f) * 10000f;
+                    Vector2f push = (Position - ent.Position).Normalize() * pushMultipier;
+                    speed += push;
+                    if (ent is Humanoid human)
+                        human.speed -= push;
                 }
-
-                //y축에 문제 있는 상태. x축에도 문제 있는지 확인하고 처리
-                //(x, 0)
-                maskC.Position = originPos + new Vector2f(toMove.X , 0f);
-                if (structure.mask.IsCollision(mask) == false)
-                {
-                    maskC.Position = originPos + new Vector2f(toMove.X, -toMove.Y);
-                    if (structure.mask.IsCollision(mask) == false)
-                    {
-                        collisionAct(new Vector2f(toMove.X, -toMove.Y));
-                        continue;
-                    }
-
-                    collisionAct(new Vector2f(toMove.X, 0f));
-                    continue;
-                }
-
-                //x, y축 모두의 문제
-                //(x, y)
-                //Console.WriteLine("x, y");
-                collisionAct(new Vector2f(
-                    Math.Abs(toMove.X) * Math.Sign(Position.X - structure.Position.X),
-                    Math.Abs(toMove.Y) * Math.Sign(Position.Y - structure.Position.Y)
-                    ));
-                continue;
-
             }
             #endregion
 

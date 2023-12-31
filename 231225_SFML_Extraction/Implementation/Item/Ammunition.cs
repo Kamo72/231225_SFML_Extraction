@@ -20,7 +20,7 @@ namespace _231109_SFML_Test
                 lethality = new AmmoStatus.Lethality()
                 {
                     damage = 59f,
-                    bleeding = 9999f,
+                    bleeding = 56f,
                     pierceLevel = 5.3f,
                     pellitCount = 1,
                 },

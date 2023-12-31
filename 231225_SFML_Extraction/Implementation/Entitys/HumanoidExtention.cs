@@ -265,7 +265,7 @@ namespace _231109_SFML_Test
             }
 
             #region [상호작용]
-            public const float interactableRange = 1000f;
+            public const float interactableRange = 100f;
             public List<IInteractable> interactables;
             public void InteractableListRefresh()
             {
@@ -273,13 +273,17 @@ namespace _231109_SFML_Test
 
                 List<IInteractable> interactables = new List<IInteractable>();
 
+                lock(igm.entitys)
                 foreach (Entity ent in igm.entitys)
                 {
+
                     float dis = (ent.Position - master.Position).Magnitude();
                     if (dis > interactableRange) continue;
 
                     if (ent is IInteractable interactable)
+                    {
                         interactables.Add(interactable);
+                    }
                 }
 
                 lock (this.interactables)
@@ -353,14 +357,14 @@ namespace _231109_SFML_Test
                 this.master = master; 
                 this.healthMax = healthMax;
                 this.healthNow = healthMax;
-                bleedingTimer = new Timer(1000d);
+                bleedingTimer = new Timer(10d);
                 bleedingTimer.Elapsed += (s, e) =>
                 {
                     if (bleeding <= 0.001f) return;
                     
-                    Damage damage = new Damage() { damage = bleeding / 100f, damageType = DamageType.BLEEDING };
+                    Damage damage = new Damage() { damage = bleeding * bleedingReduce, damageType = DamageType.BLEEDING };
                     GetDamage(damage);
-                    bleeding = Mathf.Clamp(0f, bleeding - bleedingReduce, 9999f);
+                    bleeding = Mathf.Clamp(0f, bleeding *(1f - bleedingReduce), 9999f);
                 };
                 bleedingTimer.Start();
             }
@@ -369,7 +373,7 @@ namespace _231109_SFML_Test
             public float healthMax, healthNow;
             //출혈
             public float bleeding = 0f;
-            public const float bleedingReduce = 1f;
+            public const float bleedingReduce = 0.0005f;
             Timer bleedingTimer;
 
 
@@ -505,8 +509,6 @@ namespace _231109_SFML_Test
                             damageStatus.pierce /= 2f;
                             damageStatus.pierce = -0.7f;
 
-                            //추가적으로 할만한거...?
-                            if(healthNow <= 0f) master.Dispose();
                         }
                         break;
                     case DamageType.BLEEDING:
@@ -516,11 +518,13 @@ namespace _231109_SFML_Test
                         break;
                 }
 
+
                 //Console.WriteLine($"{(damageStatus.damageType == DamageType.BULLET? "총탄" : "출혈")}데미지 : {damageStatus.damage} {damageStatus.bleeding}");
                 //데미지 처리
                 healthNow -= damageStatus.damage;
                 bleeding += damageStatus.bleeding;
 
+                if (healthNow <= 0f) master.Dispose();
                 //관통값 반환 > 탄이 계속 나아갈 수 있을지?
                 return damageStatus.pierce;
             }

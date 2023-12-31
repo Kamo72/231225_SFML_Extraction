@@ -322,7 +322,8 @@ namespace _231109_SFML_Test
             float deltaY = Math.Abs(circleCenter.Y - (rectBounds.Top + rectBounds.Height / 2));
 
             // Circle이 Rectangle 내부에 있는지 여부 확인
-            if (deltaX <= rectBounds.Width / 2 && deltaY <= rectBounds.Height / 2 + circle.Radius)
+            if (deltaX <= rectBounds.Width / 2 + circle.Radius
+                && deltaY <= rectBounds.Height / 2 + circle.Radius)
             {
                 // 충돌이 발생한 경우
                 return true;

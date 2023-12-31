@@ -245,7 +245,7 @@ namespace _231109_SFML_Test
             //commandDic[CommandType.CROUNCH] = new CommandData("숙이기", KeyReadType.TOGGLE, new KeyData(KeyCode.C));
             //commandDic[CommandType.PRONE] = new CommandData("포복", KeyReadType.TOGGLE, new KeyData(KeyCode.X));
 
-            //commandDic[CommandType.INTERACT] = new CommandData("상호작용", KeyReadType.PRESS, new KeyData(KeyCode.F));
+            commandDic[CommandType.INTERACT] = new CommandData("상호작용", KeyReadType.PRESS, new KeyData(Keyboard.Key.F));
 
             commandDic[CommandType.FIRE] = new CommandData("격발", KeyReadType.PRESSING, new KeyData(Mouse.Button.Left));
             commandDic[CommandType.AIM] = new CommandData("조준", KeyReadType.PRESSING, new KeyData(Mouse.Button.Right));
@@ -289,25 +289,6 @@ namespace _231109_SFML_Test
                     Program.tm.SetGamemodeType(GamemodeType.LOGO);
                 }
             }
-            //if (Keyboard.IsKeyPressed(Keyboard.Key.W))
-            //{
-            //    CameraManager.position.Y -= 10;
-            //}
-            //if (Keyboard.IsKeyPressed(Keyboard.Key.S))
-            //{
-            //    CameraManager.position.Y+=10;
-            //}
-
-
-            //if (Keyboard.IsKeyPressed(Keyboard.Key.A))
-            //{
-            //    CameraManager.position.X -= 10;
-            //}
-            //if (Keyboard.IsKeyPressed(Keyboard.Key.D))
-            //{
-            //    CameraManager.position.X+=10;
-            //}
-
 
         }
         public static void MouseProcess()

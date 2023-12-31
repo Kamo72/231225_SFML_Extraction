@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFML.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,11 @@ namespace _231109_SFML_Test
     {
         bool IsInteractable(Humanoid caster);
         void BeInteract(Humanoid caster);
+
+        void InitHighlight();
+        RectangleShape highlightShape { get; set; }
+        bool isHighlighed { get; set; }
+        float highlighValue { get; set; }
+        void DrawHighlight();
     }
 }

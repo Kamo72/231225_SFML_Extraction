@@ -90,7 +90,7 @@
     <Compile Include="GameMode\Ingame\GamemodeIngame.cs" />
     <Compile Include="GameMode\Ingame\IngameBackgroundDrawer.cs" />
     <Compile Include="GameMode\Ingame\IngameLightDrawer.cs" />
-    <Compile Include="GameMode\Ingame\IngameWeatherManager.cs" />
+    <Compile Include="GameMode\Ingame\IngameWeatherTimeManager.cs" />
     <Compile Include="Implementation\Entitys\Container.cs" />
     <Compile Include="Implementation\Entitys\HumanoidExtention.cs" />
     <Compile Include="Implementation\Entitys\Property\ILightSource.cs" />

@@ -16,10 +16,11 @@ using SFML.Window;
 using System.Security.Claims;
 using System.Collections;
 using static FastNoise;
+using static _231109_SFML_Test.Humanoid;
 
 namespace _231109_SFML_Test
 {
-    internal class Player : Humanoid
+    internal partial class Player : Humanoid
     {
         public Player(Gamemode gamemode, Vector2f position) : base(gamemode, position, 1000)
         {
@@ -38,7 +39,12 @@ namespace _231109_SFML_Test
             highlightShape.Origin = highlightShape.Size / 2f;
             highlightShape.Texture = hlTexture;
 
-            DrawUiInit();
+            //UI 객체들 초기화
+            DrawUiInit(new PlayerUiDrawer[] {
+                new PlayerAimDrawer(this),
+                new PlayerHpDrawer(this),
+                new TabInventory(this, null),
+            });
         }
 
         //테스트
@@ -56,16 +62,15 @@ namespace _231109_SFML_Test
 
             //마우스 변위만큼 조준점 이동
             aimPosition = new Vector2f(
-                Mathf.Clamp(0f, aimPosition.X, Vm.resolutionNow.X),
-                Mathf.Clamp(0f, aimPosition.Y, Vm.resolutionNow.Y)
+                Mathf.Clamp(-Vm.resolutionNow.X / 2f, aimPosition.X, Vm.resolutionNow.X / 2f),
+                Mathf.Clamp(-Vm.resolutionNow.Y / 2f, aimPosition.Y, Vm.resolutionNow.Y / 2f)
                 );
             AimPosition += new Vector2f(InputManager.mouseDelta.X , InputManager.mouseDelta.Y);
 
             //방향 최신화
-            Direction = (aimPosition - (Vector2f)Vm.resolutionNow /2f).ToDirection().ToDirection();
+            Direction = aimPosition.ToDirection().ToDirection();
 
             //UI
-            DrawInventoryProcess();
             DrawHudProcess();
         }
 
@@ -77,7 +82,19 @@ namespace _231109_SFML_Test
                 this.InteractionProcess();
             }
             catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
-            CameraManager.targetPos = Position + (aimPosition - (Vector2f)Vm.resolutionNow / 2f) * 0.5f;
+
+
+            //상호작용
+            if (Im.CommandCheck(Im.CommandType.INTERACT)) 
+                if (interactableChoosen is Entity intEntt)
+                    hands.Interact(intEntt);
+
+            //인벤토리
+            if (Im.CommandCheck(Im.CommandType.INVENTORY))
+                if (onInventory) InventoryClose();
+                else InventoryOpen();
+
+            CameraManager.targetPos = Position + aimPosition * 0.5f;
         }
 
         protected override void PhysicsProcess()
@@ -132,79 +149,24 @@ namespace _231109_SFML_Test
                 if (interactable is Entity intEnt)
                 {
                     float newDis = (AimPosition - intEnt.Position).Magnitude();
+
+                    Console.WriteLine(closestDis+ $"({AimPosition})" +  ">" + newDis +$"({intEnt.Position})");
                     if (closestDis > newDis)
                     {
+                        Console.WriteLine(closestDis + "==>" + newDis);
                         interactableChoosen = interactable;
                         closestDis = newDis;
                     }
                 }
             }
-
-            if (interactableChoosen is Entity intEntt)
-                if (Im.CommandCheck(Im.CommandType.INTERACT))
-                    hands.Interact(intEntt);
+            
         }
 
 
-        //UI
-        Vector2f hpUiSize = new Vector2f(600f, 30f);
-        RectangleShape hpMaxBox, hpNowBox, hpBleedingBox;
-        CircleShape aimPoint;
-        void DrawUiInit() 
+        public override void Dispose()
         {
-            aimPoint = new CircleShape(5f);
-            aimPoint.FillColor = Color.White;
-            aimPoint.Origin = new Vector2f(aimPoint.Radius, aimPoint.Radius);
-
-            hpMaxBox = new RectangleShape(hpUiSize);
-            hpMaxBox.OutlineColor = new Color(20, 20, 20);
-            hpMaxBox.OutlineThickness = 6f;
-            hpMaxBox.FillColor = new Color(40, 40, 40);
-            hpMaxBox.Position = new Vector2f(0f, Vm.resolutionNow.Y) + new Vector2f(hpUiSize.X, -hpUiSize.Y) / 2f + new Vector2f(40f, -40f);
-            hpMaxBox.Origin = hpUiSize / 2f;
-
-            hpNowBox = new RectangleShape(hpUiSize);
-            hpNowBox.FillColor = new Color(40, 210, 40);
-            hpNowBox.Position = new Vector2f(0f, Vm.resolutionNow.Y) + new Vector2f(hpUiSize.X, -hpUiSize.Y) / 2f + new Vector2f(40f, -40f);
-            hpNowBox.Origin = hpUiSize / 2f;
-
-            hpBleedingBox = new RectangleShape(new Vector2f(0f, hpUiSize.Y));
-            hpBleedingBox.Position = new Vector2f(0f, Vm.resolutionNow.Y) + new Vector2f(hpUiSize.X, -hpUiSize.Y) / 2f + new Vector2f(40f, -40f);
-            hpBleedingBox.Origin = hpUiSize / 2f;
-
-
-
-        }
-        void DrawUiDispose() 
-        {
-            aimPoint.Dispose();
-        }
-        void DrawInventoryProcess()
-        {
-        
-        }
-        void DrawHudProcess()
-        {
-            //조준점 그리기
-            aimPoint.Position = aimPosition;
-            DrawManager.texUiInterface.Draw(aimPoint);
-
-            //체력 게이지
-            float hpRatio = Mathf.Clamp(0f, health.healthNow / health.healthMax, 1f);
-            hpNowBox.Size = new Vector2f(hpUiSize.X * hpRatio, hpUiSize.Y);
-            DrawManager.texUiInterface.Draw(hpMaxBox);
-            DrawManager.texUiInterface.Draw(hpNowBox);
-
-            //출혈
-            float tTime = Math.Abs(Vm.GetTimeTotal()*4f % 2f - 1f); //깜빡이는 이펙트
-            hpBleedingBox.FillColor = new Color((byte)(40 * 170 * tTime), 40, 40);
-
-            float bleedingRatio = Mathf.Clamp(0f, health.bleeding / health.healthNow, 1f);
-            hpBleedingBox.Size = new Vector2f(hpNowBox.Size.X * bleedingRatio, hpUiSize.Y);
-            hpBleedingBox.Position = new Vector2f(0f, Vm.resolutionNow.Y) + new Vector2f(hpUiSize.X, -hpUiSize.Y) / 2f + new Vector2f(40f, -40f) + new Vector2f(hpNowBox.Size.X * (1f-bleedingRatio), 0f);
-
-            DrawManager.texUiInterface.Draw(hpBleedingBox);
-
+            DrawUiDispose();
+            base.Dispose();
         }
 
     }

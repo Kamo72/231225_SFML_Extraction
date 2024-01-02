@@ -213,6 +213,7 @@ namespace _231109_SFML_Test
             PRONE,
 
             INTERACT,
+            INVENTORY,
 
             FIRE,
             AIM,
@@ -241,15 +242,16 @@ namespace _231109_SFML_Test
             commandDic[CommandType.MOVE_LEFT] = new CommandData("왼쪽으로 이동", KeyReadType.PRESSING, new KeyData(Keyboard.Key.A));
             commandDic[CommandType.MOVE_RIGHT] = new CommandData("오른쪽으로 이동", KeyReadType.PRESSING, new KeyData(Keyboard.Key.D));
 
-            //commandDic[CommandType.SPRINT] = new CommandData("달리기", KeyReadType.TOGGLE, new KeyData(KeyCode.LeftShift));
+            commandDic[CommandType.SPRINT] = new CommandData("달리기", KeyReadType.TOGGLE, new KeyData(Keyboard.Key.LShift));
             //commandDic[CommandType.CROUNCH] = new CommandData("숙이기", KeyReadType.TOGGLE, new KeyData(KeyCode.C));
             //commandDic[CommandType.PRONE] = new CommandData("포복", KeyReadType.TOGGLE, new KeyData(KeyCode.X));
 
             commandDic[CommandType.INTERACT] = new CommandData("상호작용", KeyReadType.PRESS, new KeyData(Keyboard.Key.F));
+            commandDic[CommandType.INVENTORY] = new CommandData("인벤토리", KeyReadType.PRESS, new KeyData(Keyboard.Key.Tab));
 
             commandDic[CommandType.FIRE] = new CommandData("격발", KeyReadType.PRESSING, new KeyData(Mouse.Button.Left));
             commandDic[CommandType.AIM] = new CommandData("조준", KeyReadType.PRESSING, new KeyData(Mouse.Button.Right));
-            //commandDic[CommandType.MAGAZINE_CHANGE] = new CommandData("재장전", KeyReadType.PRESS, new KeyData(KeyCode.R));
+            commandDic[CommandType.MAGAZINE_CHANGE] = new CommandData("재장전", KeyReadType.PRESS, new KeyData(Keyboard.Key.R));
             //commandDic[CommandType.MAGAZINE_INSPECT] = new CommandData("잔탄 확인", KeyReadType.PRESS, new KeyData(KeyCode.LeftControl), new KeyData(KeyCode.R));
             //commandDic[CommandType.MAGAZINE_REMOVE] = new CommandData("탄창 제거", KeyReadType.PRESS, new KeyData(KeyCode.LeftAlt), new KeyData(KeyCode.R));
 

@@ -118,6 +118,10 @@ namespace _231109_SFML_Test
         }
 
 
+        //인벤토리 상호작용
+        public IInteractable interactingTarget = null;   //지속적인 상호작용 대상
+        public bool onInventory = false;
+
         public override void Dispose()
         {
             base.Dispose();

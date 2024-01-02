@@ -291,8 +291,9 @@ namespace _231109_SFML_Test
             }
             public void Interact(Entity entity)
             {
-                if (entity is IInteractable interactable)
-                    interactable.BeInteract(master);
+                if(master.onInventory == false)
+                    if (entity is IInteractable interactable)
+                        interactable.BeInteract(master);
 
             }
             #endregion
@@ -334,9 +335,13 @@ namespace _231109_SFML_Test
             }
             public void LogicHandlingProcess()
             {
+                //조작 가능 체크
                 if (handling == null) return;
                 if (handling.commandsReact == null) return;
+                if (master.onInventory == true) return;
 
+                //플레이어 기준 조작 handling.commandsReact.Keys는 조작유형이기 때문에 공유 가능
+                //handling.commandsReact.Values는 사용자 입력이기 때문에 AI가 조작 불가능하다...
                 foreach (InputManager.CommandType cmd in handling.commandsReact.Keys)
                 {
                     bool isTrue = InputManager.CommandCheck(cmd);

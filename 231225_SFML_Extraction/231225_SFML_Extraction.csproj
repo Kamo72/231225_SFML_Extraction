@@ -93,6 +93,7 @@
     <Compile Include="GameMode\Ingame\IngameWeatherTimeManager.cs" />
     <Compile Include="Implementation\Entitys\Container.cs" />
     <Compile Include="Implementation\Entitys\HumanoidExtention.cs" />
+    <Compile Include="Implementation\Entitys\PlayerExtension.cs" />
     <Compile Include="Implementation\Entitys\Property\ILightSource.cs" />
     <Compile Include="Implementation\Entitys\TestEnemy.cs" />
     <Compile Include="Implementation\Item\Abstracts\ItemBasics.cs" />

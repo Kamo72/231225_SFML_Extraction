@@ -17,7 +17,7 @@ namespace _231109_SFML_Test
     {
         static VideoManager() 
         {
-            resolutionNow = resolutionPreset[7];
+            resolutionNow = resolutionPreset[4];    //4 7
             drawfpsNow = drawfpsPreset[3];          //144
 
             clockTotal = new Clock();

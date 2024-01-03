@@ -23,6 +23,8 @@ namespace _231109_SFML_Test
         public Gamemode(TotalManager tm, double logicFps)
         {
             totalManager = tm;
+            tm.gmNow = this;
+            Console.WriteLine("gamemode Now is " + tm.gmNow.GetType().ToString());
             this.logicFps = logicFps;
 
             //로직 타이머 시작

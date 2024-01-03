@@ -13,6 +13,7 @@ namespace _231109_SFML_Test
         void BeInteract(Humanoid caster);
 
         void InitHighlight();
+        Text highlightText { get; set; }
         RectangleShape highlightShape { get; set; }
         bool isHighlighed { get; set; }
         float highlighValue { get; set; }

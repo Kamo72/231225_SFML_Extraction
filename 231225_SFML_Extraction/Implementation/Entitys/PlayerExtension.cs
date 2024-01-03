@@ -12,7 +12,8 @@ using Dm = _231109_SFML_Test.DrawManager;
 using Im = _231109_SFML_Test.InputManager;
 using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
-using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+using SFML.Window;
 
 namespace _231109_SFML_Test
 {
@@ -36,22 +37,12 @@ namespace _231109_SFML_Test
 
         void DrawUiInit(params PlayerUiDrawer[] uis) => uiList = uis.ToList();
 
-        void DrawHudProcess() => uiList.ForEach(ui => ui.DrawProcess());
+        void DrawHudProcess() => uiList?.ForEach(ui => ui?.DrawProcess());
+        
 
-        void DrawUiDispose() => uiList.ForEach(ui => ui?.Dispose());
+        void DrawUiDispose() => uiList?.ForEach(ui => ui?.Dispose());
         #endregion
 
-
-        void DrawInventoryProcess()
-        {
-            //본인측 인벤토리 그리기
-
-            if (interactingTarget != null)
-            {
-                //상대측 인벤토리 그리기
-                //구현 해야됨.
-            }
-        }
 
 
         #region [UI 객체들]
@@ -59,6 +50,9 @@ namespace _231109_SFML_Test
         abstract class PlayerUiDrawer : IDisposable
         {
             protected Player master;
+
+            protected float tabListMargin = 100f;
+            protected float tabListWidth = 250f;
 
             public PlayerUiDrawer(Player master)
             {
@@ -94,7 +88,7 @@ namespace _231109_SFML_Test
                 hpBleedingBox.Origin = hpUiSize / 2f;
 
             }
-            
+
             public override void DrawProcess()
             {
                 Health health = master.health;
@@ -119,7 +113,7 @@ namespace _231109_SFML_Test
             public override void Dispose()
             {
                 hpMaxBox?.Dispose();
-                hpNowBox?.Dispose(); 
+                hpNowBox?.Dispose();
                 hpBleedingBox?.Dispose();
             }
         }
@@ -154,20 +148,37 @@ namespace _231109_SFML_Test
         {
             //기본 상수
             protected Vector2f screen = (Vector2f)Vm.resolutionNow;
-            protected float tabListMargin = 35f;
 
-            Tab choosenTab;
+            public Tab choosenTab;
             List<Tab> tabList;
 
             public PlayerTabDrawer(Player master) : base(master)
             {
+                int tabIndex = 0;
+                tabList = new List<Tab> {
+                    new TabInventory(master, tabIndex++),
 
-
+                };
+                choosenTab = tabList[0];
             }
 
+            public void LogicProcess() 
+            {
+               foreach(Tab tab in tabList)
+                {
+                    tab.LogicProcess();
+                };
+            }
 
             public override void DrawProcess()
             {
+                if(master.onInventory)
+                    foreach (Tab tab in tabList)
+                    {
+                        tab.DrawTabProcess();
+                        if (tab == choosenTab)
+                            tab.DrawProcess();
+                    }
             }
 
             public override void Dispose()
@@ -176,33 +187,45 @@ namespace _231109_SFML_Test
         }
 
         //탭
-        class Tab : PlayerUiDrawer
+        abstract class Tab : PlayerUiDrawer
         {
             //기본 상수
             protected Vector2f screen = (Vector2f)Vm.resolutionNow;
-            protected float tabListMargin = 35f;
 
-            string name;
-            PlayerTabDrawer tabDrawer;
 
-            public Tab(Player master, PlayerTabDrawer tabDrawer, string name) : base(master)
+            Text tabText;
+            RectangleShape tabButton;
+
+            public Tab(Player master, string name, int index) : base(master)
             {
-                this.tabDrawer = tabDrawer;
-                this.name = name;
+                tabButton = new RectangleShape(new Vector2f(tabListWidth, tabListMargin));
+                tabButton.Position = new Vector2f(index * tabListWidth, 0f);
+                tabButton.FillColor = new Color(210, 210, 210);
+
+                tabText = new Text(name, Rm.fonts["Jalnan"]);
+                tabText.Position = tabButton.Position + new Vector2f(tabListWidth, tabListMargin) / 2f;
+                tabText.CharacterSize = 70;
+                tabText.Origin = new Vector2f(tabText.GetLocalBounds().Width / 2, tabText.GetLocalBounds().Height / 2);
+                tabText.FillColor = new Color(60, 60, 60, 210);
+
             }
 
             //탭 버튼
             public void DrawTabProcess()
             {
+                Dm.texUiPopup.Draw(tabButton);
+                Dm.texUiPopup.Draw(tabText);
             }
 
+            public abstract void LogicProcess();
+
             //전체 화면 드로우
-            public override void DrawProcess()
-            {
-            }
+            public abstract override void DrawProcess();
 
             public override void Dispose()
             {
+                tabButton?.Dispose();
+                tabText?.Dispose();
             }
         }
 
@@ -210,27 +233,191 @@ namespace _231109_SFML_Test
         //인벤토리 탭
         class TabInventory : Tab
         {
+            //드로우 도형들
             RectangleShape equipmentBox, inventoryBox, containerBox;
+            RectangleShape slotShape;
+            RectangleShape outlineShape;
+            RectangleShape itemShape;
 
-            public TabInventory(Player master, PlayerTabDrawer tabDrawer) : base(master, tabDrawer, "장비")
+            RectangleShape dropShape;   //아이템을 놓을 노드들 표시
+            RectangleShape dragShape;   //끌려올 아이템을 그릴 도형
+
+            //사전 값
+            Dictionary<Rarerity, Color> rareityBackColor;
+
+            float boxMargin = 15f, slotWidth;
+
+            public TabInventory(Player master, int index) : base(master, "장비", index)
             {
+                rareityBackColor = new Dictionary<Rarerity, Color>
+                {
+                    {Rarerity.COMMON , new Color(90, 90, 90, 80)},
+                    {Rarerity.UNCOMMON , new Color(220, 220, 220, 80)},
+                    {Rarerity.RARE , new Color(30, 30, 220, 80)},
+                    {Rarerity.UNIQUE , new Color(220, 30, 220, 80)},
+                    {Rarerity.QUEST , new Color(220, 30, 30, 80)},
+                };
+
+                slotWidth = (screen.X / 3f - boxMargin * 2f) / 8f;
+                slotShape = new RectangleShape(new Vector2f(slotWidth, slotWidth));
+                slotShape.FillColor = new Color(30, 30, 30);
+                slotShape.OutlineThickness = 2f;
+                slotShape.OutlineColor = new Color(15, 15, 15);
+
+                //outlineShape = new RectangleShape();
+                //outlineShape.FillColor = Color.Transparent;
+                //outlineShape.OutlineThickness = 3f;
+                //outlineShape.OutlineColor = Color.White;
+
+                itemShape = new RectangleShape();
+                //itemShape.FillColor = new Color(30, 30, 30);
+                itemShape.OutlineThickness = 2f;
+                itemShape.OutlineColor = new Color(50, 50, 50);
+
+
                 equipmentBox = new RectangleShape(new Vector2f(screen.X / 3f, screen.Y - tabListMargin));
                 equipmentBox.FillColor = new Color(60, 60, 60, 210);
                 equipmentBox.Position = new Vector2f(screen.X / 3f * 0, tabListMargin);
+                equipmentBox.OutlineColor = new Color(90, 90, 90, 210);
+                equipmentBox.OutlineThickness = 10;
 
                 inventoryBox = new RectangleShape(equipmentBox);
                 inventoryBox.Position = new Vector2f(screen.X / 3f * 1, tabListMargin);
 
                 containerBox = new RectangleShape(equipmentBox);
                 containerBox.Position = new Vector2f(screen.X / 3f * 2, tabListMargin);
+
+
+                dropShape = new RectangleShape(new Vector2f(slotWidth, slotWidth));
+                dropShape.FillColor = Color.Transparent;
+
+                dragShape = new RectangleShape();
+
             }
 
+            //스토리지 && 슬롯 드로우
+            void DrawStorage(Storage storage, Vector2f originPos) 
+            {
+
+                Vector2i pSize = storage.size;
+                for (int x = 0; x < pSize.X; x++)
+                    for (int y = 0; y < pSize.Y; y++)
+                    {
+                        slotShape.Position = originPos + new Vector2f(x, y) * slotWidth;
+                        Dm.texUiPopup.Draw(slotShape);
+                    }
+
+                foreach (Storage.StorageNode sNode in storage.itemList)
+                {
+                    itemShape.Position = originPos + (Vector2f)sNode.pos * slotWidth;
+                    itemShape.Size = sNode.isRotated ?
+                        (Vector2f)new Vector2i(sNode.item.size.Y, sNode.item.size.X) * slotWidth :
+                        (Vector2f)sNode.item.size * slotWidth;
+
+                    itemShape.Texture = null;
+                    itemShape.FillColor = rareityBackColor[sNode.item.rare];
+                    Dm.texUiPopup.Draw(itemShape);
+
+                    itemShape.Texture = Rm.textures[sNode.item.spriteName];
+                    itemShape.FillColor = Color.White;
+                    Dm.texUiPopup.Draw(itemShape);
+
+                }
+            }
+            void DrawEquipSlot(Inventory.EquipSlot equipSlot, Vector2f originPos){ }
+
+            //스토리지 && 슬롯 마우스 체크
+            Vector2i? MouseCheckStorage(Storage storage, Vector2f originPos, Vector2f mousePos)
+            {
+                Point mouseMask = new Point(mousePos);
+                Vector2i pSize = storage.size;
+                
+                for (int x = 0; x < pSize.X; x++)
+                    for (int y = 0; y < pSize.Y; y++)
+                    {
+                        Vector2f pos = originPos + new Vector2f(x + 0.5f, y + 0.5f) * slotWidth;
+                        Vector2f size = new Vector2f(1,1) * slotWidth;
+                        Box slot = new Box(pos, size);
+                        if (slot.IsCollision(mouseMask))
+                            return new Vector2i(x, y);
+                    }
+
+                return null;
+            }
+            void MouseCheckEquipSlot(Inventory.EquipSlot equipSlot, Vector2f originPos) { }
+
+            //각 패널에 대한 드로우
+            void DrawEquipmentBox()
+            {
+
+            }
+            void DrawInventoryBox()
+            {
+                try
+                {
+                    Inventory inventory = master.inventory;
+                    Vector2f pocketPos = inventoryBox.Position + new Vector2f(boxMargin, boxMargin);
+
+                    DrawStorage(inventory.pocket, pocketPos);
+
+                }
+                catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+
+            }
+            void DrawContainerBox()
+            {
+                if (master.interactingTarget == null) return;
+            }
+
+            //사용자 조작
+            void LogicInput() { }
+            Storage.StorageNode? onDrag = null;
+
+            //통합 마우스 체크
+            public override void LogicProcess()
+            {
+                //마우스가 올라갔는지 검사할 항목
+                Storage tStor = null;   //스토리지
+                Vector2i? tStorPos = null;  //스토리지 내 위치
+                Storage.StorageNode? tStorNode = null;  //스토리지 내 위치에 따른 노드
+                Inventory.EquipSlot tSlot = null;   //장착 슬롯
+
+                //현재 마우스 위치
+                Vector2f mousePos = (Vector2f)Mouse.GetPosition();
+
+                Inventory inventory = master.inventory;
+
+                Storage storage = inventory.pocket;
+                Vector2f pocketPos = inventoryBox.Position + new Vector2f(boxMargin, boxMargin);
+
+                Vector2i? pPos = MouseCheckStorage(storage, pocketPos, mousePos);
+                if (pPos != null)
+                {
+                    tStor = storage;
+                    tStorPos = pPos;
+                    tStorNode = storage.GetPosTo((Vector2i)tStorPos);
+                }
+
+                Console.WriteLine("mouse on : " + tStorPos);
+
+
+
+
+
+            }
+            //통합 드로우
             public override void DrawProcess()
             {
                 Dm.texUiPopup.Draw(equipmentBox);
                 Dm.texUiPopup.Draw(inventoryBox);
                 Dm.texUiPopup.Draw(containerBox);
+
+                DrawEquipmentBox();
+                DrawInventoryBox();
+                DrawContainerBox();
+
             }
+            //소멸자
             public override void Dispose()
             {
                 equipmentBox.Dispose();

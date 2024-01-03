@@ -249,7 +249,8 @@ namespace _231109_SFML_Test
                     item.onStorage.RemoveItem(item);
                 }
 
-                //item.ControllerInitiate(master.position, master.Direction);
+                item.DroppedItem(master.Position);
+                item.droppedItem.speed = master.hands.handRot.ToRadian().ToVector();
             }
             #endregion
         }

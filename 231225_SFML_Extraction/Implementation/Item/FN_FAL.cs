@@ -84,7 +84,7 @@ namespace _231109_SFML_Test
             specialPos = new Dictionary<string, Vector2f>
             {
                 ["magPos"] = new Vector2f(13.5f, -0.5f),
-                ["muzzlePos"] = new Vector2f(105.0f, -5.5f), 
+                ["muzzlePos"] = new Vector2f(105.0f, -7.5f), 
                 ["ejectPos"] = new Vector2f(13.5f, +0.5f), 
                 ["pistolPos"] = new Vector2f(-2.5f, -6.5f), 
                 ["secGripPos"] = new Vector2f(23.5f, -3.5f),

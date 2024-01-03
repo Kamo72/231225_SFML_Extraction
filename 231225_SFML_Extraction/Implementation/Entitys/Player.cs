@@ -43,7 +43,7 @@ namespace _231109_SFML_Test
             DrawUiInit(new PlayerUiDrawer[] {
                 new PlayerAimDrawer(this),
                 new PlayerHpDrawer(this),
-                new TabInventory(this, null),
+                new PlayerTabDrawer(this),
             });
         }
 
@@ -110,6 +110,10 @@ namespace _231109_SFML_Test
 
                 base.PhysicsProcess();
 
+                //플레이어 탭 드로워.로직 프로세스
+                PlayerTabDrawer ptd = uiList.Find(ui => ui is PlayerTabDrawer) as PlayerTabDrawer;
+                ptd?.LogicProcess();
+
                 //갖고 있는 아이템의 조작
                 hands.LogicHandlingProcess();
             }
@@ -150,10 +154,10 @@ namespace _231109_SFML_Test
                 {
                     float newDis = (AimPosition - intEnt.Position).Magnitude();
 
-                    Console.WriteLine(closestDis+ $"({AimPosition})" +  ">" + newDis +$"({intEnt.Position})");
+                    //Console.WriteLine(closestDis+ $"({AimPosition})" +  ">" + newDis +$"({intEnt.Position})");
                     if (closestDis > newDis)
                     {
-                        Console.WriteLine(closestDis + "==>" + newDis);
+                        //Console.WriteLine(closestDis + "==>" + newDis);
                         interactableChoosen = interactable;
                         closestDis = newDis;
                     }

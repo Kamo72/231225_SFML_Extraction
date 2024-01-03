@@ -63,6 +63,7 @@ namespace _231109_SFML_Test
             drawable.Position = position;
 
             drawable.Origin = new Vector2f(1f, 1f) * drawable.Radius / 2f;
+            drawable.Texture = ResourceManager.textures["LIGHT_radial"];
 
             Func<float> getRand = () => (float)random.NextDouble() * 2f - 1f;
 
@@ -102,13 +103,14 @@ namespace _231109_SFML_Test
 
     internal class MuzzleSmoke : Particle
     {
-        public MuzzleSmoke(Gamemode gamemode, Vector2f position, float rotation = 0) : base(gamemode, random.Next(10, 20), position, new Vector2f(1f, 1f), rotation)
+        public MuzzleSmoke(Gamemode gamemode, Vector2f position, float rotation = 0) : base(gamemode, random.Next(10, 50), position, new Vector2f(1f, 1f), rotation)
         {
-            radMax = (float)random.NextDouble() * 15f;
+            radMax = (float)random.NextDouble() * 30f;
             drawable = new CircleShape(0f);
             drawable.Position = position;
 
             drawable.Origin = new Vector2f(1f, 1f) * drawable.Radius / 2f;
+            drawable.Texture = ResourceManager.textures["LIGHT_radial"];
 
             Func<float> getRand = () => (float)random.NextDouble() * 2f - 1f;
 
@@ -125,7 +127,7 @@ namespace _231109_SFML_Test
 
             drawable.Radius = radMax * (1.5f - (float)lifeNow / lifeMax) / 1.5f;
             byte alpha = (byte)(255 * (float)lifeNow / lifeMax);
-            drawable.FillColor = new Color(170, 170, 170, alpha);
+            drawable.FillColor = new Color(170, 170, 170, (byte)(alpha / 2));
             //drawable.FillColor = Color.White;
 
             Vector2f positionNew = drawable.Position;

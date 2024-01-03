@@ -69,8 +69,6 @@ namespace _231109_SFML_Test
                         Vector2f muzzlePos = hands.master.Position + hands.handPos + muzzleSep.RotateFromZero(hands.handRot);
                         new MuzzleSmoke(gm, muzzlePos, hands.handRot);
                     }
-
-
                 } },
                 { InputManager.CommandType.AIM, (hands, isTrue) => { } },
                 //{ InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => { } },

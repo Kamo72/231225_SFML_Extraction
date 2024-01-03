@@ -58,7 +58,15 @@ namespace _231109_SFML_Test
             highlightShape = new RectangleShape(new Vector2f(100f, 100f));
             highlightShape.Origin = highlightShape.Size / 2f;
             highlightShape.Texture = hlTexture;
+
+            highlightText = new Text("F : 열기", ResourceManager.fonts["Jalnan"]);
+            highlightText.CharacterSize = 20;
+            highlightText.Origin = new Vector2f(highlightText.GetLocalBounds().Width / 2, highlightText.GetLocalBounds().Height / 2);
+            highlightText.FillColor = new Color(220, 220, 220);
+            highlightText.OutlineThickness = 2;
+            highlightText.OutlineColor = new Color(20, 20, 20);
         }
+        public Text highlightText { get; set; }
         public RectangleShape highlightShape { get; set; }
         public bool isHighlighed { get; set; } = false;
         public float highlighValue { get; set; } = 0f;
@@ -67,14 +75,19 @@ namespace _231109_SFML_Test
         {
             //하이라이트 여부 > 진행도
             highlighValue = Mathf.Clamp(0f, highlighValue + (isHighlighed ? +0.03f : -0.03f), 1f);
+            byte highlighAlpha = (byte)(255 * highlighValue);
 
             //하이라이트 진행도 > 크기
             highlightShape.Size = new Vector2f(100f, 100f) * highlighValue;
             highlightShape.Origin = highlightShape.Size / 2f;
 
             highlightShape.Position = Position;
+            highlightText.Position = Position + new Vector2f(0f, 50f);
+            highlightText.FillColor = new Color(highlightText.FillColor) { A = highlighAlpha };
+            highlightText.OutlineColor = new Color(highlightText.OutlineColor) { A = highlighAlpha };
 
             DrawManager.texWrLower.Draw(highlightShape, CameraManager.worldRenderState);
+            DrawManager.texWrLower.Draw(highlightText, CameraManager.worldRenderState);
         }
 
         #endregion
@@ -108,10 +121,6 @@ namespace _231109_SFML_Test
             //base.DrawProcess();
         }
 
-        public void DrawHighLight()
-        {
-            throw new NotImplementedException();
-        }
     }
 
 }

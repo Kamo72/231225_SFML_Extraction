@@ -56,6 +56,12 @@ namespace _231109_SFML_Test
             {
                 //if (entitys.Count < 5) new TestEnemy(this, new Vector2f(0, 0));
 
+                if (tm.gmNow != this)
+                {
+                    spawner.Dispose();
+                    return;
+                }
+
                 //드랍 아이템 테스트
                 new Oddment().DroppedItem(new Vector2f(random.Next(-100, 100), random.Next(-100, 100)));
             };
@@ -104,8 +110,8 @@ namespace _231109_SFML_Test
 
            
 
-            ibd.DrawBackgroundProcess();
-            ild.Draw();
+            ibd?.DrawBackgroundProcess();
+            ild?.Draw();
         }
 
         int i = 0;

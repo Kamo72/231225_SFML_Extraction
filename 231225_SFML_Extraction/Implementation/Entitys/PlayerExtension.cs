@@ -370,8 +370,37 @@ namespace _231109_SFML_Test
             }
 
             //사용자 조작
-            void LogicInput() { }
+            void LogicInput(Storage tStor, Vector2i? tStorPos, Storage.StorageNode? tStorNode, Inventory.EquipSlot tSlot)
+            {
+                //좌클릭 확인
+                if (InputManager.CommandCheck(InputManager.CommandType.FIRE))
+                {
+                    //onCLick
+                    if (clickBefore == false)
+                    {
+                    
+                    }
+
+
+                    //클릭 값 처리
+                    clickBefore = true;
+                }
+                else 
+                {
+
+                    //클릭 값 처리
+                    clickBefore = false;
+                }
+                //우클릭 확인
+                if (InputManager.CommandCheck(InputManager.CommandType.AIM)) 
+                {
+                
+                }
+
+
+            }
             Storage.StorageNode? onDrag = null;
+            bool clickBefore = false;   
 
             //통합 마우스 체크
             public override void LogicProcess()

@@ -3,26 +3,41 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace _231109_SFML_Test
 {
     internal class Container : Entity, IInteractable
     {
-
         //창고
         public Storage storage;
 
         //상자 열기 제어
         public bool isOpen = false;
         public Humanoid openBy = null;
+        public RectangleShape drawShape;
 
-        public Container(Gamemode gamemode, Vector2f position, ICollision collision) : base(gamemode, position, collision)
+        public string name = "";
+
+        public Container(Gamemode gamemode, Vector2f position, Vector2i storageSize, Vector2f size, string TextureName, string name)
+            : base(gamemode, position, new Box(position, size * 0.7f))
         {
-
             //하이라이트 그리기
             InitHighlight();
+
+            //창고 생성
+            storage = new Storage(storageSize);
+
+            //그리기 도형 생성
+            drawShape = new RectangleShape(size);
+            drawShape.Origin = size / 2f;
+            drawShape.Position = position;
+            drawShape.Texture = ResourceManager.textures[TextureName];
+
+            this.name = name;
         }
 
         //상자 열기
@@ -32,6 +47,12 @@ namespace _231109_SFML_Test
             {
                 isOpen = true;
                 openBy = entity;
+
+                if (entity is Player player) player.InventoryOpen();
+                else entity.hands.onInventory = true;
+
+                entity.hands.interactingTarget = this;
+
                 return true;
             }
             return false;
@@ -87,7 +108,7 @@ namespace _231109_SFML_Test
             highlightText.OutlineColor = new Color(highlightText.OutlineColor) { A = highlighAlpha };
 
             DrawManager.texWrLower.Draw(highlightShape, CameraManager.worldRenderState);
-            DrawManager.texWrLower.Draw(highlightText, CameraManager.worldRenderState);
+            DrawManager.texWrAugment.Draw(highlightText, CameraManager.worldRenderState);
         }
 
         #endregion
@@ -107,20 +128,29 @@ namespace _231109_SFML_Test
 
         protected override void LogicProcess()
         {
-            throw new NotImplementedException();
+            if (isOpen)
+            if (openBy != null)
+            if (openBy.hands.onInventory == false)
+                Close();
         }
 
         protected override void PhysicsProcess()
         {
-            throw new NotImplementedException();
         }
 
         protected override void DrawProcess()
         {
             DrawHighlight();
-            //base.DrawProcess();
+            
+            drawShape.Position = Position;
+            DrawManager.texWrLower.Draw(drawShape, CameraManager.worldRenderState);
         }
 
     }
 
+    internal class K_WoodenAmmoBox : Container
+    {
+        public K_WoodenAmmoBox(Gamemode gamemode, Vector2f position)
+            : base(gamemode, position, new Vector2i(6, 4), new Vector2f(100f, 80f), "K_WoodenAmmoBox", "군용 목제 탄약 상자") { }
+    }
 }

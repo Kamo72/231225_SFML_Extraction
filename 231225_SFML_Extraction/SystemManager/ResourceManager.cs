@@ -50,27 +50,31 @@ namespace _231109_SFML_Test
                 textures.Add("valve", new Texture(header + "valveOnSanghan.png"));
                 textures.Add("texGrass", new Texture(header + "texGrassCompressed.jpg"));
                 textures.Add("texConcrete", new Texture(header + "texConcrete.jpg"));
-
                 {
-                    textures.Add("FN_FAL_bolt", new Texture(header + "FN_FAL_bolt.png"));
-                    textures.Add("FN_FAL_body", new Texture(header + "FN_FAL_body.png"));
-                    textures.Add("FN_FAL_pistolGrip_basic", new Texture(header + "FN_FAL_pistolGrip_basic.png"));
-                    textures.Add("FN_FAL_stock_basic", new Texture(header + "FN_FAL_stock_basic.png"));
-                    textures.Add("FN_FAL_barrel_533mm", new Texture(header + "FN_FAL_barrel_533mm.png"));
-                    textures.Add("FN_FAL_muzzle_Israeli", new Texture(header + "FN_FAL_muzzle_Israeli.png"));
-                    textures.Add("FN_FAL_handGuard_dsArms", new Texture(header + "FN_FAL_handGuard_dsArms.png"));
-                    textures.Add("FN_FAL_chargingHandle", new Texture(header + "FN_FAL_chargingHandle.png"));
-                }
-                {
-                    textures.Add("FN_FAL_MAG10", new Texture(header + "FN_FAL_MAG10.png"));
-                    textures.Add("FN_FAL_MAG20", new Texture(header + "FN_FAL_MAG20.png"));
-                    textures.Add("FN_FAL_MAG50", new Texture(header + "FN_FAL_MAG50.png"));
+                    {
+                        textures.Add("FN_FAL_bolt", new Texture(header + "FN_FAL_bolt.png"));
+                        textures.Add("FN_FAL_body", new Texture(header + "FN_FAL_body.png"));
+                        textures.Add("FN_FAL_pistolGrip_basic", new Texture(header + "FN_FAL_pistolGrip_basic.png"));
+                        textures.Add("FN_FAL_stock_basic", new Texture(header + "FN_FAL_stock_basic.png"));
+                        textures.Add("FN_FAL_barrel_533mm", new Texture(header + "FN_FAL_barrel_533mm.png"));
+                        textures.Add("FN_FAL_muzzle_Israeli", new Texture(header + "FN_FAL_muzzle_Israeli.png"));
+                        textures.Add("FN_FAL_handGuard_dsArms", new Texture(header + "FN_FAL_handGuard_dsArms.png"));
+                        textures.Add("FN_FAL_chargingHandle", new Texture(header + "FN_FAL_chargingHandle.png"));
+                    }
+                    {
+                        textures.Add("FN_FAL_MAG10", new Texture(header + "FN_FAL_MAG10.png"));
+                        textures.Add("FN_FAL_MAG20", new Texture(header + "FN_FAL_MAG20.png"));
+                        textures.Add("FN_FAL_MAG50", new Texture(header + "FN_FAL_MAG50.png"));
+                    }
                 }
                 {
                     textures.Add("LIGHT_radial", new Texture(header + "RadialAlphaGradient.png"));
                 }
                 {
                     textures.Add("ITEM_Oddment", new Texture(header + "Oddment.png"));
+                }
+                {
+                    textures.Add("K_WoodenAmmoBox", new Texture(header + "K_WoodenAmmoBox.png"));
                 }
             }
 
@@ -97,42 +101,58 @@ namespace _231109_SFML_Test
             slnPath = System.IO.Path.GetDirectoryName(slnPath);
             slnPath = System.IO.Path.GetDirectoryName(slnPath);
             slnPath = System.IO.Path.GetDirectoryName(slnPath);
+
             //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape
-            {
-                dirPath = slnPath + @"\Sprites\FN_FAL\";
-                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL\
 
-                CopyFile(dirPath + @"FN_FAL_bolt.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_body.png",     @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_pistolGrip_basic.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_stock_basic.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_barrel_533mm.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_muzzle_Israeli.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_handGuard_dsArms.png",   @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_chargingHandle.png", @"Assets\Textures\");
+            {
+                var tdirPath = slnPath + @"\Sprites\WEAPONS_DMR";
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\WEAPONS_DMR
+
+                {
+                    dirPath = tdirPath + @"\FN_FAL\";
+                    //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\WEAPONS_DMR\FN_FAL\
+
+                    CopyFile(dirPath + @"FN_FAL_bolt.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_body.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_pistolGrip_basic.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_stock_basic.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_barrel_533mm.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_muzzle_Israeli.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_handGuard_dsArms.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_chargingHandle.png", @"Assets\Textures\");
+                }
+                {
+                    dirPath = tdirPath + @"\FN_FAL_MAG\";
+                    //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\WEAPONS_DMR\FN_FAL_MAG\
+
+                    CopyFile(dirPath + @"FN_FAL_MAG10.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_MAG20.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_MAG50.png", @"Assets\Textures\");
+
+                }
             }
-            {
-                dirPath = slnPath + @"\Sprites\FN_FAL_MAG\";
-                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\FN_FAL_MAG\
-
-                CopyFile(dirPath + @"FN_FAL_MAG10.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_MAG20.png", @"Assets\Textures\");
-                CopyFile(dirPath + @"FN_FAL_MAG50.png", @"Assets\Textures\");
-
-            }
 
             {
-                dirPath = slnPath + @"\Sprites\light\";
-                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\light\
+                dirPath = slnPath + @"\Sprites\LIGHT\";
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\LIGHT\
 
                 CopyFile(dirPath + @"RadialAlphaGradient.png", @"Assets\Textures\");
 
             }
+
             {
-                dirPath = slnPath + @"\Sprites\items\";
-                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\SpritesIde\items\
+                dirPath = slnPath + @"\Sprites\ITEMS\";
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\ITEMS\
 
                 CopyFile(dirPath + @"Oddment.png", @"Assets\Textures\");
+
+            }
+
+            {
+                dirPath = slnPath + @"\Sprites\CONTAINERS\";
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\CONTAINERS\
+
+                CopyFile(dirPath + @"K_WoodenAmmoBox.png", @"Assets\Textures\");
 
             }
         }
@@ -140,10 +160,9 @@ namespace _231109_SFML_Test
         static void CopyFile(string filePath, string toPath)
         {
             // 복사될 경로가 없다면 생성
-            if (!Directory.Exists(toPath))
-            {
+            if (Directory.Exists(toPath) == false)
                 Directory.CreateDirectory(toPath);
-            }
+            
 
             // 파일명 추출
             string fileName = Path.GetFileName(filePath);

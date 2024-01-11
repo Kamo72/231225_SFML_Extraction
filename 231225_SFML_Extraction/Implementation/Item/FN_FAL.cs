@@ -60,14 +60,14 @@ namespace _231109_SFML_Test
             };
 
             WeaponLibrary.Set("FN_FAL", status);
-        }
+        }   
         public FN_FAL() : base("FN_FAL")
         {
             SetupBasicData(
                 "FN FAL",
                 null,
                 "7.62x51mm NATO탄을 사용하는 벨기에제 지정사수 소총입니다. 튼튼하고 다루기 쉬운데도 불구하고 강력한 전자동 사격 기능을 가지고 있습니다.",
-                3.5f, new Vector2i(3, 2), Rarerity.COMMON, 20000f);
+                3.5f, new Vector2i(4, 2), Rarerity.COMMON, 20000f);
             InitHandableParts(new Vector2i(200, 100), new Texture[]
             {
                 ResourceManager.textures["FN_FAL_chargingHandle"],

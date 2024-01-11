@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
@@ -51,6 +52,7 @@ namespace _231109_SFML_Test
                         this.item = (IEquipable)item;
                         return true;
                     }
+
                     return false;
                 }
                 public Item UnEquipItem()
@@ -63,41 +65,74 @@ namespace _231109_SFML_Test
                     }
                     return null;
                 }
+
+                public virtual string GetCartegory()
+                {
+                    switch (equipmentType)
+                    {
+                        case EquipmentType.HEADGEAR:
+                            return "머리장비";
+                        case EquipmentType.PLATE_CARRIER:
+                            return "방탄복 플레이트";
+                        case EquipmentType.HELMET:
+                            return "헬멧";
+                        case EquipmentType.BACKPACK:
+                            return "가방";
+                        default:
+                            return "???";
+                    }
+                }
             }
             public class EquipSlotWeapon : EquipSlot
             {
-                public EquipSlotWeapon(bool isMain) : base(EquipmentType.WEAPON) { this.isMain = isMain; }
+                public EquipSlotWeapon(bool isMain, bool isFirst) : base(EquipmentType.WEAPON) { this.isMain = isMain; }
 
-                bool isMain;
+                bool isMain, isFirst;
 
                 public override bool DoEquipItem(Item item)
                 {
-                    if (base.DoEquipItem(item) == false)
-                        return false;
-
+                    // 무장인지?
                     if (item is Weapon weapon)
                     {
-                        if (weapon.AbleMain() != isMain)
-                        {
-                            return false;
-                        }
-                    }
-                    else { return false; }
 
-                    return true;
+                        // 주무장 칸인데 주무장이 아니야?
+                        if (weapon.AbleMain() != isMain)
+                            return false;
+
+                        // 보조무장 칸인데 보조무장이 아니야?
+                        else if (weapon.AbleSub() != !isMain)
+                            return false;
+                    }
+
+                    // 무장이 아니야? 나가
+                    else return false;
+
+
+                    if (this.item == null)
+                    {
+                        this.item = (IEquipable)item;
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                public override string GetCartegory()
+                {
+                    return isMain ? isFirst ? "주무장" : "부무장" : "보조무장";
                 }
             }
 
-            public EquipSlot weaponPrimary = new EquipSlotWeapon(true);
-            public EquipSlot weaponSecondary = new EquipSlotWeapon(true);
-            public EquipSlot weaponSub = new EquipSlotWeapon(false);
+            public EquipSlot weaponPrimary = new EquipSlotWeapon(true, true);
+            public EquipSlot weaponSecondary = new EquipSlotWeapon(true, false);
+            public EquipSlot weaponSub = new EquipSlotWeapon(false, false);
 
             public EquipSlot helmet = new EquipSlot(EquipmentType.HELMET);
             public EquipSlot headgear = new EquipSlot(EquipmentType.HEADGEAR);
             public EquipSlot plateCarrier = new EquipSlot(EquipmentType.PLATE_CARRIER);
             public EquipSlot backpack = new EquipSlot(EquipmentType.BACKPACK);
 
-            public Storage pocket = new Storage(new Vector2i(5, 2));
+            public Storage pocket = new Storage(new Vector2i(8, 10));
             #endregion
 
             #region [제공 함수]
@@ -108,14 +143,11 @@ namespace _231109_SFML_Test
 
                 //주머니 먼저 삽입
                 newPlace = pocket.GetPosInsert(item);
-                if (newPlace != null)
+                if (newPlace.HasValue)
                 {
-                    if (item.onStorage != null)
-                    {
-                        item.onStorage.RemoveItem(item);
-                    }
-                    item.onStorage = pocket;
-                    pocket.Insert((StorageNode)newPlace);
+                    item.onStorage?.RemoveItem(item);
+                    pocket.Insert(newPlace.Value);
+
                     return true;
                 }
 
@@ -123,13 +155,11 @@ namespace _231109_SFML_Test
                 if (backpack.item is Backpack bp)
                 {
                     newPlace = bp.storage.GetPosInsert(item);
-                    if (newPlace != null)
+                    if (newPlace.HasValue)
                     {
-                        if (item.onStorage != null)
-                            item.onStorage.RemoveItem(item);
+                        item.onStorage?.RemoveItem(item);
+                        bp.storage.Insert(newPlace.Value);
 
-                        item.onStorage = bp.storage;
-                        bp.storage.Insert((StorageNode)newPlace);
                         return true;
                     }
                 }
@@ -244,13 +274,10 @@ namespace _231109_SFML_Test
             //해당 아이템 드랍하기
             public void ThrowItem(Item item)
             {
-                if (item.onStorage != null)
-                {
-                    item.onStorage.RemoveItem(item);
-                }
-
+                item.onStorage?.RemoveItem(item);
                 item.DroppedItem(master.Position);
-                item.droppedItem.speed = master.hands.handRot.ToRadian().ToVector();
+
+                item.droppedItem.speed = master.hands.handRot.ToRadian().ToVector() * 1000f;
             }
             #endregion
         }
@@ -266,6 +293,11 @@ namespace _231109_SFML_Test
             }
 
             #region [상호작용]
+
+            //인벤토리 상호작용
+            public IInteractable interactingTarget = null;   //지속적인 상호작용 대상
+            public bool onInventory = false;        //인벤토리를 여는 중
+
             public const float interactableRange = 100f;
             public List<IInteractable> interactables;
             public void InteractableListRefresh()
@@ -274,25 +306,32 @@ namespace _231109_SFML_Test
 
                 List<IInteractable> interactables = new List<IInteractable>();
 
-                lock(igm.entitys)
-                foreach (Entity ent in igm.entitys)
-                {
-
-                    float dis = (ent.Position - master.Position).Magnitude();
-                    if (dis > interactableRange) continue;
-
-                    if (ent is IInteractable interactable)
+                lock (igm.entitys)
+                    foreach (Entity ent in igm.entitys)
                     {
-                        interactables.Add(interactable);
+
+                        float dis = (ent.Position - master.Position).Magnitude();
+                        if (dis > interactableRange) continue;
+
+                        if (ent is IInteractable interactable)
+                        {
+                            interactables.Add(interactable);
+                        }
                     }
-                }
 
                 lock (this.interactables)
                     this.interactables = interactables;
+
+                if(interactingTarget != null)
+                if (interactables.Contains(interactingTarget) == false) 
+                {
+                    interactingTarget = null;
+                    onInventory = false;
+                }
             }
             public void Interact(Entity entity)
             {
-                if(master.onInventory == false)
+                if (onInventory == false)
                     if (entity is IInteractable interactable)
                         interactable.BeInteract(master);
 
@@ -339,7 +378,7 @@ namespace _231109_SFML_Test
                 //조작 가능 체크
                 if (handling == null) return;
                 if (handling.commandsReact == null) return;
-                if (master.onInventory == true) return;
+                if (master.hands.onInventory == true) return;
 
                 //플레이어 기준 조작 handling.commandsReact.Keys는 조작유형이기 때문에 공유 가능
                 //handling.commandsReact.Values는 사용자 입력이기 때문에 AI가 조작 불가능하다...
@@ -360,17 +399,17 @@ namespace _231109_SFML_Test
             public Humanoid master;
             public Health(Humanoid master, float healthMax)
             {
-                this.master = master; 
+                this.master = master;
                 this.healthMax = healthMax;
                 this.healthNow = healthMax;
                 bleedingTimer = new Timer(10d);
                 bleedingTimer.Elapsed += (s, e) =>
                 {
                     if (bleeding <= 0.001f) return;
-                    
+
                     Damage damage = new Damage() { damage = bleeding * bleedingReduce, damageType = DamageType.BLEEDING };
                     GetDamage(damage);
-                    bleeding = Mathf.Clamp(0f, bleeding *(1f - bleedingReduce), 9999f);
+                    bleeding = Mathf.Clamp(0f, bleeding * (1f - bleedingReduce), 9999f);
                 };
                 bleedingTimer.Start();
             }
@@ -400,16 +439,16 @@ namespace _231109_SFML_Test
                 BLEEDING,
                 //STARVATION,
             }
-            public enum HittedPart 
+            public enum HittedPart
             {
                 HEAD,
                 BODY,
                 LIMBS
             }
             #endregion
-            public float GetDamage(Damage damageStatus) 
+            public float GetDamage(Damage damageStatus)
             {
-                switch (damageStatus.damageType) 
+                switch (damageStatus.damageType)
                 {
                     case DamageType.BULLET:
                         {
@@ -463,7 +502,7 @@ namespace _231109_SFML_Test
                                         //부분 관통
                                         else if (blockValue < 2f)
                                         {
-                                            float fierRatio = (-blockValue + 4f) / 8f; 
+                                            float fierRatio = (-blockValue + 4f) / 8f;
                                             damageStatus.damage *= fierRatio;           //75.0%~25.0%
                                             damageStatus.bleeding *= fierRatio * 0.5f;  //37.5%~12.5%
                                             damageStatus.pierce = -blockValue;
@@ -536,12 +575,13 @@ namespace _231109_SFML_Test
             }
 
             public Helmet helmet { get { return master.inventory.helmet.item as Helmet; } }
-            public ArmourPlate plate {
+            public ArmourPlate plate
+            {
                 get
                 {
                     PlateCarrier plateCarrier = master.inventory.plateCarrier.item as PlateCarrier;
-                    if(plateCarrier == null) return null;
-                    if(plateCarrier.armourPlate == null) return null;
+                    if (plateCarrier == null) return null;
+                    if (plateCarrier.armourPlate == null) return null;
 
                     return plateCarrier.armourPlate;
                 }

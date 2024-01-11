@@ -67,6 +67,8 @@ namespace _231109_SFML_Test
             };
             spawner.Start();
 
+            //Container
+            entitys.Add(new K_WoodenAmmoBox(this, new Vector2f(100f, 100f)));
 
         }
 

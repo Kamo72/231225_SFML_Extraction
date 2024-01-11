@@ -75,21 +75,26 @@ namespace _231109_SFML_Test
 
         public void DrawHighlight()
         {
-            //하이라이트 여부 > 진행도
-            highlighValue = Mathf.Clamp(0f, highlighValue + (isHighlighed ? +0.03f : -0.03f), 1f);
-            byte highlighAlpha = (byte)(255 * highlighValue);
+            try
+            {
+                //하이라이트 여부 > 진행도
+                highlighValue = Mathf.Clamp(0f, highlighValue + (isHighlighed ? +0.03f : -0.03f), 1f);
+                byte highlighAlpha = (byte)(255 * highlighValue);
 
-            //하이라이트 진행도 > 크기
-            highlightShape.Size = new Vector2f(100f, 100f) * highlighValue;
-            highlightShape.Origin = highlightShape.Size / 2f;
+                //하이라이트 진행도 > 크기
+                highlightShape.Size = new Vector2f(100f, 100f) * highlighValue;
+                highlightShape.Origin = highlightShape.Size / 2f;
 
-            highlightShape.Position = Position;
-            highlightText.Position = Position + new Vector2f(0f, 50f);
-            highlightText.FillColor = new Color(highlightText.FillColor) { A = highlighAlpha };
-            highlightText.OutlineColor = new Color(highlightText.OutlineColor) { A = highlighAlpha };
+                highlightShape.Position = Position;
+                highlightText.Position = Position + new Vector2f(0f, 50f);
+                highlightText.FillColor = new Color(highlightText.FillColor) { A = highlighAlpha };
+                highlightText.OutlineColor = new Color(highlightText.OutlineColor) { A = highlighAlpha };
 
-            //DrawManager.texWrLower.Draw(highlightShape, CameraManager.worldRenderState);
-            DrawManager.texWrLower.Draw(highlightText, CameraManager.worldRenderState);
+                //DrawManager.texWrLower.Draw(highlightShape, CameraManager.worldRenderState);
+                if (isDisposed == false)
+                    DrawManager.texWrAugment.Draw(highlightText, CameraManager.worldRenderState);
+            }
+            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace);  }
             
         }
 
@@ -112,7 +117,6 @@ namespace _231109_SFML_Test
             }
             catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
         }
-
 
         //Entity 구현
         protected override void LogicProcess()

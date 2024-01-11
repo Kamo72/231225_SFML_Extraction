@@ -91,7 +91,7 @@ namespace _231109_SFML_Test
 
             //인벤토리
             if (Im.CommandCheck(Im.CommandType.INVENTORY))
-                if (onInventory) InventoryClose();
+                if (hands.onInventory) InventoryClose();
                 else InventoryOpen();
 
             CameraManager.targetPos = Position + aimPosition * 0.5f;

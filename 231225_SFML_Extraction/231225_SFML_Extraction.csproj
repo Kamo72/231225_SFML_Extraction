@@ -112,7 +112,6 @@
     <Compile Include="Implementation\Projectiles\Bullet.cs" />
     <Compile Include="Implementation\Structures\Materials\Concrete.cs" />
     <Compile Include="Implementation\Structures\Concretes\Concretes.cs" />
-    <Compile Include="Implementation\Uis\AugmentedHud\InteractableNode.cs" />
     <Compile Include="Implementation\Uis\TextLabel.cs" />
     <Compile Include="Implementation\Uis\TextMainMenu.cs" />
     <Compile Include="Implementation\Uis\Uis.cs" />
@@ -139,19 +138,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="openal32.dll" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_chargingHandle.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_bolt.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_pistolGrip_basic.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_barrel_533mm.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_body.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_handGuard_dsArms.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_muzzle_Israeli.png" />
-    <Content Include="Sprites\FN_FAL\FN_FAL_stock_basic.png" />
-    <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG50.png" />
-    <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG20.png" />
-    <Content Include="Sprites\FN_FAL_MAG\FN_FAL_MAG10.png" />
-    <Content Include="Sprites\Items\Oddment.png" />
-    <Content Include="Sprites\light\RadialAlphaGradient.png" />
+    <Content Include="Sprites\CONTAINERS\K_WoodenAmmoBox.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_chargingHandle.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_bolt.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_pistolGrip_basic.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_barrel_533mm.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_body.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_handGuard_dsArms.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_muzzle_Israeli.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_stock_basic.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL_MAG\FN_FAL_MAG50.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL_MAG\FN_FAL_MAG20.png" />
+    <Content Include="Sprites\WEAPONS_DMR\FN_FAL_MAG\FN_FAL_MAG10.png" />
+    <Content Include="Sprites\ITEMS\Oddment.png" />
+    <Content Include="Sprites\LIGHT\RadialAlphaGradient.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

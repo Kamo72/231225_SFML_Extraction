@@ -14,32 +14,41 @@ using Sm = _231109_SFML_Test.SoundManager;
 using Vm = _231109_SFML_Test.VideoManager;
 using System.Windows.Forms.VisualStyles;
 using SFML.Window;
+using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
+using System.Drawing.Printing;
 
 namespace _231109_SFML_Test
 {
     internal partial class Player
     {
         //인벤토리
-        void InventoryOpen()
+        public void InventoryOpen()
         {
-            onInventory = true;
+            hands.onInventory = true;
             InputManager.mouseAllow = true;
         }
-        void InventoryClose()
+        public void InventoryClose()
         {
-            onInventory = false;
+            hands.onInventory = false;
             InputManager.mouseAllow = false;
+
+            hands.interactingTarget = null;
+
+            if (hands.interactingTarget is Container container)
+                container.Close();
+            
         }
 
         //UI
         #region [UI 인터페이스]
         List<PlayerUiDrawer> uiList;
 
+        //UI methods
         void DrawUiInit(params PlayerUiDrawer[] uis) => uiList = uis.ToList();
 
         void DrawHudProcess() => uiList?.ForEach(ui => ui?.DrawProcess());
         
-
         void DrawUiDispose() => uiList?.ForEach(ui => ui?.Dispose());
         #endregion
 
@@ -172,7 +181,7 @@ namespace _231109_SFML_Test
 
             public override void DrawProcess()
             {
-                if(master.onInventory)
+                if(master.hands.onInventory)
                     foreach (Tab tab in tabList)
                     {
                         tab.DrawTabProcess();
@@ -233,11 +242,15 @@ namespace _231109_SFML_Test
         //인벤토리 탭
         class TabInventory : Tab
         {
+            #region [그리기 도형 및 변수 선언]
             //드로우 도형들
             RectangleShape equipmentBox, inventoryBox, containerBox;
-            RectangleShape slotShape;
+            RectangleShape itemShape, cellShape;
             RectangleShape outlineShape;
-            RectangleShape itemShape;
+
+            //슬롯
+            RectangleShape slotShape;
+            Text slotText, containerText;
 
             RectangleShape dropShape;   //아이템을 놓을 노드들 표시
             RectangleShape dragShape;   //끌려올 아이템을 그릴 도형
@@ -246,6 +259,8 @@ namespace _231109_SFML_Test
             Dictionary<Rarerity, Color> rareityBackColor;
 
             float boxMargin = 15f, slotWidth;
+
+            #endregion 
 
             public TabInventory(Player master, int index) : base(master, "장비", index)
             {
@@ -259,10 +274,11 @@ namespace _231109_SFML_Test
                 };
 
                 slotWidth = (screen.X / 3f - boxMargin * 2f) / 8f;
-                slotShape = new RectangleShape(new Vector2f(slotWidth, slotWidth));
-                slotShape.FillColor = new Color(30, 30, 30);
-                slotShape.OutlineThickness = 2f;
-                slotShape.OutlineColor = new Color(15, 15, 15);
+
+                cellShape = new RectangleShape(new Vector2f(slotWidth, slotWidth));
+                cellShape.FillColor = new Color(30, 30, 30);
+                cellShape.OutlineThickness = 2f;
+                cellShape.OutlineColor = new Color(15, 15, 15);
 
                 //outlineShape = new RectangleShape();
                 //outlineShape.FillColor = Color.Transparent;
@@ -287,44 +303,110 @@ namespace _231109_SFML_Test
                 containerBox = new RectangleShape(equipmentBox);
                 containerBox.Position = new Vector2f(screen.X / 3f * 2, tabListMargin);
 
-
                 dropShape = new RectangleShape(new Vector2f(slotWidth, slotWidth));
                 dropShape.FillColor = Color.Transparent;
 
                 dragShape = new RectangleShape();
 
+                slotShape = new RectangleShape(new Vector2f(2f, 2f) * slotWidth);
+                slotShape.FillColor = new Color(30, 30, 30);
+                slotShape.OutlineThickness = 2f;
+                slotShape.OutlineColor = new Color(15, 15, 15);
+
+                slotText = new Text("슬롯", Rm.fonts["Jalnan"], 15);
+                slotText.FillColor = Color.White;
+                slotText.OutlineColor = Color.Black;
+
+
+                containerText = new Text("슬롯", Rm.fonts["Jalnan"], 25);
+                containerText.FillColor = Color.White;
+                containerText.OutlineColor = Color.Black;
+                containerText.Position = containerBox.Position + new Vector2f(boxMargin, boxMargin) + new Vector2f(10f, 10f);
             }
 
+            #region [스토리지, 창고 제어]
             //스토리지 && 슬롯 드로우
             void DrawStorage(Storage storage, Vector2f originPos) 
             {
-
                 Vector2i pSize = storage.size;
                 for (int x = 0; x < pSize.X; x++)
                     for (int y = 0; y < pSize.Y; y++)
                     {
-                        slotShape.Position = originPos + new Vector2f(x, y) * slotWidth;
-                        Dm.texUiPopup.Draw(slotShape);
+                        cellShape.Position = originPos + new Vector2f(x, y) * slotWidth;
+                        Dm.texUiPopup.Draw(cellShape);
                     }
 
+                //그래그 중인 아이템 잔상
+                if (tStor == storage) 
+                {
+                    if (tStorPos != null) 
+                    {
+                        if (onDrag != null) 
+                        {
+                            Vector2i ttStorPos = (Vector2i)tStorPos;
+                            Storage.StorageNode tOnDrag = (Storage.StorageNode)onDrag;
+                            Vector2i sepDragRotated = isRotated != tOnDrag.isRotated ? new Vector2i(sepDrag.Y, sepDrag.X) : sepDrag;
+
+
+                            //삽입 체크를 위한 드래그 중의 아이템 제거
+                            storage.RemoveItem(tOnDrag.item);
+                            //삽입 가능한가?
+                            bool isInsertable = storage.IsAbleToInsert(tOnDrag.item, ttStorPos - sepDragRotated, isRotated);
+                            //삽입 체크를 위한 드래그 중의 아이템 제거
+                            storage.Insert(tOnDrag);
+
+
+                            //시작 지점 및 끝지점 
+                            Vector2i startPos = ttStorPos - sepDragRotated;
+                            Vector2i endPos = ttStorPos - sepDragRotated +
+                                (isRotated? new Vector2i(tOnDrag.item.size.Y, tOnDrag.item.size.X) : tOnDrag.item.size);// - new Vector2i(-1, -1)
+
+
+                            for (int x = Math.Max(0, startPos.X); x < Math.Min(storage.size.X, endPos.X); x++)
+                                for (int y = Math.Max(0, startPos.Y); y < Math.Min(storage.size.Y, endPos.Y); y++) 
+                                {
+                                    dragShape.Position = originPos + new Vector2f(x, y) * slotWidth;
+
+                                    dragShape.Size = new Vector2f(1, 1) * slotWidth;
+                                    dragShape.Rotation = 0f;
+                                    dragShape.Texture = null;
+                                    dragShape.FillColor = isInsertable? Color.Green : Color.Red;
+                                    Dm.texUiPopup.Draw(dragShape);
+                                }
+
+
+
+
+                        }
+                    }
+                }
+
+                //모든 아이템 그리기
                 foreach (Storage.StorageNode sNode in storage.itemList)
                 {
-                    itemShape.Position = originPos + (Vector2f)sNode.pos * slotWidth;
-                    itemShape.Size = sNode.isRotated ?
-                        (Vector2f)new Vector2i(sNode.item.size.Y, sNode.item.size.X) * slotWidth :
-                        (Vector2f)sNode.item.size * slotWidth;
+                    itemShape.Position = originPos + (Vector2f)sNode.pos * slotWidth
+                        + ( sNode.isRotated ? new Vector2f() { Y = slotWidth * sNode.item.size.X } : new Vector2f() );
+
+                    itemShape.Size = (Vector2f)sNode.item.size * slotWidth;
+                    itemShape.Rotation = sNode.isRotated ? -90f : 0f;
 
                     itemShape.Texture = null;
                     itemShape.FillColor = rareityBackColor[sNode.item.rare];
                     Dm.texUiPopup.Draw(itemShape);
+                    //희귀도에 따른 배경색
 
                     itemShape.Texture = Rm.textures[sNode.item.spriteName];
-                    itemShape.FillColor = Color.White;
-                    Dm.texUiPopup.Draw(itemShape);
+                    itemShape.FillColor = new Color(255, 255, 255, (byte)(sNode.Equals(onDrag)? 63 : 255));
 
+                    Dm.texUiPopup.Draw(itemShape);
+                    //아이템 그림 드로우
                 }
+
             }
-            void DrawEquipSlot(Inventory.EquipSlot equipSlot, Vector2f originPos){ }
+            void DrawEquipSlot(Inventory.EquipSlot equipSlot, Vector2f originPos)
+            {
+                
+            }
 
             //스토리지 && 슬롯 마우스 체크
             Vector2i? MouseCheckStorage(Storage storage, Vector2f originPos, Vector2f mousePos)
@@ -345,7 +427,9 @@ namespace _231109_SFML_Test
                 return null;
             }
             void MouseCheckEquipSlot(Inventory.EquipSlot equipSlot, Vector2f originPos) { }
+            #endregion
 
+            #region [패널 및 커서]
             //각 패널에 대한 드로우
             void DrawEquipmentBox()
             {
@@ -366,73 +450,247 @@ namespace _231109_SFML_Test
             }
             void DrawContainerBox()
             {
-                if (master.interactingTarget == null) return;
-            }
+                if (master.hands.interactingTarget is Container container)
+                {
 
+                    Vector2f containerPos = containerBox.Position + new Vector2f(boxMargin, boxMargin) + new Vector2f(0f, 60f);
+                    DrawStorage(container.storage, containerPos);
+
+                    
+                    containerText.DisplayedString = container.name;
+                    Dm.texUiPopup.Draw(containerText);
+                }
+            }
+            void DrawCursor()
+            {
+                //집은 아이템 없음
+                if (onDrag == null)
+                {
+
+                }
+                //집은 아이템 있음
+                else
+                {
+                    Storage.StorageNode tOnDrag = (Storage.StorageNode)onDrag;
+
+                    //오리진 계산
+                    Vector2f sepRotated = tOnDrag.isRotated != isRotated ? new Vector2f(sepDrag.Y, sepDrag.X) : (Vector2f)sepDrag;
+                    Vector2f sepVec = -(sepRotated + new Vector2f(0.5f, 0.5f)) * slotWidth;
+
+
+                    //위치 변경
+                    dragShape.Position = (Vector2f)Mouse.GetPosition() + sepVec + new Vector2f() { Y = isRotated ? slotWidth * tOnDrag.item.size.X : 0f };
+
+                    dragShape.Size = (Vector2f)tOnDrag.item.size * slotWidth;
+                    dragShape.Rotation = isRotated ? -90f : 0f;
+
+                    dragShape.Texture = Rm.textures[tOnDrag.item.spriteName];
+                    dragShape.FillColor = Color.White;
+                    Dm.texUiPopup.Draw(dragShape);
+                }
+
+
+            }
+            #endregion
+
+            #region [사용자 입력 제어]
             //사용자 조작
+            Storage onDragStorage = null;
+            Storage.StorageNode? onDrag = null;
+            Vector2i sepDrag = new Vector2i();
+            bool clickBefore = false;
+            bool isRotated;
+
+
+            //마우스가 올라갔는지 검사할 항목
+            Storage tStor = null;   //스토리지
+            Vector2i? tStorPos = null;  //스토리지 내 위치
+            Storage.StorageNode? tStorNode = null;  //스토리지 내 위치에 따른 노드
+            Inventory.EquipSlot tSlot = null;   //장착 슬롯
+
+            //논리 프로세스
             void LogicInput(Storage tStor, Vector2i? tStorPos, Storage.StorageNode? tStorNode, Inventory.EquipSlot tSlot)
             {
                 //좌클릭 확인
                 if (InputManager.CommandCheck(InputManager.CommandType.FIRE))
                 {
-                    //onCLick
+                    //onClick
                     if (clickBefore == false)
                     {
-                    
+                        //현재 위치에 있는 아이템이 있다면
+                        if (tStorNode.HasValue)
+                        {
+                            //버리기
+                            if (Keyboard.IsKeyPressed(Keyboard.Key.LShift))
+                            {
+                                if (tStorNode.HasValue)
+                                    master.inventory.ThrowItem(tStorNode.Value.item);
+                            }
+                            //빠른 옮기기
+                            else if (Keyboard.IsKeyPressed(Keyboard.Key.LControl))
+                            {
+                                onDragStorage = tStor;
+
+                                if (tStorNode.HasValue)
+                                    master.inventory.TakeItem(tStorNode.Value.item);
+                            }
+                            //빠른 장착
+                            else if (Keyboard.IsKeyPressed(Keyboard.Key.LShift))
+                            {
+                                if (tStorNode.HasValue) 
+                                    master.inventory.EquipItemQuick(tStorNode.Value.item);
+                            }
+                            //집기
+                            else
+                            {
+                                //현재 위치에 있는 아이템을 집는다.
+                                onDrag = tStorNode;
+                                sepDrag = (Vector2i)tStorPos - ((Storage.StorageNode)tStorNode).pos;
+                                isRotated = ((Storage.StorageNode)tStorNode).isRotated;
+                                onDragStorage = tStor;
+                            }
+                        }
                     }
 
+                    if (onDrag != null)
+                    { 
+                        //아이템 회전
+                        if (Im.CommandCheck(Im.CommandType.MAGAZINE_CHANGE)) 
+                        {
+                            isRotated = !isRotated;
+                        }
+                    }
 
                     //클릭 값 처리
                     clickBefore = true;
                 }
-                else 
+                //좌클릭 없음
+                else
                 {
+                    //onRealease
+                    if (clickBefore == true)
+                    {
+                        //드래그 중인 아이템이 있다면
+                        if (onDrag != null)
+                        {
+                            Console.WriteLine("아이템 놓기 입력");
+
+                            //가방 안의 대상 위치가 비어있다면
+                            if (tStor != null && tStorPos != null)
+                            {
+                                Console.WriteLine("아이템 놓기 시도 ");
+
+
+                                //형변환
+                                Storage ttStor = tStor ;
+                                Storage.StorageNode tOnDrag = (Storage.StorageNode)onDrag;
+                                Vector2i ttStorPos = (Vector2i)tStorPos;
+                                Vector2i sepDragRotated = isRotated != tOnDrag.isRotated ? new Vector2i(sepDrag.Y, sepDrag.X) : sepDrag;
+
+                                //삽입 체크를 위한 드래그 중의 아이템 제거
+                                ttStor.RemoveItem(tOnDrag.item);
+
+                                //삽입 가능한가?
+                                bool isInsertable = ttStor.IsAbleToInsert(tOnDrag.item, ttStorPos - sepDragRotated, isRotated);
+                                if (isInsertable)
+                                {
+                                    Storage.StorageNode newNode = new Storage.StorageNode()
+                                    {
+                                        item = tOnDrag.item,
+                                        pos = ttStorPos - sepDragRotated,
+                                        isRotated = isRotated
+                                    };
+
+                                    //삽입 시도 및 결과 반환
+                                    bool isInserted = ttStor.Insert(newNode);
+
+                                    Console.WriteLine($"아이템 놓기 : {isInsertable}/ 신규 노드 결과 : {isInserted} - {newNode.pos} {newNode.isRotated}");
+                                }
+                                else 
+                                {
+                                    //뺐던거 다시 복구
+                                    bool isInserted = ttStor.Insert(tOnDrag);
+
+                                    Console.WriteLine($"아이템 놓기 : {isInsertable}/ 원상 복구 결과 : {isInserted} - {tOnDrag.pos} {tOnDrag.isRotated}");
+                                }
+
+                            }
+
+                            //드래그 중인 아이템 해제
+                            onDrag = null;
+                            onDragStorage = tStor;
+                        }
+
+                    }
 
                     //클릭 값 처리
                     clickBefore = false;
                 }
+
+
                 //우클릭 확인
-                if (InputManager.CommandCheck(InputManager.CommandType.AIM)) 
+                if (InputManager.CommandCheck(InputManager.CommandType.AIM))
+                {
+
+                }
+                //우클릭 없음
+                else 
                 {
                 
                 }
-
-
             }
-            Storage.StorageNode? onDrag = null;
-            bool clickBefore = false;   
+            #endregion
+
 
             //통합 마우스 체크
             public override void LogicProcess()
             {
-                //마우스가 올라갔는지 검사할 항목
-                Storage tStor = null;   //스토리지
-                Vector2i? tStorPos = null;  //스토리지 내 위치
-                Storage.StorageNode? tStorNode = null;  //스토리지 내 위치에 따른 노드
-                Inventory.EquipSlot tSlot = null;   //장착 슬롯
+                tStor = null;   //스토리지
+                tStorPos = null;  //스토리지 내 위치
+                tStorNode = null;  //스토리지 내 위치에 따른 노드
+                tSlot = null;   //장착 슬롯
 
                 //현재 마우스 위치
                 Vector2f mousePos = (Vector2f)Mouse.GetPosition();
 
+                //포켓 클릭 제어
                 Inventory inventory = master.inventory;
-
                 Storage storage = inventory.pocket;
                 Vector2f pocketPos = inventoryBox.Position + new Vector2f(boxMargin, boxMargin);
 
                 Vector2i? pPos = MouseCheckStorage(storage, pocketPos, mousePos);
-                if (pPos != null)
+                if (pPos.HasValue)
                 {
                     tStor = storage;
                     tStorPos = pPos;
                     tStorNode = storage.GetPosTo((Vector2i)tStorPos);
                 }
 
-                Console.WriteLine("mouse on : " + tStorPos);
+
+                //상호작용 중인 컨테이너 제어
+                if (master.hands.interactingTarget is Container container)
+                {
+                    storage = container.storage;
+                    Vector2f containerPos = containerBox.Position + new Vector2f(boxMargin, boxMargin) + new Vector2f(0f, 50f);
+
+
+                    Vector2i? cPos = MouseCheckStorage(storage, containerPos, mousePos);
+                    if (cPos.HasValue)
+                    {
+                        tStor = storage;
+                        tStorPos = cPos;
+                        tStorNode = storage.GetPosTo((Vector2i)tStorPos);
+                    }
+                }
 
 
 
 
 
+
+
+
+                LogicInput(tStor, tStorPos, tStorNode, null);
             }
             //통합 드로우
             public override void DrawProcess()
@@ -444,6 +702,7 @@ namespace _231109_SFML_Test
                 DrawEquipmentBox();
                 DrawInventoryBox();
                 DrawContainerBox();
+                DrawCursor();
 
             }
             //소멸자

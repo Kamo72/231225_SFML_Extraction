@@ -28,6 +28,11 @@ namespace _231109_SFML_Test
             public Item item;
             public Vector2i pos;
             public bool isRotated;
+
+            public override string ToString()
+            {
+                return $"{item.name} {pos} {(isRotated ? "rotated" : "")}";
+            }
         }
 
         public Vector2i size; // 저장공간 크기
@@ -38,7 +43,6 @@ namespace _231109_SFML_Test
         {
             this.size = size;
             this.whiteList = whiteList ?? new List<Type>();
-            
         }
 
         #region [멤버 함수]
@@ -81,14 +85,14 @@ namespace _231109_SFML_Test
                     };
 
                     // 회전을 고려한 newNode를 만들어서 겹치지 않으면 반환
-                    if (!DoesOverlap(newNode))
+                    if (!IsOverlapped(newNode))
                     {
                         return true;
                     }
 
                     // 회전해서 시도
                     newNode.isRotated = true;
-                    if (!DoesOverlap(newNode))
+                    if (!IsOverlapped(newNode))
                     {
                         return true;
                     }
@@ -108,51 +112,53 @@ namespace _231109_SFML_Test
                 isRotated = isRotated
             };
 
-            return !DoesOverlap(newNode);
+            return !IsOverlapped(newNode);
         }
 
         //입력된 노드에 따라 아이템을 저장.
         public bool Insert(StorageNode newNode)
         {
-            if (!IsWhiteList(newNode.item))
-            {
+            if (IsWhiteList(newNode.item) == false)
                 return false;
-            }
-            if (!DoesOverlap(newNode))
-            {
-                itemList.Add(newNode);
-                newNode.item.onStorage = this;
-                return true;
-            }
-            return false;
+
+            if (IsOverlapped(newNode))
+                return false;
+
+
+            if (newNode.item.onStorage != null)
+                newNode.item.onStorage.RemoveItem(newNode.item);
+
+            itemList.Add(newNode);
+            newNode.item.onStorage = this;
+
+
+            return true;
         }
 
         //자동으로 아이템이 들어갈 수 있는 공간을 찾아 반환
         public StorageNode? GetPosInsert(Item item)
         {
-            Vector2i itemSize = item.size;
-
             // 모든 가능한 위치에서 시도
-            for (int i = 0; i <= size.X - itemSize.X; i++)
+            for (int i = 0; i <= size.Y; i++)
             {
-                for (int j = 0; j <= size.Y - itemSize.Y; j++)
+                for (int j = 0; j <= size.X; j++)
                 {
                     StorageNode newNode = new StorageNode
                     {
                         item = item,
-                        pos = new Vector2i(i, j),
+                        pos = new Vector2i(j, i),
                         isRotated = false // 일단은 회전 안 시키도록 설정
                     };
 
                     // 회전을 고려한 newNode를 만들어서 겹치지 않으면 반환
-                    if (!DoesOverlap(newNode))
+                    if (!IsOverlapped(newNode))
                     {
                         return newNode;
                     }
 
                     // 회전해서 시도
                     newNode.isRotated = true;
-                    if (!DoesOverlap(newNode))
+                    if (!IsOverlapped(newNode))
                     {
                         return newNode;
                     }
@@ -188,14 +194,15 @@ namespace _231109_SFML_Test
                 if (node.item == item)
                 {
                     itemList.Remove(node);
+                    item.onStorage = null;
+
                     return true;
                 }
             }
             return false;
         }
 
-
-        private bool DoesOverlap(StorageNode newNode)
+        private bool IsOverlapped(StorageNode newNode)
         {
             Vector2i newOneSize = newNode.isRotated ? new Vector2i(newNode.item.size.Y, newNode.item.size.X) : newNode.item.size;
 

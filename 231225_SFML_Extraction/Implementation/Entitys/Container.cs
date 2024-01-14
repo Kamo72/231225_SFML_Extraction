@@ -151,6 +151,6 @@ namespace _231109_SFML_Test
     internal class K_WoodenAmmoBox : Container
     {
         public K_WoodenAmmoBox(Gamemode gamemode, Vector2f position)
-            : base(gamemode, position, new Vector2i(6, 4), new Vector2f(100f, 80f), "K_WoodenAmmoBox", "군용 목제 탄약 상자") { }
+            : base(gamemode, position, new Vector2i(6, 4), new Vector2f(50f, 50f), "K_WoodenAmmoBox", "군용 목제 탄약 상자") { }
     }
 }

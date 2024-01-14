@@ -26,10 +26,10 @@ namespace _231109_SFML_Test
                 SoundManager.waveEffect.AddSound( ResourceManager.sfxs["SpiralMissileFly"], Vector2fEx.Zero, 1000f);
             };
 
-
             //배경 그리기 객체
             ibd = new IngameBackgroundDrawer();
-            ild = new IngameLightDrawer(lights, structures);
+            ild = new IngameLightDrawer(this, lights, structures);
+            iwt = new IngameWeatherTimeManager();
 
             //마우스 허용 안됨.
             InputManager.mouseAllow = false;
@@ -74,8 +74,9 @@ namespace _231109_SFML_Test
 
         Timer spawner;
 
-        IngameBackgroundDrawer ibd;
-        IngameLightDrawer ild;
+        public IngameBackgroundDrawer ibd;
+        public IngameLightDrawer ild;
+        public IngameWeatherTimeManager iwt;
         public List<ILightSource> lights = new List<ILightSource>();
 
         public List<Structure> structures = new List<Structure>();

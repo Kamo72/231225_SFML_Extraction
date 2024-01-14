@@ -12,18 +12,21 @@ namespace _231109_SFML_Test
 {
     internal class IngameLightDrawer : IDisposable
     {
-        public IngameLightDrawer(List<ILightSource> lights, List<Structure> structures)
+        public IngameLightDrawer(GamemodeIngame igm, List<ILightSource> lights, List<Structure> structures)
         {
             this.lights = lights;
             this.structures = structures;
+            this.igm = igm;
         }
+
+        GamemodeIngame igm;
         List<ILightSource> lights;
         List<Structure> structures;
 
         public void Draw()
         {
-            DrawManager.texWrLight.Clear(new Color(0, 0, 0, 255));
-
+            //DrawManager.texWrLight.Clear(new Color(0, 0, 0, 255));
+            DrawManager.texWrLight.Clear(igm.iwt.dayLightColor) ;
 
             //조건에 부합하는 구조물의 테두리들을 따옵니다.
             List<List<Vector2f>> poligons = new List<List<Vector2f>>();

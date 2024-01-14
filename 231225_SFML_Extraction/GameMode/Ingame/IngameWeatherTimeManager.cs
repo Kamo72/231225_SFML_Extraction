@@ -1,9 +1,11 @@
 ﻿
+using SFML.Graphics;
 using SFML.System;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Drawing.Printing;
 using System.Linq;
+using System.Security.Permissions;
 using System.Text;
 using System.Timers;
 
@@ -17,8 +19,16 @@ namespace _231109_SFML_Test
             TimeInit();
 
             //시간 타이머 생성
-            timer = new Timer(1000d / 60d); //50d / 3d = 16.6666d
-            timer.Elapsed += (s, e) => ingameTime.Add(new TimeSpan(0, 0, 1));
+            if (timeAccelation <= 60d)
+            {
+                timer = new Timer(1000d / timeAccelation); //50d / 3d = 16.6666d
+                timer.Elapsed += (s, e) => ingameTime = ingameTime.Add(new TimeSpan(0, 0, 1));
+            }
+            else 
+            {
+                timer = new Timer(1000d / timeAccelation * 60d); //50d / 3d = 16.6666d
+                timer.Elapsed += (s, e) => ingameTime = ingameTime.Add(new TimeSpan(0, 1, 0));
+            }
             timer.Elapsed += (s, e) => SetDayLightColor();
             timer.Start();
 
@@ -27,16 +37,24 @@ namespace _231109_SFML_Test
             particleTimer.Elapsed += (s, e) => ParticleThreadSnow();
             particleTimer.Elapsed += (s, e) => ParticleThreadWind();
             particleTimer.Elapsed += (s, e) => ParticleThreadRain();
-            particleTimer.Stop();
+            particleTimer.Start();
+
+            //테스트 코드
+            testTimer = new Timer(1000d / 60d);
+            testTimer.Elapsed += (s, e) => Console.WriteLine(ingameTime.ToString());
+            testTimer.Start();
         }
+
+        public Timer testTimer;
 
         //[시간]
         public Timer timer;
         public DateTime ingameTime;
         public Color dayLightColor = Color.Transparent;
+        public double timeAccelation = 50d;
 
         //시간 초기화
-        void TimeInit() 
+        void TimeInit()
         {
             ingameTime = new DateTime(2026, 4, 12, 8, 0, 0);
 
@@ -51,9 +69,53 @@ namespace _231109_SFML_Test
             //가장 해가 짧은 12월 중순에는 9.5시간   [07:54] - [17:22] 대략 09시간 반 > 08:00 - 17:00
 
             //흠... 해 뜨고 지는 시간은 알았으니 이제 이걸 어케 잘 해봐야겠네
-            dayLightColor = Color.Black;
-        }
+            //dayLightColor = Color.Black;
+            dayLightColor = Color.Transparent;
+            bool isSunrise = false, isSunset = false;
+            float sunriseTime = 7.0f, sunsetTime = 18.0f;
+            float sunValue = 1f;
 
+            if (0.5f >= Math.Abs(ingameTime.Hour - sunriseTime))
+            {
+                isSunrise = true;
+                sunValue = ingameTime.Hour - sunriseTime + 0.5f;
+            }
+            else if (0.5f >= Math.Abs(ingameTime.Hour - sunsetTime))
+            {
+                isSunset = true;
+                sunValue = ingameTime.Hour - sunsetTime + 0.5f;
+            }
+
+            sunValue = (float)Math.Sin(VideoManager.GetTimeTotal()) / 2f + 0.5f;
+
+            Func<float, Color, Color, Color, Color> func = (value, init, middle, end) => Color.Transparent;
+
+            //일출
+            if (isSunrise)
+            { 
+                //해가 뜨기전 푸르스름한 빛 위주의 섀벽 느낌. 뜨면서 하얀색으로 바뀐 뒤 원상 복구.
+                dayLightColor = new Color()
+            }
+            //일몰
+            else if (isSunset)
+            {
+                //노랗고 붉은 노을. 이후 해가 진 뒤엔 진한 파란색 어둠.
+
+            }
+            //낮
+            else if (sunsetTime <= ingameTime.Hour && ingameTime.Hour <= sunsetTime)
+            {
+                dayLightColor = Color.Transparent;
+            }
+            //밤
+            else
+            {
+                dayLightColor = new Color(Color.Black) { A=125};
+            }
+
+
+
+        }
 
 
         //[기상]

@@ -136,11 +136,11 @@ namespace _231109_SFML_Test
 
             for (int idx = 0; idx < uiTex.Length; idx++)
             {
-                if (uiTex[idx] == texWrLight)
-                {
-                    texWrLight.Clear(new Color(0, 0, 0, 125));
-                    continue;
-                }
+                //if (uiTex[idx] == texWrLight)
+                //{
+                //    texWrLight.Clear(new Color(0, 0, 0, 125));
+                //    continue;
+                //}
 
                 uiTex[idx].Clear(new Color(0, 0, 0, 0));
             }

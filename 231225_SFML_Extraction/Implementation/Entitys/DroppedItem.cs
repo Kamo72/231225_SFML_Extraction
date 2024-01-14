@@ -77,25 +77,26 @@ namespace _231109_SFML_Test
         {
             try
             {
+                if (isDisposed) return;
                 //하이라이트 여부 > 진행도
                 highlighValue = Mathf.Clamp(0f, highlighValue + (isHighlighed ? +0.03f : -0.03f), 1f);
                 byte highlighAlpha = (byte)(255 * highlighValue);
 
                 //하이라이트 진행도 > 크기
-                highlightShape.Size = new Vector2f(100f, 100f) * highlighValue;
-                highlightShape.Origin = highlightShape.Size / 2f;
+                //highlightShape.Size = new Vector2f(100f, 100f) * highlighValue;
+                //highlightShape.Origin = highlightShape.Size / 2f;
 
-                highlightShape.Position = Position;
+                //highlightShape.Position = Position;
                 highlightText.Position = Position + new Vector2f(0f, 50f);
                 highlightText.FillColor = new Color(highlightText.FillColor) { A = highlighAlpha };
                 highlightText.OutlineColor = new Color(highlightText.OutlineColor) { A = highlighAlpha };
 
                 //DrawManager.texWrLower.Draw(highlightShape, CameraManager.worldRenderState);
-                if (isDisposed == false)
-                    DrawManager.texWrAugment.Draw(highlightText, CameraManager.worldRenderState);
+
+                DrawManager.texWrAugment.Draw(highlightText, CameraManager.worldRenderState);
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace);  }
-            
+            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+
         }
 
         #endregion

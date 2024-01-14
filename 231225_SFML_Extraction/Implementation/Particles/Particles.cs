@@ -125,7 +125,8 @@ namespace _231109_SFML_Test
         {
             if (drawable == null) return;
 
-            drawable.Radius = radMax * (1.5f - (float)lifeNow / lifeMax) / 1.5f;
+            drawable.Radius = radMax * (1.5f - (float)lifeNow / lifeMax) / 1.5f ;
+            drawable.Origin = new Vector2f(drawable.Radius / 2f, drawable.Radius / 2f);
             byte alpha = (byte)(255 * (float)lifeNow / lifeMax);
             drawable.FillColor = new Color(170, 170, 170, (byte)(alpha / 2));
             //drawable.FillColor = Color.White;

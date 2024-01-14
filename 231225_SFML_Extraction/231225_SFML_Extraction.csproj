@@ -109,6 +109,7 @@
     <Compile Include="Implementation\Item\Oddments.cs" />
     <Compile Include="Implementation\Particles\Cartridges.cs" />
     <Compile Include="Implementation\Particles\Particles.cs" />
+    <Compile Include="Implementation\Particles\ParticleWeather.cs" />
     <Compile Include="Implementation\Projectiles\Bullet.cs" />
     <Compile Include="Implementation\Structures\Materials\Concrete.cs" />
     <Compile Include="Implementation\Structures\Concretes\Concretes.cs" />
@@ -139,6 +140,7 @@
   <ItemGroup>
     <Content Include="openal32.dll" />
     <Content Include="Sprites\CONTAINERS\K_WoodenAmmoBox.png" />
+    <Content Include="Sprites\LIGHT\RadialAlphaGradient.png" />
     <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_chargingHandle.png" />
     <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_bolt.png" />
     <Content Include="Sprites\WEAPONS_DMR\FN_FAL\FN_FAL_pistolGrip_basic.png" />
@@ -151,7 +153,7 @@
     <Content Include="Sprites\WEAPONS_DMR\FN_FAL_MAG\FN_FAL_MAG20.png" />
     <Content Include="Sprites\WEAPONS_DMR\FN_FAL_MAG\FN_FAL_MAG10.png" />
     <Content Include="Sprites\ITEMS\Oddment.png" />
-    <Content Include="Sprites\LIGHT\RadialAlphaGradient.png" />
+    <Content Include="Sprites\LIGHT\RadialAlphaGradientGray.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

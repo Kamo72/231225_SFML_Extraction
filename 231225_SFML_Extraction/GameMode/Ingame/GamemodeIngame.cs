@@ -17,7 +17,7 @@ namespace _231109_SFML_Test
         public GamemodeIngame(TotalManager tm) : base(tm, 90)
         {
             //랜덤
-            Random random = new Random();
+            random = new Random();
 
             //테스트 UI
             Ui ui = new UiTest(this, new Vector2f(100f, 100f), new Vector2f(100f, 100f));
@@ -70,8 +70,11 @@ namespace _231109_SFML_Test
             //Container
             entitys.Add(new K_WoodenAmmoBox(this, new Vector2f(100f, 100f)));
 
-        }
 
+
+
+        }
+        Random random;
         Timer spawner;
 
         public IngameBackgroundDrawer ibd;
@@ -111,7 +114,13 @@ namespace _231109_SFML_Test
 
 
 
-           
+            for (int i = 0; i < 1; i++)
+                new SnowFall(this,
+                    new Vector2f(
+                        (float)random.NextDouble() * VideoManager.resolutionNow.X,
+                        (float)random.NextDouble() * VideoManager.resolutionNow.Y),
+                    (float)Math.Sin(VideoManager.GetTimeTotal()) * 1f);
+
 
             ibd?.DrawBackgroundProcess();
             ild?.Draw();

@@ -19,12 +19,17 @@ namespace _231109_SFML_Test
             TimeInit();
 
             //시간 타이머 생성
-            if (timeAccelation <= 60d)
+            if (timeAccelation <= 800d)
             {
                 timer = new Timer(1000d / timeAccelation); //50d / 3d = 16.6666d
                 timer.Elapsed += (s, e) => ingameTime = ingameTime.Add(new TimeSpan(0, 0, 1));
             }
-            else 
+            else if (timeAccelation <= 80d) 
+            {
+                timer = new Timer(1000d / timeAccelation * 10d); //50d / 3d = 16.6666d
+                timer.Elapsed += (s, e) => ingameTime = ingameTime.Add(new TimeSpan(0, 0, 10));
+            }
+            else
             {
                 timer = new Timer(1000d / timeAccelation * 60d); //50d / 3d = 16.6666d
                 timer.Elapsed += (s, e) => ingameTime = ingameTime.Add(new TimeSpan(0, 1, 0));
@@ -39,10 +44,10 @@ namespace _231109_SFML_Test
             particleTimer.Elapsed += (s, e) => ParticleThreadRain();
             particleTimer.Start();
 
-            //테스트 코드
-            testTimer = new Timer(1000d / 60d);
-            testTimer.Elapsed += (s, e) => Console.WriteLine(ingameTime.ToString());
-            testTimer.Start();
+            ////테스트 코드
+            //testTimer = new Timer(1000d / 60d);
+            //testTimer.Elapsed += (s, e) => Console.WriteLine(ingameTime.ToString());
+            //testTimer.Start();
         }
 
         public Timer testTimer;
@@ -51,15 +56,17 @@ namespace _231109_SFML_Test
         public Timer timer;
         public DateTime ingameTime;
         public Color dayLightColor = Color.Transparent;
-        public double timeAccelation = 50d;
+        public double timeAccelation = 100d;
 
         //시간 초기화
         void TimeInit()
         {
-            ingameTime = new DateTime(2026, 4, 12, 8, 0, 0);
+            ingameTime = new DateTime(2026, 4, 12, 8, 30, 0);
 
             //원래라면 게임 로드할 때 원래 시간 가져와야 함.
         }
+
+
 
         void SetDayLightColor()
         {
@@ -75,48 +82,88 @@ namespace _231109_SFML_Test
             float sunriseTime = 7.0f, sunsetTime = 18.0f;
             float sunValue = 1f;
 
-            if (0.5f >= Math.Abs(ingameTime.Hour - sunriseTime))
+            float hourValue = (float)ingameTime.Hour + ingameTime.Minute / 60f + ingameTime.Second / 3600f;
+            if (0.75f >= Math.Abs(hourValue - sunriseTime))
             {
                 isSunrise = true;
-                sunValue = ingameTime.Hour - sunriseTime + 0.5f;
+                sunValue = hourValue - sunriseTime;
             }
-            else if (0.5f >= Math.Abs(ingameTime.Hour - sunsetTime))
+            else if (0.75f >= Math.Abs(hourValue - sunsetTime))
             {
                 isSunset = true;
-                sunValue = ingameTime.Hour - sunsetTime + 0.5f;
+                sunValue = hourValue - sunsetTime;
             }
 
-            sunValue = (float)Math.Sin(VideoManager.GetTimeTotal()) / 2f + 0.5f;
-
-            Func<float, Color, Color, Color, Color> func = (value, init, middle, end) => Color.Transparent;
+            //sunValue = (float)Math.Sin(VideoManager.GetTimeTotal()) / 2f + 0.5f;
 
             //일출
             if (isSunrise)
-            { 
+            {
                 //해가 뜨기전 푸르스름한 빛 위주의 섀벽 느낌. 뜨면서 하얀색으로 바뀐 뒤 원상 복구.
-                dayLightColor = new Color()
+
+                Color bColor = new Color(32, 32, 128, 191);
+                Color yColor = new Color(192, 128, 32, 128);
+
+                dayLightColor = sunValue < 0.75f / 3f? sunValue < -0.75f / 3f?
+                    ColorLerp(
+                        (sunValue + 0.75f), new Color(Color.Black) { A = 229 }, bColor
+                    ) :
+                    ColorLerp(
+                        (sunValue + 0.75f / 3f) , bColor, yColor
+                    ) :
+                    ColorLerp(
+                        (sunValue - 0.75f / 3f) , yColor, Color.Transparent
+                    );
+                Console.WriteLine("color : " + sunValue + "(" + (sunValue - 0.75f / 3f) + ") -" + dayLightColor);
             }
             //일몰
             else if (isSunset)
             {
                 //노랗고 붉은 노을. 이후 해가 진 뒤엔 진한 파란색 어둠.
+                Color bColor = new Color(32, 32, 128, 191);
+                Color yColor = new Color(192, 128, 32, 128);
 
+
+                dayLightColor = sunValue < 0.75f / 3f ? sunValue < -0.75f / 3f ?
+                    ColorLerp(
+                        (sunValue + 0.75f), Color.Transparent, yColor
+                    ) :
+                    ColorLerp(
+                        (sunValue + 0.75f / 3f), yColor, bColor
+                    ) :
+                    ColorLerp(
+                        (sunValue - 0.75f / 3f), bColor, new Color(Color.Black) { A = 229 }
+                    );
+                Console.WriteLine("color : "+ sunValue+"(" + (sunValue - 0.75f / 3f) + ") -" + dayLightColor);
             }
             //낮
-            else if (sunsetTime <= ingameTime.Hour && ingameTime.Hour <= sunsetTime)
+            else if (sunriseTime <= hourValue && hourValue <= sunsetTime)
             {
                 dayLightColor = Color.Transparent;
             }
             //밤
             else
             {
-                dayLightColor = new Color(Color.Black) { A=125};
+                dayLightColor = new Color(Color.Black) { A= 229 };
             }
 
 
 
         }
 
+        Color ColorLerp(float value, Color startC, Color endC)
+        {
+            Func<float, byte, byte, byte> lerp = (v, zero, one) => (byte)(zero * (1 - v) + one * v);
+
+            float ratio = (value % 0.50001f) * 2f;
+
+            return new Color(
+                lerp(ratio, startC.R, endC.R),
+                lerp(ratio, startC.G, endC.G),
+                lerp(ratio, startC.B, endC.B),
+                lerp(ratio, startC.A, endC.A)
+                );
+        }
 
         //[기상]
         Weather weatherNow;

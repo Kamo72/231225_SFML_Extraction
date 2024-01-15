@@ -119,7 +119,7 @@ namespace _231109_SFML_Test
                     new Vector2f(
                         (float)random.NextDouble() * VideoManager.resolutionNow.X,
                         (float)random.NextDouble() * VideoManager.resolutionNow.Y),
-                    (float)Math.Sin(VideoManager.GetTimeTotal()) * 1f);
+                    (float)Math.Sin(VideoManager.GetTimeTotal()) * 10f);
 
 
             ibd?.DrawBackgroundProcess();

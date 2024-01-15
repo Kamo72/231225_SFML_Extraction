@@ -44,10 +44,10 @@ namespace _231109_SFML_Test
             particleTimer.Elapsed += (s, e) => ParticleThreadRain();
             particleTimer.Start();
 
-            ////테스트 코드
-            //testTimer = new Timer(1000d / 60d);
-            //testTimer.Elapsed += (s, e) => Console.WriteLine(ingameTime.ToString());
-            //testTimer.Start();
+            //테스트 코드
+            testTimer = new Timer(1000d / 60d);
+            testTimer.Elapsed += (s, e) => Console.WriteLine(ingameTime.ToString());
+            testTimer.Start();
         }
 
         public Timer testTimer;
@@ -61,7 +61,7 @@ namespace _231109_SFML_Test
         //시간 초기화
         void TimeInit()
         {
-            ingameTime = new DateTime(2026, 4, 12, 8, 30, 0);
+            ingameTime = new DateTime(2026, 4, 12, 6, 30, 0);
 
             //원래라면 게임 로드할 때 원래 시간 가져와야 함.
         }

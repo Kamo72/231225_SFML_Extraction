@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace _231109_SFML_Test
 {
 
-    internal abstract class Magazine
+    internal abstract class Magazine : Item
     {
         public Magazine(string magazineCode)
         {
@@ -19,6 +19,8 @@ namespace _231109_SFML_Test
         }
         public Magazine(string magazineCode, Type ammoType) : this(magazineCode)
         {
+            if (ammoType == null) return;
+
             //입력한 탄 유형으로 탄약 채우기
             bool isAmmo = TypeEx.IsChildByParent(ammoType, typeof(Ammo));
 

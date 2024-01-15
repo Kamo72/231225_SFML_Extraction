@@ -298,26 +298,47 @@ namespace _231109_SFML_Test
 
         //조준 정보
         public AimData aimDt;
-        public struct AimData 
+        public struct AimData
         {
-            public AimData(float moa, float aimStable, float hipAccuracy, float hipRecovery, Vector2f recoilFixed, Vector2f recoilRandom) 
+            public struct HipData   //지향 사격
             {
-                this.moa = moa;
-                this.aimStable = aimStable;
-                this.hipAccuracy = hipAccuracy;
-                this.hipRecovery = hipRecovery;
+                public struct HipStancelData    //자세 값
+                {
+                    public float[] accuracy;     //지향 자세 정확도 [일반,이동]
+                    public float[] recovery;     //지향 자세 회복 속도 [일반,이동]
+                }
+                public HipStancelData stance;
 
-                this.recoilFixed = recoilFixed;
-                this.recoilRandom = recoilRandom;
-            }
+                public struct HipRecoilData //반동 값
+                {
+                    public float[] accuracy;     //지향 반동 정확도 [일반,이동]
+                    public float[] recovery;     //지향 반동 회복 속도 [일반,이동]
+                }
+                public HipRecoilData reocil;
+
+            };
+            public HipData hip;
+
+            public struct AdsData   //조준 사격
+            {
+                public struct AdsStancelData    //자세 값
+                {
+                    public float[] accuracy;     //조준 자세 정확도 [일반,이동]
+                }
+                public AdsStancelData stance;
+
+                public struct AdsRecoilData    //반동 값
+                {
+                    public Vector2f fix;        //조준점 고정 반동
+                    public Vector2f random;     //조준점 랜덤 반동
+                    public float recovery;      //조준점 지향 반동 회복 속도
+                }
+                public AdsRecoilData recoil;
+
+            };
+            public AdsData ads;
 
             public float moa;       //최소 조준점 탄퍼짐 (거리 1000기준).
-            public float aimStable; //조준 안정도 조준점 흐트러짐 크기 및 흐트러짐 속도
-            public float hipAccuracy;   //지향 사격 최소 조준점 흐트러짐 크기
-            public float hipRecovery;   //지향 사격 회복 속도
-
-            public Vector2f recoilFixed;    //고정 반동
-            public Vector2f recoilRandom;   //랜덤 반동
         }
 
         //행동 소요 시간 정보 

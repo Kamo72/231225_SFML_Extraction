@@ -19,7 +19,7 @@ namespace _231109_SFML_Test
             drawable = new CircleShape(0f);
             drawable.Radius = 10f;
             drawable.Position = position;
-            drawable.Scale = new Vector2f((float)Math.Sqrt(Math.Max( Math.Abs(speed),1f)), 1f) * (float)random.NextDouble() * 3f;
+            drawable.Scale = new Vector2f((float)Math.Sqrt(Math.Max( Math.Abs(speed),1f)), 1f) * (float)random.NextDouble() * 1f;
             drawable.Origin = new Vector2f(1f, 1f) * drawable.Radius / 2f;
             drawable.Texture = ResourceManager.textures["LIGHT_radial"];
             drawable.FillColor = new Color(Color.White){ A = 192 };

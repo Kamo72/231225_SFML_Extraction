@@ -3,11 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using static _231109_SFML_Test.Humanoid;
+using static _231109_SFML_Test.Humanoid.Hands;
 using static _231109_SFML_Test.Storage;
 
 namespace _231109_SFML_Test
@@ -349,6 +354,7 @@ namespace _231109_SFML_Test
             public float handRotTarget = 0f;
             public const float handRotSpeed = 0.2f;
 
+
             public void DrawHandlingProcess()
             {
                 if (handling == null) return;
@@ -369,10 +375,11 @@ namespace _231109_SFML_Test
                     DrawManager.texWrHigher,
                     master.Position + handPos,
                     handRot,
-                    new Vector2f(1f, (-90f <= master.Direction && master.Direction <= 90f) ? 1f : -1f) * 1.5f,
+                    new Vector2f(1f, 1.5f * (-90f <= master.Direction && master.Direction <= 90f ? 1f : -1f)),
                     CameraManager.worldRenderState
                     );
             }
+
             public void LogicHandlingProcess()
             {
                 //조작 가능 체크
@@ -388,8 +395,126 @@ namespace _231109_SFML_Test
                     handling.commandsReact[cmd](this, isTrue);
                 }
             }
-            #endregion
 
+
+
+
+            #endregion
+            #region [애니메이션]
+            public struct Phase 
+            {
+                public Phase(Vector2f position, float rotation)
+                {
+                    this.position = position;
+                    this.rotation = rotation;
+                }
+
+                public Vector2f position;
+                public float rotation;
+
+                public static Phase Lerp(float value, Phase start, Phase end) { return new Phase(); }
+            }
+
+            public abstract class Animator : IDisposable
+            {
+                public Phase phase;
+                public float size;
+
+                #region [기타 편의를 위한 메서드들]
+                public Vector2f position
+                {
+                    get { return phase.position; }
+                    set => phase.position = value;
+                }
+                public float rotation
+                {
+                    get { return phase.rotation; }
+                    set => phase.rotation = value;
+                }
+
+
+                public void Draw() => DrawManual(phase);
+                public void DrawManual(Phase phase) => DrawManual(phase.position, phase.rotation);
+                #endregion
+
+                public abstract void DrawManual(Vector2f position, float rotation);
+
+
+
+                #region [애니메이터 탈부착]
+                Dictionary<Animator, Phase> attacheds = new Dictionary<Animator, Phase>();
+                Animator attachTo;
+
+                //피동 탈부착
+                public void BeAttach(Animator animator, Vector2f position, float rotation) => BeAttach(animator, new Phase(position, rotation));
+                public void BeAttach(Animator animator, Phase phase) => attacheds[animator] = phase;
+                public void BeDettach(Animator animator) => attacheds.Remove(animator);
+
+                //능동 탈부착
+                public void DoAttach(Animator animator, Vector2f position, float rotation) => DoAttach(animator, new Phase(position, rotation));
+                public void DoAttach(Animator animator, Phase phase) 
+                {
+                    attachTo.BeAttach(animator, phase);
+                    attachTo = animator;
+                }
+                public void DoDettach() 
+                {
+                    if (attachTo == null) throw new Exception("DoDettach - 아니 attachTo가 null인데 어디서 뗀다는거?");
+                    attachTo.BeDettach(this);
+                    attachTo = null;
+                }
+
+                //프로세스
+                public void AttachesProcess()
+                {
+                    //TODO
+
+                    foreach(Animator animator in attacheds.Keys) animator.AttachesProcess();
+                }
+                #endregion
+
+                #region [소멸자 처리]
+                public bool isDiposed = false;
+                ~Animator() => Dispose();
+                public void Dispose()
+                {
+                    isDiposed = true;
+
+                    foreach (Animator animator in attacheds.Keys) animator.DoDettach(); // 나에게 붙어있는 애니메이터들 제거.
+                    DoDettach();  //내가 붙어 있는 애니메이터에서 제거
+
+                    GC.SuppressFinalize(this);
+                }
+                #endregion
+            }
+
+            public enum HandAnimationType
+            {
+                IDLE,
+            }
+            public class HandUnit
+            {
+                public HandUnit(Hands hands, bool isRightArm)
+                {
+                    this.hands = hands;
+                    this.isRightArm = isRightArm;
+
+                    steadyOffset = isRightArm ? new Vector2f(50f, 100f) : new Vector2f(-50f, 100f);
+                    animaType = HandAnimationType.IDLE;
+
+
+                }
+                public Hands hands;
+                public HandAnimationType animaType;
+                public Vector2f steadyOffset;
+                public bool isRightArm;
+            }
+            public void AnimationProcess()
+            {
+
+            }
+
+            #endregion
 
         }
 

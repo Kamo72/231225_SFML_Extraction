@@ -37,14 +37,33 @@ namespace _231109_SFML_Test
                 },
                 aimDt = new WeaponStatus.AimData()
                 {
+                    hip = new WeaponStatus.AimData.HipData()
+                    {
+                        stance = new WeaponStatus.AimData.HipData.HipStancelData()
+                        {
+                            accuracy = new float[] { 2f, 10f },
+                            recovery = new float[] { 3f, 2f },
+                        },
+                        reocil = new WeaponStatus.AimData.HipData.HipRecoilData()
+                        {
+                            accuracy = new float[] { 2f, 10f },
+                            recovery = new float[] { 3f, 2f },
+                        },
+                    },
+                    ads = new WeaponStatus.AimData.AdsData()
+                    {
+                        stance = new WeaponStatus.AimData.AdsData.AdsStancelData()
+                        {
+                            accuracy = new float[] { 3f, 6f },
+                        },
+                        recoil = new WeaponStatus.AimData.AdsData.AdsRecoilData()
+                        {
+                            fix = new Vector2f(7.0f, 35.0f),
+                            random = new Vector2f(3.5f, 5.0f),
+                            recovery = 0.02f,
+                        },
+                    },
                     moa = 1.80f,
-                    aimStable = 18f,
-                    
-                    hipAccuracy = 20f,
-                    hipRecovery = 0.2f,
-
-                    recoilFixed = new Vector2f(7.0f, 35.0f),
-                    recoilRandom = new Vector2f(3.5f, 5.0f),
                 },
                 detailDt = new WeaponStatus.DetailData()
                 {
@@ -146,15 +165,11 @@ namespace _231109_SFML_Test
             };
             MagazineLibrary.Set("FN_FAL_MAG10", status); 
         }
-        public FN_FAL_MAG10() : base("FN_FAL_MAG10")
-        {
-            InitTopParts(new Vector2i(45,45), new Texture[]
-            {
-                ResourceManager.textures["FN_FAL_MAG10"],
-            });
-        }
+        
+        public FN_FAL_MAG10() : this(null) { }
         public FN_FAL_MAG10(Type ammoType) : base("FN_FAL_MAG10", ammoType)
         {
+            SetupBasicData("FN FAL 10발 들이 탄창", "FN_FAL_MAG10", "FN FAL의 10발 들이 탄창입니다.", 0.25f, new Vector2i(1, 1), Rarerity.COMMON, 2000);
             InitTopParts(new Vector2i(45, 45), new Texture[]
             {
                 ResourceManager.textures["FN_FAL_MAG10"],
@@ -179,16 +194,13 @@ namespace _231109_SFML_Test
             };
 
             MagazineLibrary.Set("FN_FAL_MAG20", status);
+            MagazineLibrary.Set("FN_FAL_MAG20", status);
         }
-        public FN_FAL_MAG20() : base("FN_FAL_MAG20")
-        {
-            InitTopParts(new Vector2i(45, 45), new Texture[]
-            {
-                ResourceManager.textures["FN_FAL_MAG20"],
-            });
-        }
+        
+        public FN_FAL_MAG20() : this(null) { }
         public FN_FAL_MAG20(Type ammoType) : base("FN_FAL_MAG20", ammoType)
         {
+            SetupBasicData("FN FAL 20발 들이 탄창", "FN_FAL_MAG20", "FN FAL의 20발 들이 탄창입니다.", 0.42f, new Vector2i(1, 2), Rarerity.UNCOMMON, 6400);
             InitTopParts(new Vector2i(45, 45), new Texture[]
             {
                 ResourceManager.textures["FN_FAL_MAG20"],

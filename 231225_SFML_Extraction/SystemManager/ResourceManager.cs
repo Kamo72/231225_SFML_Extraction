@@ -68,7 +68,7 @@ namespace _231109_SFML_Test
                     }
                 }
                 {
-                    textures.Add("LIGHT_radial", new Texture(header + "RadialAlphaGradient.png"));
+                    textures.Add("LIGHT_radial", new Texture(header + "RadialAlphaGradientGray.png"));
                 }
                 {
                     textures.Add("ITEM_Oddment", new Texture(header + "Oddment.png"));
@@ -136,7 +136,7 @@ namespace _231109_SFML_Test
                 dirPath = slnPath + @"\Sprites\LIGHT\";
                 //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\LIGHT\
 
-                CopyFile(dirPath + @"RadialAlphaGradient.png", @"Assets\Textures\");
+                CopyFile(dirPath + @"RadialAlphaGradientGray.png", @"Assets\Textures\");
 
             }
 

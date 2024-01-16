@@ -28,7 +28,12 @@ namespace _231109_SFML_Test
             gamemode.DisposablesAdd(this);
             gamemode.logicEvent += LogicProcess;
             gamemode.logicEvent += PhysicsProcess;
-            gamemode.drawEvent += DrawProcess;
+            gamemode.drawEvent += () => 
+            {
+                float drawableRange = CameraManager.size.Magnitude() * CameraManager.zoomValue;
+                float dist = (this.Position - CameraManager.position).Magnitude();
+                if (drawableRange > dist) DrawProcess();
+            };
         }
 
         public float Direction;
@@ -174,7 +179,7 @@ namespace _231109_SFML_Test
             gamemode.DisposablesAdd(this);
             gamemode.drawEvent += DrawProcess;
             gamemode.logicEvent += LogicProcess;
-            gamemode.logicEvent += LifeProcess;
+
         }
 
         public int lifeMax, lifeNow;
@@ -187,18 +192,27 @@ namespace _231109_SFML_Test
 
         protected static Random random = new Random();
 
-        void LifeProcess() 
-        {
-            lifeNow--;
-            if(lifeNow == 0) Dispose();
-
-            float dis = (position - CameraManager.position).Magnitude();
-            float range = (CameraManager.size * 0.5f).Magnitude();
-            if (dis > range) Dispose(); 
-        }
 
         public abstract void DrawProcess();
-        public abstract void LogicProcess();
+        public virtual void LogicProcess() 
+        {
+
+            lifeNow--;
+            if (lifeNow == 0) Dispose();
+            
+            float drawableRange = CameraManager.size.Magnitude() * CameraManager.zoomValue;
+            float dist = (this.position - CameraManager.position).Magnitude();
+            if (drawableRange < dist) { 
+                Dispose(); 
+                
+            }
+            //if (lifeNow % 20 != 1) return; dist) Dispose();
+             
+
+                //    float dis = (position - CameraManager.position).Magnitude();
+                //    float range = (CameraManager.size * 0.5f).Magnitude();
+                //    if (dis > range) Dispose();
+        }
 
 
         ~Particle() { Dispose(); }
@@ -208,7 +222,6 @@ namespace _231109_SFML_Test
             gamemode.DisposablesRemove(this);
             gamemode.drawEvent -= DrawProcess;
             gamemode.logicEvent -= LogicProcess;
-            gamemode.logicEvent -= LifeProcess;
 
             GC.SuppressFinalize(this);
         }

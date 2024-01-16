@@ -31,13 +31,9 @@ namespace _231109_SFML_Test
                 CameraManager.rotation = Direction;
             };
 
-            hands.handling = new FN_FAL();
-
-            //테스트
-            hlTexture = ResourceManager.textures["LIGHT_radial"];
-            highlightShape = new RectangleShape(new Vector2f(100f, 100f));
-            highlightShape.Origin = highlightShape.Size / 2f;
-            highlightShape.Texture = hlTexture;
+            // hands.handling = new FN_FAL();
+            inventory.weaponPrimary.DoEquipItem(new FN_FAL());
+            hands.SetHandling(inventory.weaponPrimary.item as Weapon);
 
             //UI 객체들 초기화
             DrawUiInit(new PlayerUiDrawer[] {
@@ -47,9 +43,6 @@ namespace _231109_SFML_Test
             });
         }
 
-        //테스트
-        Texture hlTexture;
-        RectangleShape highlightShape;
 
 
 
@@ -102,11 +95,11 @@ namespace _231109_SFML_Test
             try
             {
                 //이동 방향 지정
-                moveDir = Vector2fEx.Zero;
-                if (Im.CommandCheck(Im.CommandType.MOVE_LEFT))      moveDir += (+180f).ToRadian().ToVector();
-                if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT))     moveDir += (+000f).ToRadian().ToVector();
-                if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD))  moveDir += (+090f).ToRadian().ToVector();
-                if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD))   moveDir += (+270f).ToRadian().ToVector();
+                movement.moveDir = Vector2fEx.Zero;
+                if (Im.CommandCheck(Im.CommandType.MOVE_LEFT))      movement.moveDir += (+180f).ToRadian().ToVector();
+                if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT))     movement.moveDir += (+000f).ToRadian().ToVector();
+                if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD))  movement.moveDir += (+090f).ToRadian().ToVector();
+                if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD))   movement.moveDir += (+270f).ToRadian().ToVector();
 
                 base.PhysicsProcess();
 

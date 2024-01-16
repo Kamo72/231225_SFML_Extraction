@@ -8,7 +8,8 @@ namespace _231109_SFML_Test
 {
     internal class CartridgeBig : Particle
     {
-        public CartridgeBig(Gamemode gamemode, Vector2f position, float height, float rotation = 0) : base(gamemode, random.Next(500, 1000), position, new Vector2f(1f, 1f), rotation)
+        public CartridgeBig(Gamemode gamemode, Vector2f position, float height, float rotation = 0)
+            : base(gamemode, random.Next(100, 200), position, new Vector2f(1f, 1f), rotation)
         {
             drawable = new RectangleShape(new Vector2f(8f, 3f));
             drawable.Origin = drawable.Size / 2f;
@@ -68,9 +69,6 @@ namespace _231109_SFML_Test
             drawable.Rotation = rot;
         }
 
-        public override void LogicProcess()
-        {
-        }
 
         public override void Dispose()
         {

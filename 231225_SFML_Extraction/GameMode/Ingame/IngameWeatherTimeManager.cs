@@ -45,9 +45,9 @@ namespace _231109_SFML_Test
             particleTimer.Start();
 
             //테스트 코드
-            testTimer = new Timer(1000d / 60d);
-            testTimer.Elapsed += (s, e) => Console.WriteLine(ingameTime.ToString());
-            testTimer.Start();
+            //testTimer = new Timer(1000d / 60d);
+            //testTimer.Elapsed += (s, e) => Console.WriteLine(ingameTime.ToString());
+            //testTimer.Start();
         }
 
         public Timer testTimer;
@@ -114,7 +114,7 @@ namespace _231109_SFML_Test
                     ColorLerp(
                         (sunValue - 0.75f / 3f) , yColor, Color.Transparent
                     );
-                Console.WriteLine("color : " + sunValue + "(" + (sunValue - 0.75f / 3f) + ") -" + dayLightColor);
+                //Console.WriteLine("color : " + sunValue + "(" + (sunValue - 0.75f / 3f) + ") -" + dayLightColor);
             }
             //일몰
             else if (isSunset)
@@ -134,7 +134,7 @@ namespace _231109_SFML_Test
                     ColorLerp(
                         (sunValue - 0.75f / 3f), bColor, new Color(Color.Black) { A = 229 }
                     );
-                Console.WriteLine("color : "+ sunValue+"(" + (sunValue - 0.75f / 3f) + ") -" + dayLightColor);
+                //Console.WriteLine("color : "+ sunValue+"(" + (sunValue - 0.75f / 3f) + ") -" + dayLightColor);
             }
             //낮
             else if (sunriseTime <= hourValue && hourValue <= sunsetTime)

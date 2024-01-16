@@ -3,7 +3,9 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ namespace _231109_SFML_Test
 {
     internal class FN_FAL : Weapon
     {
-        static FN_FAL() 
+        static FN_FAL()
         {
             WeaponStatus status = new WeaponStatus()
             {
@@ -31,7 +33,7 @@ namespace _231109_SFML_Test
                 timeDt = new WeaponStatus.TimeData()
                 {
                     adsTime = 0.400f,
-                    reloadTime = new float[3] { 0.710f, 0.950f, 0.380f },
+                    reloadTime = (0.710f, 0.950f, 0.380f),
                     sprintTime = 0.350f,
                     swapTime = 0.250f,
                 },
@@ -41,20 +43,23 @@ namespace _231109_SFML_Test
                     {
                         stance = new WeaponStatus.AimData.HipData.HipStancelData()
                         {
-                            accuracy = new float[] { 2f, 10f },
-                            recovery = new float[] { 3f, 2f },
+                            recovery = 1.00f,
+                            accuracy = 1.00f,
+                            accuracyAdjust = (crounch: 1.00f, walk: 1.00f),
                         },
-                        reocil = new WeaponStatus.AimData.HipData.HipRecoilData()
+                        recoil = new WeaponStatus.AimData.HipData.HipRecoilData()
                         {
-                            accuracy = new float[] { 2f, 10f },
-                            recovery = new float[] { 3f, 2f },
+                            recovery = 1.00f,
+                            recoveryAdjust = (crounch: 1.00f, walk: 1.00f),
                         },
+                        traggingSpeed = 1.00f,
                     },
                     ads = new WeaponStatus.AimData.AdsData()
                     {
                         stance = new WeaponStatus.AimData.AdsData.AdsStancelData()
                         {
-                            accuracy = new float[] { 3f, 6f },
+                            accuracy = 1.00f,
+                            accuracyAdjust = (crounch: 1.00f, walk: 1.00f),
                         },
                         recoil = new WeaponStatus.AimData.AdsData.AdsRecoilData()
                         {
@@ -62,8 +67,13 @@ namespace _231109_SFML_Test
                             random = new Vector2f(3.5f, 5.0f),
                             recovery = 0.02f,
                         },
+                        moa = 12f,
                     },
-                    moa = 1.80f,
+                },
+                moveDt = new WeaponStatus.MovementData()
+                {
+                    speed = 1.00f,
+                    speedAdjust = (crounch: 1.00f, ads: 1.00f, sprint: 1.00f),
                 },
                 detailDt = new WeaponStatus.DetailData()
                 {
@@ -75,7 +85,10 @@ namespace _231109_SFML_Test
                     },
                     muzzleVelocity = 2080f,
                     roundPerMinute = 700f,
+                    effectiveRange = 750f,
+                    barrelLength = 50f;
                 },
+                
             };
 
             WeaponLibrary.Set("FN_FAL", status);
@@ -155,11 +168,11 @@ namespace _231109_SFML_Test
                     new WeaponAdjust("조준 시간 감소", WeaponAdjustType.PROS, (ws)=> ws.timeDt.adsTime *= 0.81f),
                     new WeaponAdjust("재장전 시간 감소", WeaponAdjustType.PROS,
                     (ws)=> {
-                        ws.timeDt.reloadTime[0]  *= 0.85f;
-                        ws.timeDt.reloadTime[1]  *= 0.74f;
-                        ws.timeDt.reloadTime[2]  *= 0.92f;
+                        ws.timeDt.reloadTime.Item1  *= 0.85f;
+                        ws.timeDt.reloadTime.Item2  *= 0.74f;
+                        ws.timeDt.reloadTime.Item3  *= 0.92f;
                     }),
-                    new WeaponAdjust("이동 속도 증가", WeaponAdjustType.PROS, (ws)=> ws.moveDt.basicRatio *= 1.09f),
+                    new WeaponAdjust("이동 속도 증가", WeaponAdjustType.PROS, (ws)=> ws.moveDt.speed *= 1.09f),
                     new WeaponAdjust("탄약 감소", WeaponAdjustType.CONS, (ws)=>{ }),
                 },
             };

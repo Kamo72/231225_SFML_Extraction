@@ -163,7 +163,7 @@ namespace _231109_SFML_Test
             for (int i = 0; i < ammo.status.lethality.pellitCount; i++)
             {
                 //총탄 생성 및 저장
-                float moaSpray = ((float)random.NextDouble() - 0.5f) * status.aimDt.moa;
+                float moaSpray = ((float)random.NextDouble() - 0.5f) * status.aimDt.ads.moa;
 
                 Projectile bullet = new Bullet(gm, ammo.status, muzzlePos, hands.handRot + moaSpray, status.detailDt.muzzleVelocity / 240f);
                 gm.projs.Add(bullet);
@@ -304,57 +304,110 @@ namespace _231109_SFML_Test
             {
                 public struct HipStancelData    //자세 값
                 {
-                    public float[] accuracy;     //지향 자세 정확도 [일반,이동]
-                    public float[] recovery;     //지향 자세 회복 속도 [일반,이동]
+                    /// <summary>
+                    /// 지향 자세 회복 속도
+                    /// </summary>
+                    public float recovery;     
+                    /// <summary>
+                    /// 지향 자세 정확도
+                    /// </summary>
+                    public float accuracy;     
+                    /// <summary>
+                    ///  정확도 변인 [엄폐, 걷기]
+                    /// </summary>
+                    public (float crounch, float walk) accuracyAdjust;
                 }
+                /// <summary>
+                /// 자세 값
+                /// </summary>
                 public HipStancelData stance;
 
-                public struct HipRecoilData //반동 값
+                public struct HipRecoilData     //반동 값
                 {
-                    public float[] accuracy;     //지향 반동 정확도 [일반,이동]
-                    public float[] recovery;     //지향 반동 회복 속도 [일반,이동]
+                    /// <summary>
+                    /// 지향 반동 회복 속도
+                    /// </summary>
+                    public float recovery;
+                    /// <summary>
+                    /// 회복 속도 변인 [엄폐, 걷기]
+                    /// </summary>
+                    public (float crounch, float walk) recoveryAdjust;   
                 }
-                public HipRecoilData reocil;
+                /// <summary>
+                /// 반동 값
+                /// </summary>
+                public HipRecoilData recoil;
 
+                /// <summary>
+                /// 트래깅 속도
+                /// </summary>
+                public float traggingSpeed;     
             };
+            /// <summary>
+            /// 지향 사격
+            /// </summary>
             public HipData hip;
 
             public struct AdsData   //조준 사격
             {
                 public struct AdsStancelData    //자세 값
                 {
-                    public float[] accuracy;     //조준 자세 정확도 [일반,이동]
+                    /// <summary>
+                    /// 조준 자세 정확도
+                    /// </summary>
+                    public float accuracy;
+                    /// <summary>
+                    /// 정확도 변인 [엄폐, 걷기]
+                    /// </summary>
+                    public (float crounch, float walk) accuracyAdjust;
                 }
+                /// <summary>
+                /// 자세 값
+                /// </summary>
                 public AdsStancelData stance;
 
                 public struct AdsRecoilData    //반동 값
                 {
-                    public Vector2f fix;        //조준점 고정 반동
-                    public Vector2f random;     //조준점 랜덤 반동
-                    public float recovery;      //조준점 지향 반동 회복 속도
+                    /// <summary>
+                    /// 조준점 반동 고정
+                    /// </summary>
+                    public Vector2f fix;   
+                    /// <summary>
+                    /// 조준점 반동 랜덤
+                    /// </summary>
+                    public Vector2f random;
+                    /// <summary>
+                    /// 조준점 반동 회복 속도
+                    /// </summary>
+                    public float recovery; 
                 }
+                /// <summary>
+                /// 반동 값
+                /// </summary>
                 public AdsRecoilData recoil;
 
+                /// <summary>
+                /// 절대 명중률(거리 1000 기준)
+                /// </summary>
+                public float moa;
             };
+            /// <summary>
+            /// 조준 사격
+            /// </summary>
             public AdsData ads;
 
-            public float moa;       //최소 조준점 탄퍼짐 (거리 1000기준).
         }
 
         //행동 소요 시간 정보 
         public TimeData timeDt;
-        public struct TimeData {
-            public TimeData(float adsTime, float sprintTime, float[] reloadTime, float swapTime)
-            {
-                this.adsTime = adsTime;
-                this.sprintTime = sprintTime;
-                this.reloadTime = reloadTime;
-                this.swapTime = swapTime;
-            }
-
+        public struct TimeData
+        {
             public float adsTime;       //조준 속도
             public float sprintTime;    //질주 후 사격 전환 속도
-            public float[] reloadTime;  //재장전 속도 - 박스(분리 / 결합 (장전)) - 실린더(사출 / 장전 / 결합) - 내부(볼트 재낌 /장전) - (장전 준비 / (약실 장전) / 튜브 장전 )
+            /// <summary>
+            /// 재장전 속도 - 박스(분리 / 결합 (장전)) - 실린더(사출 / 장전 / 결합) - 내부(볼트 재낌 /장전) - (장전 준비 / (약실 장전) / 튜브 장전 )
+            /// </summary>
+            public (float, float, float) reloadTime;
             public float swapTime;      //무기 교체 속도
         }
 
@@ -362,35 +415,27 @@ namespace _231109_SFML_Test
         public MovementData moveDt;
         public struct MovementData 
         {
-            public MovementData(float basicRatio, float sprintRatio, float adsRatio) 
-            {
-                this.basicRatio = basicRatio;
-                this.sprintRatio = sprintRatio;
-                this.adsRatio = adsRatio;
-            }
-
-            public float basicRatio;
-            public float sprintRatio;
-            public float adsRatio;
+            /// <summary>
+            /// 기본 이동 속도 배율
+            /// </summary>
+            public float speed;
+            /// <summary>
+            /// 이속 변인 (엄폐, 조준, 질주)
+            /// </summary>
+            public (float crounch, float ads, float sprint) speedAdjust;
         }
 
         //상세 정보
         public DetailData detailDt;
         public struct DetailData 
         {
-            public DetailData(float roundPerMinute, int chamberSize, List<Type> magazineWhiteList, float muzzleVelocity) 
-            {
-                this.roundPerMinute = roundPerMinute;
-                this.chamberSize = chamberSize;
-                this.magazineWhiteList = magazineWhiteList;
-                this.muzzleVelocity = muzzleVelocity;
-            }
-
             public float RoundDelay { get { return 60f / roundPerMinute; } }
             public float roundPerMinute;
             public int chamberSize; //약실 크기
             public List<Type> magazineWhiteList;  //장착 가능한 탄창리스트
             public float muzzleVelocity;    //총구 속도
+            public float effectiveRange;    //유효 사거리
+            public float barrelLength;      //총기 전장
         }
 
 

@@ -48,9 +48,6 @@ namespace _231109_SFML_Test
 
         }
 
-        public override void LogicProcess()
-        {
-        }
     }
 
 
@@ -95,9 +92,6 @@ namespace _231109_SFML_Test
 
         }
 
-        public override void LogicProcess()
-        {
-        }
     }
 
 
@@ -142,9 +136,6 @@ namespace _231109_SFML_Test
             DrawManager.texWrEffect.Draw(drawable, CameraManager.worldRenderState);
         }
 
-        public override void LogicProcess()
-        {
-        }
     }
 
     internal class MuzzleFlash : Particle, ILightSource
@@ -169,9 +160,6 @@ namespace _231109_SFML_Test
         {
         }
 
-        public override void LogicProcess()
-        {
-        }
 
         public override void Dispose()
         {

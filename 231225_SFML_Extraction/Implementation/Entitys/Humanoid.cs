@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using SFML.Graphics;
 using System.IO.Ports;
 using System.Drawing;
+using static _231109_SFML_Test.Humanoid;
 
 namespace _231109_SFML_Test
 {
@@ -28,6 +29,7 @@ namespace _231109_SFML_Test
             inventory = new Inventory(this);
             hands = new Hands(this);
             health = new Health(this, healthMax);
+            movement = new Movement(this);
 
 
             GamemodeIngame ingm = gamemode as GamemodeIngame;
@@ -39,13 +41,14 @@ namespace _231109_SFML_Test
             get { return aimPosition + Position; }
             set { aimPosition = value - Position; }
         }
-        public float aimRange = 2000f;
+        
 
 
         protected override void DrawProcess()
         {
             DrawManager.texWrHigher.Draw(mask, CameraManager.worldRenderState);
             hands.DrawHandlingProcess();
+            hands.DrawAnimatorsProcess();
         }
 
         protected override void LogicProcess()
@@ -54,70 +57,10 @@ namespace _231109_SFML_Test
         }
 
 
-        //[물리]
-        public float accel = 3000f;    //가속
-        public float accelPer = 1.00f;      //가속 배율
-        public const float friction = 8.0f;   //마찰
-
-        public Vector2f speed = Vector2fEx.Zero; // 속도 벡터
-        public Vector2f moveDir = Vector2fEx.Zero; // 가속 벡터 (최대 1)
         protected override void PhysicsProcess()
         {
-            //마찰에 의한 감속
-            double deltaTime = 1d / gamemode.logicFps;
-            speed *= (float)(1d - friction * deltaTime);
-
-            //이동에 의한 가속
-            Vector2f accelVec = moveDir.Magnitude() > 1f? moveDir.Normalize() : moveDir;
-            speed += accelVec * (float)(accel * accelPer * deltaTime);
-
-            #region [충돌]
-
-            Circle maskHum = mask as Circle;
-            Vector2f posOrigin = Position;
-            Vector2f vecOrigin = speed;// * (float)deltaTime;
-
-            GamemodeIngame gm = gamemode as GamemodeIngame;
-            //벽과의 충돌
-            foreach (Structure stru in gm.structures)
-            {
-                maskHum.Position = posOrigin + new Vector2f(vecOrigin.X * (float)deltaTime, 0f);
-                if (maskHum.IsCollision(stru.mask))
-                    vecOrigin.X = Math.Abs(vecOrigin.X) * Math.Sign(vecOrigin.X) * -0.5f;
-
-                maskHum.Position = posOrigin + new Vector2f(0f, vecOrigin.Y * (float)deltaTime);
-                if (maskHum.IsCollision(stru.mask))
-                    vecOrigin.Y = Math.Abs(vecOrigin.Y) * Math.Sign(vecOrigin.Y) * -0.5f;
-
-                maskHum.Position = posOrigin;
-                speed = vecOrigin;
-            }
-
-            //엔티티와의 충돌
-            foreach (Entity ent in gm.entitys)
-            {
-                if (ent == null) continue;
-                if (ent.isDisposed == true) continue;
-                if (ent.Position == this.Position) continue;
-                if (ent is Humanoid == false) continue;
-                if (ent.mask.IsCollision(mask))
-                {
-                    float dis = (Position - ent.Position).Magnitude();
-                    float pushMultipier = 1f / (dis + 1f) * 10000f;
-                    Vector2f push = (Position - ent.Position).Normalize() * pushMultipier;
-                    speed += push;
-                    if (ent is Humanoid human)
-                        human.speed -= push;
-                }
-            }
-            #endregion
-
-            //속도에 의한 변위
-            Position += speed * (float)deltaTime ;
-
+            movement.MovementProcess();
         }
-
-
 
         public override void Dispose()
         {

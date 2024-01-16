@@ -78,8 +78,13 @@ namespace _231109_SFML_Test
             try
             {
                 if (isDisposed) return;
+
                 //하이라이트 여부 > 진행도
                 highlighValue = Mathf.Clamp(0f, highlighValue + (isHighlighed ? +0.03f : -0.03f), 1f);
+                
+                //진행도 0이라면 안 그림
+                if (highlighValue < 0.0001f) return;
+                
                 byte highlighAlpha = (byte)(255 * highlighValue);
 
                 //하이라이트 진행도 > 크기

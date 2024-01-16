@@ -1,18 +1,10 @@
-﻿using SFML.System;
+﻿using SFML.Graphics;
+using SFML.System;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net.Mail;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Security.Policy;
 using System.Timers;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using static _231109_SFML_Test.Humanoid;
-using static _231109_SFML_Test.Humanoid.Hands;
 using static _231109_SFML_Test.Storage;
 
 namespace _231109_SFML_Test
@@ -295,7 +287,31 @@ namespace _231109_SFML_Test
             {
                 this.master = master;
                 interactables = new List<IInteractable>();
+                AnimationInit();
             }
+
+            //수정 필요.
+            public void SetHandling(IHandable handable)
+            {
+                this.handling = handable;
+
+                Animator hUnit;
+                if (handable is Weapon w) hUnit = new WeaponUnit(w);
+                else if (handable is Item i) hUnit = new ItemUnit(i, Vector2fEx.Zero, 90f);
+                else throw new Exception("SetHandling - IHandable handable을 지원하는 타입이 존재하지 않습니다.");
+
+                animators.Add(hUnit);
+            }
+            public void LooseHandling()
+            {
+                this.handling = null;
+
+                Animator animatorToRemove = animators.Find((a) => a is HandableUnit);
+                animatorToRemove.Dispose();
+                animators.Remove(animatorToRemove);
+
+            }
+
 
             #region [상호작용]
 
@@ -327,12 +343,12 @@ namespace _231109_SFML_Test
                 lock (this.interactables)
                     this.interactables = interactables;
 
-                if(interactingTarget != null)
-                if (interactables.Contains(interactingTarget) == false) 
-                {
-                    interactingTarget = null;
-                    onInventory = false;
-                }
+                if (interactingTarget != null)
+                    if (interactables.Contains(interactingTarget) == false)
+                    {
+                        interactingTarget = null;
+                        onInventory = false;
+                    }
             }
             public void Interact(Entity entity)
             {
@@ -396,12 +412,12 @@ namespace _231109_SFML_Test
                 }
             }
 
-
-
-
             #endregion
+
+
             #region [애니메이션]
-            public struct Phase 
+
+            public struct Phase
             {
                 public Phase(Vector2f position, float rotation)
                 {
@@ -412,38 +428,84 @@ namespace _231109_SFML_Test
                 public Vector2f position;
                 public float rotation;
 
-                public static Phase Lerp(float value, Phase start, Phase end) { return new Phase(); }
-            }
+                public static Phase Lerp(float value, Phase start, Phase end)
+                {
+                    Phase ret = new Phase();
+                    ret.position = start.position * (1f - value) + end.position * value;
+                    Vector2f rotVec = start.rotation.ToRadian().ToVector() * (1f - value) + end.rotation.ToRadian().ToVector() * value;
+                    ret.rotation = rotVec.ToDirection();
 
-            public abstract class Animator : IDisposable
+                    return ret;
+                }
+            }
+            protected abstract class Animator : IDisposable
             {
-                public Phase phase;
+                Phase phasePro;
+                public Phase phase
+                {
+                    get { return phasePro; }
+                    set
+                    {
+                        Vector2f sepPos = value.position - phasePro.position;
+                        float sepRot = value.rotation - phasePro.rotation;
+
+                        phasePro = value;
+                        foreach (Animator item in attacheds.Keys)
+                        {
+                            item.position += sepPos;
+                            item.rotation += sepRot;
+
+                            Vector2f difPos = item.position - phasePro.position;
+                            difPos.RotateFromZero(sepRot);
+                            item.position = phasePro.position + difPos;
+                        }
+                    }
+                }
                 public float size;
 
+                public Animator(Vector2f position, float rotation, float size) : this(new Phase(position, rotation), size) { }
+                public Animator(Phase phase, float size)
+                {
+                    this.phase = phase;
+                    this.size = size;
+                }
+
+                public abstract void DrawManual(Vector2f position, float rotation);
+                protected abstract void LogicProcess();
+
+
                 #region [기타 편의를 위한 메서드들]
+
                 public Vector2f position
                 {
-                    get { return phase.position; }
-                    set => phase.position = value;
+                    get { return phasePro.position; }
+                    set => phase = new Phase(value, phase.rotation);
                 }
                 public float rotation
                 {
-                    get { return phase.rotation; }
-                    set => phase.rotation = value;
+                    get { return phasePro.rotation; }
+                    set => phase = new Phase(phase.position, value);
                 }
 
 
-                public void Draw() => DrawManual(phase);
+                public void Draw(Hands hands)
+                {
+                    Vector2f tPos = hands.handRot.ToRadian().ToVector() * phase.position.X +
+                         (hands.handRot + 90f).ToRadian().ToVector() * phase.position.Y +
+                         hands.handPos +
+                         hands.master.Position;
+                    float tRot = hands.handRot + phase.rotation;
+
+                    Phase newPhase = new Phase(tPos, tRot);
+
+                    DrawManual(newPhase);
+                }
                 public void DrawManual(Phase phase) => DrawManual(phase.position, phase.rotation);
                 #endregion
 
-                public abstract void DrawManual(Vector2f position, float rotation);
-
-
-
                 #region [애니메이터 탈부착]
-                Dictionary<Animator, Phase> attacheds = new Dictionary<Animator, Phase>();
-                Animator attachTo;
+                protected Dictionary<Animator, Phase> attacheds = new Dictionary<Animator, Phase>();
+                protected Animator attachTo;
 
                 //피동 탈부착
                 public void BeAttach(Animator animator, Vector2f position, float rotation) => BeAttach(animator, new Phase(position, rotation));
@@ -452,25 +514,25 @@ namespace _231109_SFML_Test
 
                 //능동 탈부착
                 public void DoAttach(Animator animator, Vector2f position, float rotation) => DoAttach(animator, new Phase(position, rotation));
-                public void DoAttach(Animator animator, Phase phase) 
+                public void DoAttach(Animator animator, Phase phase)
                 {
                     attachTo.BeAttach(animator, phase);
                     attachTo = animator;
                 }
-                public void DoDettach() 
+                public void DoDettach()
                 {
-                    if (attachTo == null) throw new Exception("DoDettach - 아니 attachTo가 null인데 어디서 뗀다는거?");
-                    attachTo.BeDettach(this);
+                    attachTo?.BeDettach(this);
                     attachTo = null;
                 }
 
                 //프로세스
                 public void AttachesProcess()
                 {
-                    //TODO
+                    LogicProcess();
 
-                    foreach(Animator animator in attacheds.Keys) animator.AttachesProcess();
+                    foreach (Animator animator in attacheds.Keys) animator.AttachesProcess();
                 }
+
                 #endregion
 
                 #region [소멸자 처리]
@@ -488,32 +550,154 @@ namespace _231109_SFML_Test
                 #endregion
             }
 
-            public enum HandAnimationType
+            protected abstract class HandableUnit : Animator
             {
-                IDLE,
-            }
-            public class HandUnit
-            {
-                public HandUnit(Hands hands, bool isRightArm)
+                public HandableUnit(IHandable handable) : base(new Vector2f(), 90f, 1f)
                 {
-                    this.hands = hands;
+                    this.handable = handable;
+                }
+
+                protected IHandable handable;
+
+                public override void DrawManual(Vector2f position, float rotation)
+                {
+                    handable.DrawHandable(DrawManager.texWrHigher, position, rotation, new Vector2f(1f, 1f) * size, CameraManager.worldRenderState);
+                }
+
+                protected override abstract void LogicProcess();
+            }
+
+
+            protected class HandUnit : Animator
+            {
+                public enum AnimationType
+                {
+                    LOOSE,
+                    IDLE,
+                }
+                public HandUnit(bool isRightArm) : base(Vector2fEx.Zero, 0f, 1f)
+                {
                     this.isRightArm = isRightArm;
 
-                    steadyOffset = isRightArm ? new Vector2f(50f, 100f) : new Vector2f(-50f, 100f);
-                    animaType = HandAnimationType.IDLE;
+                    phaseTarget = isRightArm ? new Phase(new Vector2f(50f, 100f), 0f) : new Phase(new Vector2f(-50f, 100f), 0f);
+                    animaType = AnimationType.IDLE;
 
+                    drawShape = new RectangleShape(new Vector2f(32, 32));
+                    drawShape.Origin = drawShape.Size / 2f;
+                    drawShape.Position = phase.position;
+                    drawShape.Rotation = phase.rotation;
+                    //drawShape.Texture = ResourceManager.textures["hand_idle"];
 
                 }
-                public Hands hands;
-                public HandAnimationType animaType;
-                public Vector2f steadyOffset;
+
+                public RectangleShape drawShape;
+
+                public AnimationType animaType;
+                public Phase phaseTarget;   //사용자의 위상이 수렴하는 곳.
                 public bool isRightArm;
+
+                //피 부착을 위한 이동
+                public Animator grabTarget = null;
+                public Phase grabPhase;
+
+                public override void DrawManual(Vector2f position, float rotation)
+                {
+                    drawShape.Position = position;
+                    drawShape.Rotation = rotation;
+
+                    DrawManager.texWrHigher.Draw(drawShape, CameraManager.worldRenderState);
+                }
+
+                //
+                void SetGrab(Animator animator, Phase phase)
+                {
+                    grabTarget = animator;
+                    grabPhase = phase;
+                }
+                void CancelGrab()
+                {
+                    grabTarget = null;
+                }
+
+                protected void ChangeAnimation(AnimationType animationType)
+                {
+                    switch (animationType)
+                    {
+                        case AnimationType.IDLE:
+                            //SetGrab()
+                            break;
+                        case AnimationType.LOOSE:
+                            CancelGrab();
+                            phaseTarget = isRightArm ? new Phase(new Vector2f(50f, 100f), 0f) : new Phase(new Vector2f(-50f, 100f), 0f);
+                            break;
+                    }
+                }
+
+                protected override void LogicProcess()
+                {
+                    switch (animaType)
+                    {
+                        case AnimationType.IDLE:
+                            //if (attachTo != null)
+                            //    Phase.Lerp(0.1f, phase, phaseTarget);
+                            break;
+
+                        case AnimationType.LOOSE:
+                            if (grabTarget != null) CancelGrab();
+                            break;
+                    }
+
+                }
+            }
+            protected class WeaponUnit : HandableUnit
+            {
+                public WeaponUnit(Weapon weapon) : base(weapon) { }
+
+                protected override void LogicProcess() { }
+            }
+
+            protected class ItemUnit : Animator
+            {
+                public ItemUnit(Item item, Vector2f position, float rotation) : base(position, rotation, 1f)
+                {
+                    this.item = item;
+
+                    shape = new RectangleShape(new Vector2f(64, 64));
+                    shape.Texture = ResourceManager.textures[item.spriteName];
+                    shape.Position = position;
+                    shape.Rotation = rotation;
+                }
+
+                Item item;
+                RectangleShape shape;
+
+                public override void DrawManual(Vector2f position, float rotation)
+                {
+                    shape.Position = position;
+                    shape.Rotation = rotation;
+                    DrawManager.texWrHigher.Draw(shape, CameraManager.worldRenderState);
+                }
+
+                protected override void LogicProcess() { }
+            }
+
+            List<Animator> animators;
+            public void AnimationInit()
+            {
+                animators = new List<Animator>
+                {
+                    new HandUnit(true),
+                    new HandUnit(false),
+                };
             }
             public void AnimationProcess()
             {
 
             }
-
+            public void DrawAnimatorsProcess()
+            {
+                foreach (Animator ani in animators) ani.Draw(this);
+            }
             #endregion
 
         }
@@ -527,7 +711,7 @@ namespace _231109_SFML_Test
                 this.master = master;
                 this.healthMax = healthMax;
                 this.healthNow = healthMax;
-                bleedingTimer = new Timer(10d);
+                bleedingTimer = new Timer(100d);
                 bleedingTimer.Elapsed += (s, e) =>
                 {
                     if (bleeding <= 0.001f) return;
@@ -543,7 +727,7 @@ namespace _231109_SFML_Test
             public float healthMax, healthNow;
             //출혈
             public float bleeding = 0f;
-            public const float bleedingReduce = 0.0005f;
+            public const float bleedingReduce = 0.005f;
             Timer bleedingTimer;
 
 
@@ -711,6 +895,236 @@ namespace _231109_SFML_Test
                     return plateCarrier.armourPlate;
                 }
             }
+
+
+        }
+
+        public Movement movement;
+        public class Movement
+        {
+            public Humanoid master;
+            public Movement(Humanoid master)
+            {
+                this.master = master;
+                weapon = null;
+            }
+
+            public Weapon weapon;
+            public void SetWeapon(Weapon weapon) => this.weapon = weapon;
+
+            public struct MovementData
+            {
+                public MovementData(float friction, float accel, bool handUsable, bool directive)
+                {
+                    this.friction = friction;
+                    this.accel = accel;
+                    this.handUsable = handUsable;
+                    this.directive = directive;
+                }
+
+                public float friction;  //마찰
+                public float accel;     //가속
+
+                public bool handUsable; //장비 사용 가능
+
+                public bool directive;  //방향 전환...
+                public static MovementData Lerp(float value, MovementData s, MovementData e)
+                {
+                    return new MovementData()
+                    {
+                        accel = s.accel * (1f - value) + e.accel * value,
+                        friction = s.friction * (1f - value) + e.friction * value,
+                        handUsable = s.handUsable && e.handUsable,
+                        directive = s.directive || e.directive,
+                    };
+                }
+            }
+            public enum MovementState
+            {
+                CROUNCH,
+                IDLE,
+                SPRINT,
+            }
+
+            static (MovementData counch, MovementData walk, MovementData sprint) movementOrigin =
+            (
+                counch: new MovementData(12.0f, 3500f, true, false), //숙이기
+                walk: new MovementData(8.0f, 3000f, true, false),    //기본
+                sprint: new MovementData(3.0f, 2000f, false, true)   //스프린트
+            );
+            (MovementData counch, MovementData walk, MovementData sprint) movementPreset = movementOrigin;
+
+            public MovementData nowMovement;
+            public MovementState nowState = MovementState.IDLE;
+            int basicIndex = 1;
+            public float movementValue = 1f;
+
+            public bool handUsable { get { return nowMovement.handUsable; } }
+            public bool directive { get { return nowMovement.directive; } }
+
+            public void MovementProcess()
+            {
+                RefreshMovement();
+
+                //마찰에 의한 감속
+                double deltaTime = 1d / master.gamemode.logicFps;
+                speed *= (float)(1d - nowMovement.friction * deltaTime);
+
+                //이동에 의한 가속
+                Vector2f accelVec = moveDir.Magnitude() > 1f ? moveDir.Normalize() : moveDir;
+                speed += accelVec * (float)(nowMovement.accel * accelPer * deltaTime);
+
+                #region [충돌]
+
+                Circle maskHum = master.mask as Circle;
+                Vector2f posOrigin = master.Position;
+                Vector2f vecOrigin = speed;// * (float)deltaTime;
+
+                GamemodeIngame gm = master.gamemode as GamemodeIngame;
+
+                //벽과의 충돌
+                foreach (Structure stru in gm.structures)
+                {
+                    maskHum.Position = posOrigin + new Vector2f(vecOrigin.X * (float)deltaTime, 0f);
+                    if (maskHum.IsCollision(stru.mask))
+                        vecOrigin.X = Math.Abs(vecOrigin.X) * Math.Sign(vecOrigin.X) * -0.5f;
+
+                    maskHum.Position = posOrigin + new Vector2f(0f, vecOrigin.Y * (float)deltaTime);
+                    if (maskHum.IsCollision(stru.mask))
+                        vecOrigin.Y = Math.Abs(vecOrigin.Y) * Math.Sign(vecOrigin.Y) * -0.5f;
+
+                    maskHum.Position = posOrigin;
+                    speed = vecOrigin;
+                }
+
+                //엔티티와의 충돌
+                foreach (Entity ent in gm.entitys)
+                {
+                    if (ent == null) continue;
+                    if (ent.isDisposed == true) continue;
+                    if (ent.Position == master.Position) continue;
+
+                    if (ent is Container || ent is Humanoid)
+                        if (ent.mask.IsCollision(master.mask))
+                        {
+                            float dis = (master.Position - ent.Position).Magnitude();
+                            float pushMultipier = 1f / (dis + 1f) * 10000f;
+                            Vector2f push = (master.Position - ent.Position).Normalize() * pushMultipier;
+                            speed += push;
+                            if (ent is Humanoid human)
+                                human.movement.speed -= push;
+                        }
+                }
+                #endregion
+
+                //속도에 의한 변위
+                master.Position += speed * (float)deltaTime;
+            }
+
+            void RefreshMovement()
+            {
+                //기본(걷기) 상태라면?
+                if (Math.Abs(movementValue - basicIndex) < 0.001f)
+                {
+                    nowMovement = movementPreset.walk;
+                    nowState = MovementState.IDLE;
+                }
+                //로우레디 상태라면?
+                else if (movementValue < basicIndex)
+                {
+                    float ratio = movementValue;
+                    nowMovement = MovementData.Lerp(ratio, movementPreset.counch, movementPreset.walk);
+                    nowState = MovementState.CROUNCH;
+                }
+                //스프린트 상태라면?
+                else if (movementValue > basicIndex)
+                {
+                    float ratio = movementValue - 1f;
+                    nowMovement = MovementData.Lerp(ratio, movementPreset.walk, movementPreset.sprint);
+                    nowState = MovementState.SPRINT;
+                }
+            }
+
+            public float accelPer = 1.00f;      //가속 배율
+
+            public Vector2f speed = Vector2fEx.Zero; // 속도 벡터
+            public Vector2f moveDir = Vector2fEx.Zero; // 가속 벡터 (최대 1)
+
+        }
+
+        public Aim aim;
+        public class Aim
+        {
+            public Humanoid master;
+            public Aim(Humanoid master)
+            {
+                this.master = master;
+                weapon = null;
+
+                staticDot = master.Position;
+                dynamicDot = master.Position;
+                recoilVec = Vector2fEx.Zero;
+                traggingDot = master.Position;
+                damageVec = Vector2fEx.Zero;
+            }
+
+            Weapon weapon;
+            WeaponStatus status;
+            WeaponStatus.AimData aimData { get => status.aimDt; }
+            float moveValue => master.movement.movementValue;
+
+            public void SetWeapon(Weapon weapon)
+            {
+                this.weapon = weapon;
+                status = GetAdjustAppliedStatus(weapon);
+            }
+            public WeaponStatus GetAdjustAppliedStatus(Weapon weapon)
+            {
+                //TODO
+                return weapon.status;
+            }
+
+
+
+            //ADS 전환 및 값 -1 : 질주, 0 : 대기, 1 : 조준
+            //딜레이 -1 ~ 0 : 질주 전환 / 0 ~ 1 : 조준 전환
+            public float adsValue = 0f;
+            public float adsTime { get => status.timeDt.adsTime; }
+            public float sprintTime { get => status.timeDt.sprintTime; }
+
+
+            //실제 마우스 점, 동적 마우스 점;
+            public Vector2f staticDot, dynamicDot;
+
+            public Vector2f traggingDot;
+            /// <summary>
+            /// 트래킹 도트 수렴 속도
+            /// </summary>
+            public float traggingDotSpeed { get => aimData.hip.traggingSpeed; }
+
+            public Vector2f recoilVec;
+            /// <summary>
+            /// 반동 벡터 회복 속도
+            /// </summary>
+            public float recoilVecRecovery { get => aimData.ads.recoil.recovery; }
+
+            public Vector2f damageVec;
+            /// <summary>
+            /// 피격 반응 회복 속도
+            /// </summary>
+            public float damageVecRecovery;
+
+
+
+            /// <summary>
+            /// 지향 사격 탄퍼짐
+            /// </summary>
+            public float hipSpray { get => hiptStanceSpray + hipRecoilSpray; }
+
+            public float hiptStanceSpray, hipStanceRecovery, hipStanceAccuracy;
+            public float hipRecoilSpray, hipRecoilRecovery;
+
+
 
 
         }

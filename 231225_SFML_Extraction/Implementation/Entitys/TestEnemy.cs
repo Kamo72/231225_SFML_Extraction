@@ -14,7 +14,7 @@ namespace _231109_SFML_Test
         {
             ((CircleShape)mask).FillColor = Color.Red;
             noise = new FastNoise((int)(VideoManager.GetTimeTotal() * 37));
-            accel *= 0.9f;
+            movement.accelPer*= 0.9f;
         }
 
         Entity targetEntity = null;
@@ -42,9 +42,9 @@ namespace _231109_SFML_Test
             base.LogicProcess();
 
             if (targetEntity != null)
-                moveDir = (targetEntity.Position - Position).Normalize();
+                movement.moveDir = (targetEntity.Position - Position).Normalize();
             else
-                moveDir = new Vector2f(
+                movement.moveDir = new Vector2f(
                     noise.GetPerlin(VideoManager.GetTimeTotal() * 100f, 12531f),
                     noise.GetPerlin(VideoManager.GetTimeTotal() * 100f, 1613f)).Normalize();
 

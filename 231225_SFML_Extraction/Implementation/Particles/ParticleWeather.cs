@@ -12,7 +12,7 @@ namespace _231109_SFML_Test
     internal class SnowFall : Particle
     {
         public SnowFall(Gamemode gamemode, Vector2f position, float speed)
-            : base(gamemode, 6000, position, new Vector2f(1f, 1f), 0f)
+            : base(gamemode, 240, position, new Vector2f(1f, 1f), 0f)
         {
             rotationFixed = (180f.ToRadian() + new Vector2f(speed, -1f).ToDirection()).ToDirection();
 
@@ -49,10 +49,6 @@ namespace _231109_SFML_Test
             DrawManager.texWrEffect.Draw(drawable, CameraManager.worldRenderState);
         }
 
-        public override void LogicProcess()
-        {
-
-        }
     }
 
 

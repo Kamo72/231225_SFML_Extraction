@@ -333,7 +333,7 @@ namespace _231109_SFML_Test
             return false;
         }
 
-    public static bool CheckCollision(Circle circle, Line line)
+        public static bool CheckCollision(Circle circle, Line line)
         {
             return Collision.CheckCollision(line, circle);
         }
@@ -369,6 +369,7 @@ namespace _231109_SFML_Test
 
             // Check if the distance is less than the sum of the radii
             return distanceSquared <= ((radius1 + radius2) * (radius1 + radius2));
+
         }
 
         public static bool CheckCollision(Point point, Line line)

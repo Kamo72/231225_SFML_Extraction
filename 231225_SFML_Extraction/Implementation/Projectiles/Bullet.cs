@@ -18,7 +18,7 @@ namespace _231109_SFML_Test
     internal class Bullet : Projectile, ILightSource
     {
         public Bullet(Gamemode gamemode, AmmoStatus ammoStatus, Vector2f position, float rotation = 0, float speed = 0)
-            : base(gamemode, 120, new Line(position, position + rotation.ToRadian().ToVector() * speed * 3f),
+            : base(gamemode, 100, new Line(position, position + rotation.ToRadian().ToVector() * speed * 3f),
                   position, rotation, speed)
         {
             this.ammoStatus = ammoStatus;
@@ -34,6 +34,7 @@ namespace _231109_SFML_Test
                 }
 
             collisionCheck = CollisionCheck;
+
         }
 
         AmmoStatus ammoStatus;
@@ -48,8 +49,12 @@ namespace _231109_SFML_Test
         void CollisionCheck()
         {
             GamemodeIngame ingm = gamemode as GamemodeIngame;
+
+            //카메라 안에서만 궤적을 남김.
+            float drawableRange = CameraManager.size.Magnitude() * CameraManager.zoomValue;
+            float dist = (this.position - CameraManager.position).Magnitude();
+            if (drawableRange > dist) new MuzzleSmoke(ingm, position, rotation - 180f);
             
-            new MuzzleSmoke(ingm, position, rotation - 180f);
 
             foreach (Entity ent in ingm.entitys)
             {
@@ -72,7 +77,7 @@ namespace _231109_SFML_Test
                     //Console.WriteLine("데미지 체크! " + Vm.GetTimeTotal());
 
                     float ret = human.health.GetDamage(damage);
-                    human.speed += rotation.ToRadian().ToVector() * speed.Magnitude() / 10f;
+                    human.movement.speed += rotation.ToRadian().ToVector() * speed.Magnitude() / 10f;
                     for (int i = 0; i < 30; i++)
                         new BloodSpray(gamemode, position, rotation);
 
@@ -99,6 +104,7 @@ namespace _231109_SFML_Test
 
         public override void LogicProcess()
         {
+            lifeNow--;
             if (lifeNow <= 0) Dispose();
         }
     

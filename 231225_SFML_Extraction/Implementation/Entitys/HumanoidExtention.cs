@@ -1113,12 +1113,18 @@ namespace _231109_SFML_Test
             //실제 마우스 점, 동적 마우스 점;
             public Vector2f staticDot, dynamicDot;
 
+            #region [트래킹 도트]
+
             public Vector2f traggingDot;
             /// <summary>
             /// 트래킹 도트 수렴 속도
             /// </summary>
-            public float traggingDotSpeed => aimData.hip.traggingSpeed; 
+            public float traggingDotSpeed => aimData.hip.traggingSpeed;
 
+            #endregion
+
+
+            #region [피격 반응 벡터]
 
             public Vector2f damageVec;
             /// <summary>
@@ -1129,11 +1135,16 @@ namespace _231109_SFML_Test
             public void GetDamageVector(float value) { }
             public void DamageVectorProcess() { }
 
+            #endregion
+
 
             /// <summary>
             /// 지향 사격 탄퍼짐
             /// </summary>
-            public float hipSpray => hiptStanceSpray + hipRecoilSpray; 
+            public float hipSpray => hiptStanceSpray + hipRecoilSpray;
+
+
+            #region [지향 사격 - 자세(지향 사격 정확도)]
 
             /// <summary>
             /// 지향 사격 자세 탄퍼짐
@@ -1179,6 +1190,10 @@ namespace _231109_SFML_Test
 
             public void HipStanceProcess() { }
 
+            #endregion
+
+
+            #region [지향 사격 - 반동(지향 사격 반동)]
 
             /// <summary>
             /// 지향 사격 반동 탄퍼짐
@@ -1204,8 +1219,8 @@ namespace _231109_SFML_Test
 
                         return aimData.hip.recoil.recovery * adjustRatio;
                     }
-                    
-                    if (master.movement.speed.Magnitude() < 0.1f) //이동 중
+
+                    if (master.movement.speed.Magnitude() > 0.1f) //이동 중
                     {
                         float ratio = Mathf.Clamp(0f, moveRatio, 1f);
                         float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.hip.recoil.recoveryAdjust.walk);
@@ -1220,6 +1235,10 @@ namespace _231109_SFML_Test
             public void GetHipRecoil() { }
             public void HipRecoilProcess() { }
 
+            #endregion
+
+
+            #region [반동 벡터(조준점 반동 제어)]
 
             /// <summary>
             /// 반동 벡터
@@ -1244,7 +1263,7 @@ namespace _231109_SFML_Test
                         return 1f * adjustRatio;
                     }
 
-                    if (master.movement.speed.Magnitude() < 0.1f) //이동 중
+                    if (master.movement.speed.Magnitude() > 0.1f) //이동 중
                     {
                         float ratio = Mathf.Clamp(0f, moveRatio, 1f);
                         float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.ads.recoil.strengthAdjust.walk);
@@ -1260,6 +1279,42 @@ namespace _231109_SFML_Test
 
             public void RecoilVectorProcess() { }
 
+            #endregion
+
+
+            #region [조준 사격 - 자세(조준점 안정)]
+
+            /// <summary>
+            /// 조준 사격 정확도
+            /// </summary>
+            public Vector2f adsStanceVec;
+
+            public float adsStanceAccuracy 
+            {
+                get
+                {
+                    if (moveValue < 0.99f) //웅크리기
+                    {
+                        float ratio = 1f - moveValue;
+                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.ads.stance.accuracyAdjust.crounch);
+
+                        return aimData.ads.stance.accuracy * adjustRatio;
+                    }
+
+                    if (master.movement.speed.Magnitude() > 0.1f) //이동 중
+                    {
+                        float ratio = Mathf.Clamp(0f, moveRatio, 1f);
+                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.ads.stance.accuracyAdjust.walk);
+
+                        return aimData.ads.stance.accuracy * adjustRatio;
+                    }
+
+                    return aimData.ads.stance.accuracy;
+                }
+            }
+
+            public void AdsStanceVectorProcess() { }
+            #endregion
 
 
         }

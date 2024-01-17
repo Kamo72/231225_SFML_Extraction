@@ -307,11 +307,11 @@ namespace _231109_SFML_Test
                     /// <summary>
                     /// 지향 자세 회복 속도
                     /// </summary>
-                    public float recovery;     
+                    public float recovery;
                     /// <summary>
                     /// 지향 자세 정확도
                     /// </summary>
-                    public float accuracy;     
+                    public float accuracy;
                     /// <summary>
                     ///  정확도 변인 [엄폐, 걷기]
                     /// </summary>
@@ -331,7 +331,11 @@ namespace _231109_SFML_Test
                     /// <summary>
                     /// 회복 속도 변인 [엄폐, 걷기]
                     /// </summary>
-                    public (float crounch, float walk) recoveryAdjust;   
+                    public (float crounch, float walk) recoveryAdjust;
+                    /// <summary>
+                    /// 지향 반동 크기
+                    /// </summary>
+                    public float strength;
                 }
                 /// <summary>
                 /// 반동 값
@@ -379,7 +383,11 @@ namespace _231109_SFML_Test
                     /// <summary>
                     /// 조준점 반동 회복 속도
                     /// </summary>
-                    public float recovery; 
+                    public float recovery;
+                    /// <summary>
+                    /// 지향 반동 크기 변인
+                    /// </summary>
+                    public (float crounch, float walk) strengthAdjust;
                 }
                 /// <summary>
                 /// 반동 값

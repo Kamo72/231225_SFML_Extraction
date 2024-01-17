@@ -21,5 +21,11 @@ namespace _231109_SFML_Test
         {
             return Math.Min(Math.Max(value, min), max);
         }
+
+        internal static float PercentMultiflex(float percent, float multiflex) 
+        {
+            float sep = percent - 1f;
+            return 1f + sep * multiflex;
+        }
     }
 }

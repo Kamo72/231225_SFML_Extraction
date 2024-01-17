@@ -51,6 +51,7 @@ namespace _231109_SFML_Test
                         {
                             recovery = 1.00f,
                             recoveryAdjust = (crounch: 1.00f, walk: 1.00f),
+                            strength = 1.00f,
                         },
                         traggingSpeed = 1.00f,
                     },
@@ -66,6 +67,7 @@ namespace _231109_SFML_Test
                             fix = new Vector2f(7.0f, 35.0f),
                             random = new Vector2f(3.5f, 5.0f),
                             recovery = 0.02f,
+                            strengthAdjust = (crounch: 1.00f, walk : 1.00f),
                         },
                         moa = 12f,
                     },
@@ -86,9 +88,8 @@ namespace _231109_SFML_Test
                     muzzleVelocity = 2080f,
                     roundPerMinute = 700f,
                     effectiveRange = 750f,
-                    barrelLength = 50f;
-                },
-                
+                    barrelLength = 50f,
+                }, 
             };
 
             WeaponLibrary.Set("FN_FAL", status);

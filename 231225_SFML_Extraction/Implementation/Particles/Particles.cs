@@ -17,8 +17,8 @@ namespace _231109_SFML_Test
             Func<float> getRand = () => (float)random.NextDouble() * 2f - 1f;
 
             Vector2f speed2D = (rotation + getRand() * 70f).ToRadian().ToVector() * (getRand() * 300f + 100f);
-            Console.WriteLine(speed2D);
-            float hSpeed = +7f + getRand() * 3f;
+
+            float hSpeed = 7f + getRand() * 3f;
             speed = new Vector3f(speed2D.X, speed2D.Y, hSpeed);
 
         }

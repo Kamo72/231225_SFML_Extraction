@@ -66,6 +66,11 @@ namespace _231109_SFML_Test
                         textures.Add("FN_FAL_MAG20", new Texture(header + "FN_FAL_MAG20.png"));
                         textures.Add("FN_FAL_MAG50", new Texture(header + "FN_FAL_MAG50.png"));
                     }
+                    {
+
+                        textures.Add("IronSight_FN_FAL_close", new Texture(header + "IronSight_FN_FAL_close.png"));
+                        textures.Add("IronSight_FN_FAL_far", new Texture(header + "IronSight_FN_FAL_far.png"));
+                    }
                 }
                 {
                     textures.Add("LIGHT_radial", new Texture(header + "RadialAlphaGradientGray.png"));
@@ -129,6 +134,13 @@ namespace _231109_SFML_Test
                     CopyFile(dirPath + @"FN_FAL_MAG20.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_MAG50.png", @"Assets\Textures\");
 
+                }
+                {
+                    dirPath = tdirPath + @"\IronSight_FN_FAL\";
+                    //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\WEAPONS_DMR\IronSight_FN_FAL\
+
+                    CopyFile(dirPath + @"IronSight_FN_FAL_close.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"IronSight_FN_FAL_far.png", @"Assets\Textures\");
                 }
             }
 

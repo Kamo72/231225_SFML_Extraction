@@ -17,6 +17,9 @@ using SFML.Window;
 using System.Security.Cryptography.X509Certificates;
 using System.Xml.Linq;
 using System.Drawing.Printing;
+using System.Collections;
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace _231109_SFML_Test
 {
@@ -128,27 +131,178 @@ namespace _231109_SFML_Test
         }
 
         //조준점
-        class PlayerAimDrawer : PlayerUiDrawer
+        class PlayerCrosshairDrawer : PlayerUiDrawer
         {
-            CircleShape aimPoint;
+            CircleShape staticDot;
+            RectangleShape[] dynamicDotCrosshair;
 
-            public PlayerAimDrawer(Player master) : base(master)
+            public PlayerCrosshairDrawer(Player master) : base(master)
             {
 
-                aimPoint = new CircleShape(5f);
-                aimPoint.FillColor = Color.White;
-                aimPoint.Origin = new Vector2f(aimPoint.Radius, aimPoint.Radius);
+                staticDot = new CircleShape(4f);
+                staticDot.FillColor = new Color(255, 255, 255, 255);
+                staticDot.Origin = new Vector2f(staticDot.Radius, staticDot.Radius);
+
+                
+                dynamicDotCrosshair = new RectangleShape[]
+                {
+                    new RectangleShape(new Vector2f(20f, 3f)),
+                    new RectangleShape(new Vector2f(20f, 3f)),
+                    new RectangleShape(new Vector2f(20f, 3f)),
+                    new RectangleShape(new Vector2f(20f, 3f)),
+                };
+
+                dynamicDotCrosshair[0].Rotation = 0f;
+                dynamicDotCrosshair[1].Rotation = 90f;
+                dynamicDotCrosshair[2].Rotation = 180f;
+                dynamicDotCrosshair[3].Rotation = 270f;
+
+                dynamicDotCrosshair[0].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
+                dynamicDotCrosshair[1].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
+                dynamicDotCrosshair[2].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
+                dynamicDotCrosshair[3].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
+
+                dynamicDotCrosshair[0].FillColor = new Color(255, 255, 255, 255);
+                dynamicDotCrosshair[1].FillColor = new Color(255, 255, 255, 255);
+                dynamicDotCrosshair[2].FillColor = new Color(255, 255, 255, 255);
+                dynamicDotCrosshair[3].FillColor = new Color(255, 255, 255, 255);
+
             }
 
             public override void DrawProcess()
             {
-                aimPoint.Position = master.aimPosition + (Vector2f)Vm.resolutionNow / 2f;
-                DrawManager.texUiInterface.Draw(aimPoint);
+                staticDot.Position = master.aimPosition + (Vector2f)Vm.resolutionNow / 2f;
+                DrawManager.texUiInterface.Draw(staticDot);
+
+                Vector2f dynamicDot = master.aim.dynamicDot;
+                float aimSpray = master.aim.hipSpray;
+
+                float crosshairAlpha = Mathf.Clamp(0f, 1f - Math.Abs(master.aim.adsValue) * 2f, 1f);
+
+                dynamicDotCrosshair[0].Position = dynamicDot + new Vector2f(aimSpray, 0f);
+                dynamicDotCrosshair[1].Position = dynamicDot + new Vector2f(0f, +aimSpray);
+                dynamicDotCrosshair[2].Position = dynamicDot + new Vector2f(-aimSpray, 0f);
+                dynamicDotCrosshair[3].Position = dynamicDot + new Vector2f(0f, -aimSpray);
+
+                foreach (var item in dynamicDotCrosshair)
+                {
+                    Console.WriteLine(master.aim.adsValue);
+                    item.FillColor = new Color(item.FillColor) { A = (byte)(255 * crosshairAlpha) };
+                    DrawManager.texUiInterface.Draw(item);
+                }
             }
             public override void Dispose()
             {
-                aimPoint?.Dispose();
+                staticDot?.Dispose();
             }
+        }
+
+
+        class PlayerAdsDrawer : PlayerUiDrawer
+        {
+            static RectangleShape drawable;
+            public AdsData sightAds;
+            public AdsData weaponAds;
+            public Weapon weapon;
+
+            public PlayerAdsDrawer(Player master) : base(master)
+            {
+                drawable = new RectangleShape(new Vector2f(100f, 100f));
+                drawable.Origin = drawable.Size / 2f;
+            }
+            static Random random = new Random();
+            public override void DrawProcess()
+            {
+                try
+                {
+                    if (master.hands.handling is Weapon weapon)
+                    {
+                        if (this.weapon != weapon)
+                        {
+                            this.weapon = weapon;
+                            //무기 초기화
+                            weaponAds = AdsData.adsLibrary[weapon.status.aimDt.ads.adsName];
+                            //sightAds = weapon.
+                        }
+                        Console.WriteLine($"무기초기화 : {AdsData.adsLibrary[weapon.status.aimDt.ads.adsName]}");
+                    }
+
+
+                    if (this.weapon != null)
+                    {
+                        //값가져오기
+                        float adsAlpha = Mathf.Clamp(0f, (master.aim.adsValue - 0.5f) * 2f, 1f);
+                        float size = 1f  + master.aim.recoilVec.Magnitude() / 500f;
+                        Vector2f tremble = new Vector2f(
+                            ((float)random.NextDouble() - 0.5f) * master.aim.recoilVec.Magnitude(),
+                            ((float)random.NextDouble() - 0.5f) * master.aim.recoilVec.Magnitude());
+                        Vector2f posTo = master.aim.dynamicDot;
+                        Vector2f posFrom = master.aim.traggingDot + (Vector2f)VideoManager.resolutionNow / 2f
+                            - master.aim.adsStanceVec * 1f
+                            + tremble * 0.5f;
+
+                        //드로우
+                        DrawAds(DrawManager.texWrAugment, weaponAds, posTo, posFrom, adsAlpha, size);
+                    }
+
+
+
+                }
+                catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+            }
+
+            public override void Dispose()
+            {
+                drawable.Dispose();
+            }
+
+
+            void DrawAds(RenderTexture rTexture, AdsData ads, Vector2f aimPos, Vector2f screenPos, float alpha = 1f, float size = 1f)
+            {
+                try
+                {
+                    //if (ads.adsType == AdsData.AdsType.SCOPE || ads.adsType == AdsData.AdsType.DOT_SIGHT)
+                    //{
+                    //    //TODO!
+                    //}
+
+                    float originDepth = 100f;
+                    Vector2f posDelta = (screenPos - aimPos) / originDepth;
+
+                    foreach (var pair in ads.depthSpritePair)
+                    {
+                        float depth = pair.Key;
+                        Texture texture = ResourceManager.textures[pair.Value];
+
+                        drawable.Texture = texture;
+                        drawable.FillColor = new Color(Color.White) { A = (byte)(255 * alpha) };
+                        drawable.Scale = new Vector2f(1, 1) * size * (originDepth + depth) / originDepth;
+                        drawable.Position = aimPos + posDelta * depth;
+
+                        rTexture.Draw(drawable);
+                    }
+
+                }
+                catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+                
+            }
+        }
+
+        public class AdsData 
+        {
+            public static Dictionary<string, AdsData> adsLibrary = new Dictionary<string, AdsData>();
+
+            public enum AdsType 
+            {
+                IRON_SIGHT, //기계식 조준경 - X
+                DOT_SIGHT,  //전자식 조준경 - 정확한 조준점, 
+                SCOPE,      //광학 조준경 - 정확한 조준점, 조준점에서 멀면 까맣게 보임.
+            }
+            
+            public AdsType adsType;
+            public string sightMask;
+            public string sightSprite;
+            public Dictionary<int, string> depthSpritePair;
         }
 
 

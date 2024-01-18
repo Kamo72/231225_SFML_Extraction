@@ -154,6 +154,8 @@
     <Content Include="Sprites\WEAPONS_DMR\FN_FAL_MAG\FN_FAL_MAG10.png" />
     <Content Include="Sprites\ITEMS\Oddment.png" />
     <Content Include="Sprites\LIGHT\RadialAlphaGradientGray.png" />
+    <Content Include="Sprites\WEAPONS_DMR\IronSight_FN_FAL\IronSight_FN_FAL_far.png" />
+    <Content Include="Sprites\WEAPONS_DMR\IronSight_FN_FAL\IronSight_FN_FAL_close.png" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

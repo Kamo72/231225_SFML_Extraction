@@ -131,7 +131,7 @@ namespace _231109_SFML_Test
                 bool result;
                 KeyData keyToTry = secondKey != null ? (KeyData)secondKey : (KeyData)firstKey;
 
-                if (keyReadType == KeyReadType.RELEASE) Console.WriteLine("Release Test : tryResult " + keyToTry.IsActivated() + " && keyToTry.isActivatedBefore " + keyToTry.isActivatedBefore);
+                //if (keyReadType == KeyReadType.RELEASE) Console.WriteLine("Release Test : tryResult " + keyToTry.IsActivated() + " && keyToTry.isActivatedBefore " + keyToTry.isActivatedBefore);
                 //키 없음
                 if (firstKey == null && secondKey == null)
                 {
@@ -242,8 +242,8 @@ namespace _231109_SFML_Test
             commandDic[CommandType.MOVE_LEFT] = new CommandData("왼쪽으로 이동", KeyReadType.PRESSING, new KeyData(Keyboard.Key.A));
             commandDic[CommandType.MOVE_RIGHT] = new CommandData("오른쪽으로 이동", KeyReadType.PRESSING, new KeyData(Keyboard.Key.D));
 
-            commandDic[CommandType.SPRINT] = new CommandData("달리기", KeyReadType.TOGGLE, new KeyData(Keyboard.Key.LShift));
-            //commandDic[CommandType.CROUNCH] = new CommandData("숙이기", KeyReadType.TOGGLE, new KeyData(KeyCode.C));
+            commandDic[CommandType.SPRINT] = new CommandData("달리기", KeyReadType.PRESS, new KeyData(Keyboard.Key.LShift));
+            commandDic[CommandType.CROUNCH] = new CommandData("숙이기", KeyReadType.PRESS, new KeyData(Keyboard.Key.C));
             //commandDic[CommandType.PRONE] = new CommandData("포복", KeyReadType.TOGGLE, new KeyData(KeyCode.X));
 
             commandDic[CommandType.INTERACT] = new CommandData("상호작용", KeyReadType.PRESS, new KeyData(Keyboard.Key.F));

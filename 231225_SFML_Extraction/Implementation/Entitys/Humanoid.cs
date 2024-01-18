@@ -30,6 +30,7 @@ namespace _231109_SFML_Test
             hands = new Hands(this);
             health = new Health(this, healthMax);
             movement = new Movement(this);
+            aim = new Aim(this);
 
 
             GamemodeIngame ingm = gamemode as GamemodeIngame;
@@ -60,6 +61,7 @@ namespace _231109_SFML_Test
         protected override void PhysicsProcess()
         {
             movement.MovementProcess();
+            aim.AimProcess();
         }
 
         public override void Dispose()

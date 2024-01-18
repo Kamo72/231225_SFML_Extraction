@@ -121,7 +121,7 @@ namespace _231109_SFML_Test
                 //드로우
                 DrawManager.texWrLower.Draw(drawShape, CameraManager.worldRenderState);
             }
-            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+            catch (System.AccessViolationException ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
         }
 
         //Entity 구현

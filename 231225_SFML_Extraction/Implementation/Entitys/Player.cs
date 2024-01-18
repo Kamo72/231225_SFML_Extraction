@@ -17,6 +17,7 @@ using System.Security.Claims;
 using System.Collections;
 using static FastNoise;
 using static _231109_SFML_Test.Humanoid;
+using System.Drawing.Printing;
 
 namespace _231109_SFML_Test
 {
@@ -37,9 +38,10 @@ namespace _231109_SFML_Test
 
             //UI 객체들 초기화
             DrawUiInit(new PlayerUiDrawer[] {
-                new PlayerAimDrawer(this),
+                new PlayerCrosshairDrawer(this),
                 new PlayerHpDrawer(this),
                 new PlayerTabDrawer(this),
+                new PlayerAdsDrawer(this),
             });
         }
 
@@ -94,6 +96,10 @@ namespace _231109_SFML_Test
         {
             try
             {
+                //이동 자세 전환
+                if (Im.CommandCheck(Im.CommandType.SPRINT)) movement.targetIndex = movement.targetIndex == Movement.MovementState.SPRINT ? Movement.MovementState.IDLE : Movement.MovementState.SPRINT;
+                if (Im.CommandCheck(Im.CommandType.CROUNCH)) movement.targetIndex = movement.targetIndex == Movement.MovementState.CROUNCH ? Movement.MovementState.IDLE : Movement.MovementState.CROUNCH;
+
                 //이동 방향 지정
                 movement.moveDir = Vector2fEx.Zero;
                 if (Im.CommandCheck(Im.CommandType.MOVE_LEFT))      movement.moveDir += (+180f).ToRadian().ToVector();

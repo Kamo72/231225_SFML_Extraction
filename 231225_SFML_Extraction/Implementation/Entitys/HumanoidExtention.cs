@@ -3,6 +3,7 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Policy;
 using System.Timers;
@@ -300,6 +301,9 @@ namespace _231109_SFML_Test
                 if (handable is Weapon w) hUnit = new WeaponUnit(w);
                 else if (handable is Item i) hUnit = new ItemUnit(i, Vector2fEx.Zero, 90f);
                 else throw new Exception("SetHandling - IHandable handable을 지원하는 타입이 존재하지 않습니다.");
+
+                if (handable is Weapon wea)
+                    master.aim.SetWeapon(wea);
 
                 animators.Add(hUnit);
             }
@@ -726,6 +730,7 @@ namespace _231109_SFML_Test
 
             //체력
             public float healthMax, healthNow;
+
             //출혈
             public float bleeding = 0f;
             public const float bleedingReduce = 0.005f;
@@ -909,7 +914,15 @@ namespace _231109_SFML_Test
                 this.master = master;
                 weapon = null;
             }
-            
+
+            public void MovementProcess() 
+            {
+                StateProcess();
+                RefreshProcess();
+                PhysicProcess();
+            }
+
+
             //무기 확인
             public Weapon weapon;
             public void SetWeapon(Weapon weapon) => this.weapon = weapon;
@@ -950,31 +963,110 @@ namespace _231109_SFML_Test
             }
 
             //고정 프리셋, 실제 프리셋
-            static (MovementData counch, MovementData walk, MovementData sprint) movementOrigin =
+            static (MovementData crounch, MovementData walk, MovementData sprint) movementOrigin =
             (
-                counch: new MovementData(12.0f, 3500f, true, false), //숙이기
-                walk: new MovementData(8.0f, 3000f, true, false),    //기본
-                sprint: new MovementData(3.0f, 2000f, false, true)   //스프린트
+                crounch: new MovementData(11.0f, 2200f, true, false), //숙이기
+                walk: new MovementData(8.0f, 2800f, true, false),    //기본
+                sprint: new MovementData(5.0f, 3500f, false, true)   //스프린트
             );
-            (MovementData counch, MovementData walk, MovementData sprint) movementPreset = movementOrigin;
+            (MovementData crounch, MovementData walk, MovementData sprint) movementPreset = movementOrigin;
 
             //무브먼트 데이터
             public MovementData nowMovement;
             public MovementState nowState = MovementState.IDLE;
             public float nowValue = 1f;
 
-            const int basicIndex = 1;   //걷기 상태 인덱스
-            public float accelPer = 1.00f;      //가속 배율
+            const MovementState basicIndex = MovementState.IDLE;   //걷기 상태 인덱스
+            public MovementState targetIndex = MovementState.IDLE; //목표 상태 인덱스
+            public const float crounchTime = 0.300f;
+            public float sprintTime => weapon == null? 0.200f : weapon.status.timeDt.sprintTime;
+
+
+            void StateProcess()
+            {
+                float deltaTime = VideoManager.GetTimeDelta();
+
+                switch (targetIndex)
+                {
+                    case MovementState.CROUNCH:
+                        {
+                            //달리는 상태라면? 
+                            if (nowValue > 1.01f)
+                            {
+                                nowValue = Mathf.Clamp(0f, nowValue - 1f / sprintTime * deltaTime, 2f);
+                                break;
+                            }
+
+                            //서 있는 상태라면?
+                            if (nowValue > 0.01f)
+                            {
+                                nowValue = Mathf.Clamp(0f, nowValue - 1f / crounchTime * deltaTime, 2f);
+                                break;
+                            }
+
+                            nowValue = 0.00f;
+                            break;
+                        }
+
+                    case MovementState.IDLE:
+                        {
+                            //웅크리기 상태라면? 
+                            if (nowValue < 0.99f)
+                            {
+                                nowValue = Mathf.Clamp(0f, nowValue + 1f / crounchTime * deltaTime, 2f);
+                                break;
+                            }
+
+                            //달리는 상태라면? 
+                            if (nowValue > 1.01f)
+                            {
+                                nowValue = Mathf.Clamp(0f, nowValue - 1f / sprintTime * deltaTime, 2f);
+                                break;
+                            }
+
+                            nowValue = 1.00f;
+                            break;
+                        }
+                    
+                    case MovementState.SPRINT:
+                        { 
+                            //이동 중이 아니라면?
+                            if (moveDir.Magnitude() < 0.01f)
+                            {
+                                targetIndex = MovementState.IDLE;
+                                break;
+                            }
+
+                            //웅크리기 상태라면? 
+                            if (nowValue < 0.99f)
+                            {
+                                nowValue = Mathf.Clamp(0f, nowValue + 1f / crounchTime * deltaTime, 2f);
+                                break;
+                            }
+
+                            //서 있는 상태라면?
+                            if (nowValue < 1.99f)
+                            {
+                                nowValue = Mathf.Clamp(0f, nowValue + 1f / sprintTime * deltaTime, 2f);
+                                break;
+                            }
+
+                            nowValue = 2.00f;
+                            break;
+                        }
+
+                }
+            }
 
             //손을 사용할 수 있는가?
-            public bool handUsable { get { return nowMovement.handUsable; } }
+            public bool handUsable => nowMovement.handUsable; 
             //방향전환이 전방인가?
-            public bool directive { get { return nowMovement.directive; } }
+            public bool directive => nowMovement.directive;
 
             //프로세스
-            public void MovementProcess()
+            public float accelPer = 1.00f;      //가속 배율
+            void PhysicProcess()
             {
-                RefreshMovement();
 
                 //마찰에 의한 감속
                 double deltaTime = 1d / master.gamemode.logicFps;
@@ -1032,23 +1124,23 @@ namespace _231109_SFML_Test
             }
 
             //무브먼트 데이터 초기화
-            void RefreshMovement()
+            void RefreshProcess()
             {
                 //기본(걷기) 상태라면?
-                if (Math.Abs(nowValue - basicIndex) < 0.001f)
+                if (Math.Abs(nowValue - (float)basicIndex) < 0.001f)
                 {
                     nowMovement = movementPreset.walk;
                     nowState = MovementState.IDLE;
                 }
                 //로우레디 상태라면?
-                else if (nowValue < basicIndex)
+                else if (nowValue < (float)basicIndex)
                 {
                     float ratio = nowValue;
-                    nowMovement = MovementData.Lerp(ratio, movementPreset.counch, movementPreset.walk);
+                    nowMovement = MovementData.Lerp(ratio, movementPreset.crounch, movementPreset.walk);
                     nowState = MovementState.CROUNCH;
                 }
                 //스프린트 상태라면?
-                else if (nowValue > basicIndex)
+                else if (nowValue > (float)basicIndex)
                 {
                     float ratio = nowValue - 1f;
                     nowMovement = MovementData.Lerp(ratio, movementPreset.walk, movementPreset.sprint);
@@ -1071,13 +1163,10 @@ namespace _231109_SFML_Test
                 this.master = master;
                 weapon = null;
 
-                staticDot = master.Position;
-                dynamicDot = master.Position;
                 recoilVec = Vector2fEx.Zero;
                 traggingDot = master.Position;
                 damageVec = Vector2fEx.Zero;
             }
-
 
             //이동
             Movement.MovementData moveData => master.movement.nowMovement;
@@ -1100,18 +1189,62 @@ namespace _231109_SFML_Test
                 return weapon.status;
             }
 
+            //통합 프로세스
+            public void AimProcess()
+            {
+                AdsProcess();
+
+                DamageVectorProcess();
+                RecoilVectorProcess();
+                AdsStanceVectorProcess();
+
+                HipStanceProcess();
+                HipRecoilProcess();
+
+                TraggingDotProcess();
+
+            }
 
 
             //ADS 전환 및 값 -1 : 질주, 0 : 대기, 1 : 조준
             //딜레이 -1 ~ 0 : 질주 전환 / 0 ~ 1 : 조준 전환
             public float adsValue = 0f;
             public float adsTime => status.timeDt.adsTime;
+            public bool isAds = false;
+
+            public void AdsProcess() 
+            {
+                float deltaTime = VideoManager.GetTimeDelta();
+
+                if (isAds)
+                {
+                    adsValue = Math.Min(adsValue + 1f / adsTime * deltaTime, 1f);
+                    if (master.movement.targetIndex == Movement.MovementState.SPRINT) master.movement.targetIndex = Movement.MovementState.IDLE;
+                }
+                else if (moveData.handUsable == false)
+                {
+                    adsValue = Math.Max(adsValue - 1f / sprintTime * deltaTime, -1f);
+                }
+                else
+                {
+                    adsValue = 
+                        adsValue < -0.01f ?
+                            Math.Min(adsValue + 1f / sprintTime * deltaTime, 0f) :
+                        adsValue > 0.01f ?
+                            Math.Max(adsValue - 1f / adsTime * deltaTime, 0f) :
+                            adsValue = 0.00f;
+                }
+            }
+            
             public float sprintTime => status.timeDt.sprintTime;
-            public float moveRatio => master.movement.speed.Magnitude() / 100f;
+            public float moveRatio => master.movement.speed.Magnitude() / 100f / 3.7f;
 
 
             //실제 마우스 점, 동적 마우스 점;
-            public Vector2f staticDot, dynamicDot;
+            public Vector2f staticDot => master.aimPosition ;
+            public Vector2f dynamicDot => traggingDot + damageVec + recoilVec + adsStanceVec + (Vector2f)VideoManager.resolutionNow / 2f;
+
+
 
             #region [트래킹 도트]
 
@@ -1119,29 +1252,40 @@ namespace _231109_SFML_Test
             /// <summary>
             /// 트래킹 도트 수렴 속도
             /// </summary>
-            public float traggingDotSpeed => aimData.hip.traggingSpeed;
+            float traggingDotSpeed => aimData.hip.traggingSpeed;
+
+            void TraggingDotProcess() =>
+                traggingDot = (traggingDot * 100f + staticDot * traggingDotSpeed) / (100f + traggingDotSpeed);
 
             #endregion
 
 
             #region [피격 반응 벡터]
 
-            public Vector2f damageVec;
+            Vector2f damageVec;
             /// <summary>
             /// 피격 반응 회복 속도
             /// </summary>
-            public float damageVecRecovery;
+            float damageVecRecovery;
+            
+            static Random random = new Random();
+            public void GetDamageVector(float value) =>
+                damageVec += new Vector2f((float)(random.NextDouble() - 0.5f) * value, (float)(random.NextDouble() - 0.5f) * value);
 
-            public void GetDamageVector(float value) { }
-            public void DamageVectorProcess() { }
+            void DamageVectorProcess()
+            {
+                damageVec = (damageVec * 100f) / (100f + damageVecRecovery);
 
+                if(master is Player player)
+                    CameraManager.GetShake(damageVec.Magnitude());
+            }
             #endregion
 
 
             /// <summary>
             /// 지향 사격 탄퍼짐
             /// </summary>
-            public float hipSpray => hiptStanceSpray + hipRecoilSpray;
+            public float hipSpray => (hiptStanceSpray + hipRecoilSpray) * Math.Min(1f - adsValue, 1f);
 
 
             #region [지향 사격 - 자세(지향 사격 정확도)]
@@ -1149,46 +1293,46 @@ namespace _231109_SFML_Test
             /// <summary>
             /// 지향 사격 자세 탄퍼짐
             /// </summary>
-            public float hiptStanceSpray = 0f;
-            public float hipStanceRecovery => aimData.hip.stance.recovery;
-            public float hipStanceAccuracy
+            float hiptStanceSpray = 0f;
+            float hipStanceRecovery => aimData.hip.stance.recovery;
+            float hipStanceAccuracy
             {
                 get
                 {
                     if (moveValue > 1.01f) //달리기 중
                     {
-                        float ratio = moveValue - 1f;
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, 10f);
+                        float ratio = Math.Max(-adsValue, 0f);
+                        float adjustRatio = Mathf.PercentMultiflex(10f, ratio);
 
                         return aimData.hip.stance.accuracy * adjustRatio;
                     }
-
-                    if (moveData.handUsable == false) //무기 사용 불가
+                    else if (moveRatio > 0.01f) //이동 중
                     {
-                        return aimData.hip.stance.accuracy * 10f;
-                    }
+                        float ratio = Mathf.Clamp(0f, moveRatio, 1f);
+                        float adjustRatio = Mathf.PercentMultiflex(aimData.hip.stance.accuracyAdjust.walk, ratio);
 
+                        return aimData.hip.stance.accuracy * adjustRatio;
+                    }
+                    
                     if (moveValue < 0.99f) //웅크리기
                     {
                         float ratio = 1f - moveValue;
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.hip.stance.accuracyAdjust.crounch);
+                        float adjustRatio = Mathf.PercentMultiflex(aimData.hip.stance.accuracyAdjust.crounch, ratio);
 
                         return aimData.hip.stance.accuracy * adjustRatio;
                     }
-                    
-                    if (master.movement.speed.Magnitude() < 0.1f) //이동 중
-                    {
-                        float ratio = Mathf.Clamp(0f, moveRatio, 1f);
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.hip.stance.accuracyAdjust.walk);
 
-                        return aimData.hip.stance.accuracy * adjustRatio;
-                    }
-                    
                     return aimData.hip.stance.accuracy;
                 }
             }
 
-            public void HipStanceProcess() { }
+            void HipStanceProcess()
+            {
+                if (hiptStanceSpray < hipStanceAccuracy)
+                    hiptStanceSpray = Math.Min(hipStanceAccuracy, hiptStanceSpray + 10f);
+                else
+                    hiptStanceSpray = Math.Max(hipStanceAccuracy, hiptStanceSpray - hipStanceRecovery);
+            }
 
             #endregion
 
@@ -1198,9 +1342,9 @@ namespace _231109_SFML_Test
             /// <summary>
             /// 지향 사격 반동 탄퍼짐
             /// </summary>
-            public float hipRecoilSpray = 0f;
-            public float hipRecoilStrength => aimData.hip.recoil.strength;
-            public float hipRecoilRecovery
+            float hipRecoilSpray = 0f;
+            float hipRecoilStrength => aimData.hip.recoil.strength;
+            float hipRecoilRecovery
             {
                 get
                 {
@@ -1211,29 +1355,36 @@ namespace _231109_SFML_Test
 
                         return aimData.hip.recoil.recovery * adjustRatio;
                     }
-                    
+                    else if (moveRatio > 0.01f) //이동 중
+                    {
+                        float ratio = Mathf.Clamp(0f, moveRatio, 1f);
+                        float adjustRatio = Mathf.PercentMultiflex(aimData.hip.recoil.recoveryAdjust.walk, ratio);
+
+                        return aimData.hip.recoil.recovery * adjustRatio;
+                    }
+
                     if (moveValue < 0.99f) //웅크리기
                     {
                         float ratio = 1f - moveValue;
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.hip.recoil.recoveryAdjust.crounch);
+                        float adjustRatio = Mathf.PercentMultiflex(aimData.hip.recoil.recoveryAdjust.crounch, ratio);
 
                         return aimData.hip.recoil.recovery * adjustRatio;
                     }
 
-                    if (master.movement.speed.Magnitude() > 0.1f) //이동 중
-                    {
-                        float ratio = Mathf.Clamp(0f, moveRatio, 1f);
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.hip.recoil.recoveryAdjust.walk);
-
-                        return aimData.hip.recoil.recovery * adjustRatio;
-                    }
-                    
                     return aimData.hip.recoil.recovery;
                 }
             }
 
-            public void GetHipRecoil() { }
-            public void HipRecoilProcess() { }
+            public void GetHipRecoil()
+            {
+                hipRecoilSpray += hipRecoilStrength;
+
+                if (master is Player player)
+                    CameraManager.GetShake(hipRecoilStrength);
+            }
+
+            void HipRecoilProcess() =>
+                hipRecoilSpray = (hipRecoilSpray * 100f) / (100f + hipRecoilRecovery);
 
             #endregion
 
@@ -1248,25 +1399,25 @@ namespace _231109_SFML_Test
             /// <summary>
             /// 반동 벡터 회복 속도
             /// </summary>
-            public float recoilVecRecovery => aimData.ads.recoil.recovery;
-            public Vector2f recoilVecFix => aimData.ads.recoil.fix;
-            public Vector2f recoilVecRandom => aimData.ads.recoil.random;
-            public float recoilStrengthAdjust 
+            float recoilVecRecovery => aimData.ads.recoil.recovery;
+            Vector2f recoilVecFix => aimData.ads.recoil.fix;
+            Vector2f recoilVecRandom => aimData.ads.recoil.random;
+            float recoilStrengthAdjust
             {
                 get
                 {
                     if (moveValue < 0.99f) //웅크리기
                     {
                         float ratio = 1f - moveValue;
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.ads.recoil.strengthAdjust.crounch);
+                        float adjustRatio = Mathf.PercentMultiflex(aimData.ads.recoil.strengthAdjust.crounch, ratio);
 
                         return 1f * adjustRatio;
                     }
 
-                    if (master.movement.speed.Magnitude() > 0.1f) //이동 중
+                    if (moveRatio  > 0.01f) //이동 중
                     {
                         float ratio = Mathf.Clamp(0f, moveRatio, 1f);
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.ads.recoil.strengthAdjust.walk);
+                        float adjustRatio = Mathf.PercentMultiflex(aimData.ads.recoil.strengthAdjust.walk, ratio);
 
                         return 1f * adjustRatio;
                     }
@@ -1275,9 +1426,18 @@ namespace _231109_SFML_Test
                 }
             }
 
-            public void GetRecoilVector() { }
+            public void GetRecoilVector()
+            {
+                Vector2f ret = recoilVecFix 
+                    + new Vector2f(
+                        (float)(random.NextDouble() - 0.5f) * recoilVecRandom.X, 
+                        (float)(random.NextDouble() - 0.5f) * recoilVecRandom.Y)
+                    * recoilStrengthAdjust;
+                recoilVec += ret;
+            }
 
-            public void RecoilVectorProcess() { }
+            void RecoilVectorProcess() =>
+                recoilVec = (recoilVec * 100f) / (100f + recoilVecRecovery);
 
             #endregion
 
@@ -1289,22 +1449,22 @@ namespace _231109_SFML_Test
             /// </summary>
             public Vector2f adsStanceVec;
 
-            public float adsStanceAccuracy 
+            float adsStanceAccuracy
             {
                 get
                 {
                     if (moveValue < 0.99f) //웅크리기
                     {
                         float ratio = 1f - moveValue;
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.ads.stance.accuracyAdjust.crounch);
+                        float adjustRatio = Mathf.PercentMultiflex(aimData.ads.stance.accuracyAdjust.crounch, ratio);
 
                         return aimData.ads.stance.accuracy * adjustRatio;
                     }
 
-                    if (master.movement.speed.Magnitude() > 0.1f) //이동 중
+                    if (moveRatio > 0.01f) //이동 중
                     {
                         float ratio = Mathf.Clamp(0f, moveRatio, 1f);
-                        float adjustRatio = Mathf.PercentMultiflex(ratio, aimData.ads.stance.accuracyAdjust.walk);
+                        float adjustRatio = Mathf.PercentMultiflex(aimData.ads.stance.accuracyAdjust.walk, ratio);
 
                         return aimData.ads.stance.accuracy * adjustRatio;
                     }
@@ -1313,7 +1473,20 @@ namespace _231109_SFML_Test
                 }
             }
 
-            public void AdsStanceVectorProcess() { }
+            float time;
+            static FastNoise noise = new FastNoise();
+            void AdsStanceVectorProcess()
+            {
+                time += VideoManager.GetTimeDelta() * adsStanceAccuracy  + (1f + recoilVec.Magnitude() / 10f); 
+
+                float x = adsStanceAccuracy * noise.GetPerlin(0f, time);
+                float y = adsStanceAccuracy * noise.GetPerlin(1335f, time);
+
+                adsStanceVec = new Vector2f(x, y);
+                //Console.WriteLine($"x : {x}, y : {y}");
+            }
+
+
             #endregion
 
 

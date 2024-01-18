@@ -16,6 +16,20 @@ namespace _231109_SFML_Test
     {
         static FN_FAL()
         {
+            string adsName = "IronSight_FN_FAL";
+
+            Player.AdsData.adsLibrary[adsName] = new Player.AdsData
+            {
+                adsType = Player.AdsData.AdsType.IRON_SIGHT,
+                sightMask = "",
+                sightSprite = "",
+                depthSpritePair = new Dictionary<int, string>
+                {
+                    { 90, "IronSight_FN_FAL_far" },
+                    { 100, "IronSight_FN_FAL_close" },
+                },
+            };
+
             WeaponStatus status = new WeaponStatus()
             {
                 typeDt = new WeaponStatus.TypeData()
@@ -43,33 +57,34 @@ namespace _231109_SFML_Test
                     {
                         stance = new WeaponStatus.AimData.HipData.HipStancelData()
                         {
-                            recovery = 1.00f,
-                            accuracy = 1.00f,
-                            accuracyAdjust = (crounch: 1.00f, walk: 1.00f),
+                            recovery = 4.50f,
+                            accuracy = 23.00f,
+                            accuracyAdjust = (crounch: 0.62f, walk: 1.95f),
                         },
                         recoil = new WeaponStatus.AimData.HipData.HipRecoilData()
                         {
-                            recovery = 1.00f,
-                            recoveryAdjust = (crounch: 1.00f, walk: 1.00f),
-                            strength = 1.00f,
+                            recovery = 12.00f,
+                            recoveryAdjust = (crounch: 1.74f, walk: 0.70f),
+                            strength = 39.00f,
                         },
-                        traggingSpeed = 1.00f,
+                        traggingSpeed = 18.00f,
                     },
                     ads = new WeaponStatus.AimData.AdsData()
                     {
                         stance = new WeaponStatus.AimData.AdsData.AdsStancelData()
                         {
-                            accuracy = 1.00f,
-                            accuracyAdjust = (crounch: 1.00f, walk: 1.00f),
+                            accuracy = 40.00f,
+                            accuracyAdjust = (crounch: 0.45f, walk: 1.67f),
                         },
                         recoil = new WeaponStatus.AimData.AdsData.AdsRecoilData()
                         {
-                            fix = new Vector2f(7.0f, 35.0f),
-                            random = new Vector2f(3.5f, 5.0f),
-                            recovery = 0.02f,
-                            strengthAdjust = (crounch: 1.00f, walk : 1.00f),
+                            fix = new Vector2f(21.0f, -75.0f),
+                            random = new Vector2f(65.5f, 55.0f),
+                            recovery = 28.50f,
+                            strengthAdjust = (crounch: 0.48f, walk: 1.22f),
                         },
-                        moa = 12f,
+                        moa = 1f,
+                        adsName = adsName,
                     },
                 },
                 moveDt = new WeaponStatus.MovementData()

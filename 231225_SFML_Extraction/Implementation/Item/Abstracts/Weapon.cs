@@ -70,10 +70,19 @@ namespace _231109_SFML_Test
                         new MuzzleSmoke(gm, muzzlePos, hands.handRot);
                     }
                 } },
-                { InputManager.CommandType.AIM, (hands, isTrue) => { } },
-                //{ InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => { } },
-                //{ InputManager.CommandType.SPRINT, (hands, isTrue) => { } },
-                //{ InputManager.CommandType.MELEE, (hand, isTrue) => { } }
+                { InputManager.CommandType.AIM, (hands, isTrue) =>
+                {
+                    hands.master.aim.isAds = isTrue;
+                } },
+                //{ InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => {
+
+                //} },
+                //{ InputManager.CommandType.SPRINT, (hands, isTrue) => {
+
+                //} },
+                //{ InputManager.CommandType.MELEE, (hand, isTrue) => {
+
+                //} }
             };
         }
 
@@ -147,9 +156,8 @@ namespace _231109_SFML_Test
 
         void Fire(Humanoid.Hands hands) 
         {
-            CameraManager.GetShake(10f);
-
             GamemodeIngame gm = Program.tm.gmNow as GamemodeIngame;
+
             //Y값이 뒤집힌경우 총구 편차 보정
             Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos["muzzlePos"] : new Vector2f(specialPos["muzzlePos"].X, -specialPos["muzzlePos"].Y);
 
@@ -170,21 +178,25 @@ namespace _231109_SFML_Test
             }
             delayNow = delayMax;
 
-            for (int i = 0; i < 30; i++)
-                new MuzzleSmoke(gm, muzzlePos, hands.handRot);
-
-            new MuzzleFlash(gm, muzzlePos, 300);
-
             //Y값이 뒤집힌경우 배출구 편차 보정
             Vector2f chamberSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos["ejectPos"] : new Vector2f(specialPos["ejectPos"].X, -specialPos["ejectPos"].Y);
 
             //배출구 위치를 세계 좌표로 변환
             Vector2f chamberPos = hands.master.Position + hands.handPos + chamberSep.RotateFromZero(hands.handRot);
 
-            new CartridgeBig(gm, chamberPos, 50f);
+
             for (int i = 0; i < 5; i++)
                 new MuzzleSmoke(gm, chamberPos, hands.handRot - 180f);
 
+            for (int i = 0; i < 30; i++)
+                new MuzzleSmoke(gm, muzzlePos, hands.handRot);
+
+            new CartridgeBig(gm, chamberPos, 50f);
+            new MuzzleFlash(gm, muzzlePos, 300);
+
+            //에임에 반동 적용
+            hands.master.aim.GetHipRecoil();
+            hands.master.aim.GetRecoilVector();
 
             muzzleHeat += muzzleHeatDelta;
         }
@@ -398,6 +410,11 @@ namespace _231109_SFML_Test
                 /// 절대 명중률(거리 1000 기준)
                 /// </summary>
                 public float moa;
+
+                /// <summary>
+                /// adsData 라이브러리에서 adsData를 찾는 키값
+                /// </summary>
+                public string adsName;
             };
             /// <summary>
             /// 조준 사격
@@ -437,7 +454,7 @@ namespace _231109_SFML_Test
         public DetailData detailDt;
         public struct DetailData 
         {
-            public float RoundDelay { get { return 60f / roundPerMinute; } }
+            public float RoundDelay =>  60f / roundPerMinute;
             public float roundPerMinute;
             public int chamberSize; //약실 크기
             public List<Type> magazineWhiteList;  //장착 가능한 탄창리스트

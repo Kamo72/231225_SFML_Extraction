@@ -17,9 +17,10 @@ namespace _231109_SFML_Test
 {
     internal class Bullet : Projectile, ILightSource
     {
-        public Bullet(Gamemode gamemode, AmmoStatus ammoStatus, Vector2f position, float rotation = 0, float speed = 0)
-            : base(gamemode, 100, new Line(position, position + rotation.ToRadian().ToVector() * speed * 3f),
-                  position, rotation, speed)
+        public Bullet(Gamemode gamemode, AmmoStatus ammoStatus, Vector2f position, Vector2f toGo, float speed = 0)
+            : base(gamemode, 100,
+                  new Line(position, position + (position - toGo).ToDirection().ToVector() * speed * 3f),
+                  position, (toGo - position).ToDirection().ToDirection(), speed)
         {
             this.ammoStatus = ammoStatus;
             

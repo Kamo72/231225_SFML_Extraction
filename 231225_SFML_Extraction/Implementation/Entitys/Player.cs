@@ -46,8 +46,6 @@ namespace _231109_SFML_Test
         }
 
 
-
-
         protected override void DrawProcess()
         {
             base.DrawProcess();

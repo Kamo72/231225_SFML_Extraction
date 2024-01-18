@@ -171,9 +171,13 @@ namespace _231109_SFML_Test
             for (int i = 0; i < ammo.status.lethality.pellitCount; i++)
             {
                 //총탄 생성 및 저장
-                float moaSpray = ((float)random.NextDouble() - 0.5f) * status.aimDt.ads.moa;
+                Vector2f moaSpray = ((float)random.NextDouble() * 360f).ToRadian().ToVector()
+                    * status.aimDt.ads.moa;
+                Vector2f hipSpray = ((float)random.NextDouble() * 360f).ToRadian().ToVector()
+                    * hands.master.aim.hipSpray;
+                Vector2f dynamicDot = hands.master.aim.dynamicDot - (Vector2f)VideoManager.resolutionNow / 2f + CameraManager.position;
 
-                Projectile bullet = new Bullet(gm, ammo.status, muzzlePos, hands.handRot + moaSpray, status.detailDt.muzzleVelocity / 240f);
+                Projectile bullet = new Bullet(gm, ammo.status, muzzlePos, dynamicDot + moaSpray + hipSpray, status.detailDt.muzzleVelocity / 240f);
                 gm.projs.Add(bullet);
             }
             delayNow = delayMax;

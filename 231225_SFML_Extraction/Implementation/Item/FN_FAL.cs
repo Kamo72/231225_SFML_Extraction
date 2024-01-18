@@ -25,7 +25,7 @@ namespace _231109_SFML_Test
                 sightSprite = "",
                 depthSpritePair = new Dictionary<int, string>
                 {
-                    { 90, "IronSight_FN_FAL_far" },
+                    { 70, "IronSight_FN_FAL_far" },
                     { 100, "IronSight_FN_FAL_close" },
                 },
             };

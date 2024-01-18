@@ -1285,7 +1285,9 @@ namespace _231109_SFML_Test
             /// <summary>
             /// 지향 사격 탄퍼짐
             /// </summary>
-            public float hipSpray => (hiptStanceSpray + hipRecoilSpray) * Math.Min(1f - adsValue, 1f);
+            public float hipSpray => (hiptStanceSpray + hipRecoilSpray)
+                * Math.Min(1f - adsValue, 1f) 
+                * master.aimPosition.Magnitude() / 1000f;
 
 
             #region [지향 사격 - 자세(지향 사격 정확도)]
@@ -1482,7 +1484,7 @@ namespace _231109_SFML_Test
                 float x = adsStanceAccuracy * noise.GetPerlin(0f, time);
                 float y = adsStanceAccuracy * noise.GetPerlin(1335f, time);
 
-                adsStanceVec = new Vector2f(x, y);
+                adsStanceVec = new Vector2f(x, y)  * master.aimPosition.Magnitude() / 1000f;
                 //Console.WriteLine($"x : {x}, y : {y}");
             }
 

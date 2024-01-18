@@ -152,20 +152,12 @@ namespace _231109_SFML_Test
                     new RectangleShape(new Vector2f(20f, 3f)),
                 };
 
-                dynamicDotCrosshair[0].Rotation = 0f;
-                dynamicDotCrosshair[1].Rotation = 90f;
-                dynamicDotCrosshair[2].Rotation = 180f;
-                dynamicDotCrosshair[3].Rotation = 270f;
-
-                dynamicDotCrosshair[0].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
-                dynamicDotCrosshair[1].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
-                dynamicDotCrosshair[2].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
-                dynamicDotCrosshair[3].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
-
-                dynamicDotCrosshair[0].FillColor = new Color(255, 255, 255, 255);
-                dynamicDotCrosshair[1].FillColor = new Color(255, 255, 255, 255);
-                dynamicDotCrosshair[2].FillColor = new Color(255, 255, 255, 255);
-                dynamicDotCrosshair[3].FillColor = new Color(255, 255, 255, 255);
+                for (int i = 0; i < 4; i++)
+                {
+                    dynamicDotCrosshair[i].Rotation = 90f * i;
+                    dynamicDotCrosshair[i].Origin = new Vector2f(-3f, dynamicDotCrosshair[0].Size.Y / 2f);
+                    dynamicDotCrosshair[i].FillColor = new Color(255, 255, 255, 255);
+                }
 
             }
 
@@ -186,7 +178,6 @@ namespace _231109_SFML_Test
 
                 foreach (var item in dynamicDotCrosshair)
                 {
-                    Console.WriteLine(master.aim.adsValue);
                     item.FillColor = new Color(item.FillColor) { A = (byte)(255 * crosshairAlpha) };
                     DrawManager.texUiInterface.Draw(item);
                 }
@@ -194,6 +185,8 @@ namespace _231109_SFML_Test
             public override void Dispose()
             {
                 staticDot?.Dispose();
+                foreach (var item in dynamicDotCrosshair)
+                    item?.Dispose();
             }
         }
 
@@ -224,7 +217,7 @@ namespace _231109_SFML_Test
                             weaponAds = AdsData.adsLibrary[weapon.status.aimDt.ads.adsName];
                             //sightAds = weapon.
                         }
-                        Console.WriteLine($"무기초기화 : {AdsData.adsLibrary[weapon.status.aimDt.ads.adsName]}");
+                        
                     }
 
 
@@ -236,13 +229,18 @@ namespace _231109_SFML_Test
                         Vector2f tremble = new Vector2f(
                             ((float)random.NextDouble() - 0.5f) * master.aim.recoilVec.Magnitude(),
                             ((float)random.NextDouble() - 0.5f) * master.aim.recoilVec.Magnitude());
-                        Vector2f posTo = master.aim.dynamicDot;
+                        Vector2f toTrag = master.aim.staticDot - master.aim.traggingDot;
+                        Vector2f adsGet = new Vector2f(100f, 100f) * (float)Math.Pow(1f-adsAlpha, 1.5f);
+
+                        Vector2f posTo = master.aim.dynamicDot + master.aim.recoilVec;
                         Vector2f posFrom = master.aim.traggingDot + (Vector2f)VideoManager.resolutionNow / 2f
                             - master.aim.adsStanceVec * 1f
-                            + tremble * 0.5f;
+                            + tremble * 0.5f
+                            - toTrag * 0.4f
+                            + adsGet;
 
                         //드로우
-                        DrawAds(DrawManager.texWrAugment, weaponAds, posTo, posFrom, adsAlpha, size);
+                        DrawAds(DrawManager.texWrAugment, weaponAds, posTo, posFrom, adsAlpha, size + (float)Math.Pow(1f - adsAlpha, 1.5f));
                     }
 
 
@@ -872,10 +870,6 @@ namespace _231109_SFML_Test
 
 
         #endregion
-
-
-
-
 
     }
 }

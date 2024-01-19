@@ -36,6 +36,7 @@ namespace _231109_SFML_Test
 
             collisionCheck = CollisionCheck;
 
+
         }
 
         AmmoStatus ammoStatus;
@@ -56,7 +57,6 @@ namespace _231109_SFML_Test
             float dist = (this.position - CameraManager.position).Magnitude();
             if (drawableRange > dist) new MuzzleSmoke(ingm, position, rotation - 180f);
             
-
             foreach (Entity ent in ingm.entitys)
             {
                 if (ent.mask.IsCollision(this.mask) == false) continue;

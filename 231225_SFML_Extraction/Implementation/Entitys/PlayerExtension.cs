@@ -40,7 +40,6 @@ namespace _231109_SFML_Test
 
             if (hands.interactingTarget is Container container)
                 container.Close();
-            
         }
 
         //UI
@@ -50,7 +49,14 @@ namespace _231109_SFML_Test
         //UI methods
         void DrawUiInit(params PlayerUiDrawer[] uis) => uiList = uis.ToList();
 
-        void DrawHudProcess() => uiList?.ForEach(ui => ui?.DrawProcess());
+        void DrawHudProcess()
+        {
+            try
+            {
+                uiList?.ForEach(ui => ui?.DrawProcess());
+            }
+            catch (System.AccessViolationException ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+        }
         
         void DrawUiDispose() => uiList?.ForEach(ui => ui?.Dispose());
         #endregion

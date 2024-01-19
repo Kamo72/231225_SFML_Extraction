@@ -3,6 +3,7 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Printing;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Policy;
@@ -289,32 +290,28 @@ namespace _231109_SFML_Test
             {
                 this.master = master;
                 interactables = new List<IInteractable>();
-                AnimationInit();
             }
 
             //수정 필요.
             public void SetHandling(IHandable handable)
             {
-                this.handling = handable;
+                if (this.handling == handable) return;
 
-                Animator hUnit;
-                if (handable is Weapon w) hUnit = new WeaponUnit(w);
-                else if (handable is Item i) hUnit = new ItemUnit(i, Vector2fEx.Zero, 90f);
+                this.handling = handable;
+                if (handable is Weapon w) 
+                {
+                    nowAnimator = new WeaponAnimator(this, w);
+                    master.aim.SetWeapon(w);
+                }
                 else throw new Exception("SetHandling - IHandable handable을 지원하는 타입이 존재하지 않습니다.");
 
-                if (handable is Weapon wea)
-                    master.aim.SetWeapon(wea);
-
-                animators.Add(hUnit);
             }
             public void LooseHandling()
             {
                 this.handling = null;
 
-                Animator animatorToRemove = animators.Find((a) => a is HandableUnit);
-                animatorToRemove.Dispose();
-                animators.Remove(animatorToRemove);
-
+                nowAnimator.Dispose();
+                nowAnimator = null;
             }
 
 
@@ -367,22 +364,39 @@ namespace _231109_SFML_Test
             #region [장비 착용]
             public IHandable handling = null;
 
-
+            public Vector2f handPosTremble;
             public Vector2f handPos = Vector2fEx.Zero;
             public Vector2f handPosTarget = Vector2fEx.Zero;
             public const float handPosSpeed = 0.2f;
+
+            public float handRotTremble;
             public float handRot = 0f;
             public float handRotTarget = 0f;
             public const float handRotSpeed = 0.2f;
 
+            public Vector2f handPosMovement;
 
-            public void DrawHandlingProcess()
+            static FastNoise noise = new FastNoise();
+            float time = 0f;
+            public void PhaseHandlingProcess()
             {
-                if (handling == null) return;
+                //handPosTremble / handRotTremble
+                time += VideoManager.GetTimeDelta() * 100f;
+                time += master.aim.moveRatio * 2f;
 
+                handPosMovement = master.movement.speed.Normalize() * master.aim.moveRatio * 5f;
+
+                handPosTremble = new Vector2f(noise.GetPerlin(11f, time), noise.GetPerlin(1231f, time)) * 10f;
+                handPosTremble += new Vector2f(noise.GetPerlin(11f, VideoManager.GetTimeTotal() * 5f), noise.GetPerlin(1231f, VideoManager.GetTimeTotal() * 5f));
+
+                handRotTremble = noise.GetPerlin(41f, VideoManager.GetTimeTotal() * 5f) * 10f + noise.GetPerlin(1331f, time) * 5f;
+
+                //handPos
                 handPosTarget = master.Direction.ToRadian().ToVector() * 50f;
                 handPos = (handPos + handPosTarget * handPosSpeed) / (1f + handPosSpeed);
 
+
+                //handRot
                 handRotTarget = master.Direction;
 
                 Vector2f handRotVec = handRot.ToRadian().ToVector();
@@ -390,15 +404,6 @@ namespace _231109_SFML_Test
 
                 handRotVec = (handRotVec + handRotTargetVec * handRotSpeed) / (1f + handRotSpeed);
                 handRot = handRotVec.ToDirection().ToDirection();
-
-
-                handling.DrawHandable(
-                    DrawManager.texWrHigher,
-                    master.Position + handPos,
-                    handRot,
-                    new Vector2f(1f, 1.5f * (-90f <= master.Direction && master.Direction <= 90f ? 1f : -1f)),
-                    CameraManager.worldRenderState
-                    );
             }
 
             public void LogicHandlingProcess()
@@ -418,7 +423,6 @@ namespace _231109_SFML_Test
             }
 
             #endregion
-
 
             #region [애니메이션]
 
@@ -442,266 +446,185 @@ namespace _231109_SFML_Test
 
                     return ret;
                 }
+
+                public Phase GetRelativePhase(Phase bePhase)
+                {
+                    Phase ret = this;
+                    Vector2f sepPos = bePhase.position.RotateFromZero(rotation);
+                    float sepRot = bePhase.rotation;
+
+                    ret.position += sepPos;
+                    ret.rotation += sepRot;
+
+                    return ret;
+                }
             }
-            protected abstract class Animator : IDisposable
+
+            public abstract class Animator : IDisposable
             {
-                Phase phasePro;
-                public Phase phase
+                public enum AnimationState 
                 {
-                    get { return phasePro; }
-                    set
-                    {
-                        Vector2f sepPos = value.position - phasePro.position;
-                        float sepRot = value.rotation - phasePro.rotation;
+                    IDLE,       //대기
+                    FIRE,       //격발
+                    SPRINT,     //질주
+                    ADS,        //조준
 
-                        phasePro = value;
-                        foreach (Animator item in attacheds.Keys)
-                        {
-                            item.position += sepPos;
-                            item.rotation += sepRot;
-
-                            Vector2f difPos = item.position - phasePro.position;
-                            difPos.RotateFromZero(sepRot);
-                            item.position = phasePro.position + difPos;
-                        }
-                    }
-                }
-                public float size;
-
-                public Animator(Vector2f position, float rotation, float size) : this(new Phase(position, rotation), size) { }
-                public Animator(Phase phase, float size)
-                {
-                    this.phase = phase;
-                    this.size = size;
+                    INVENTORY,  //인벤토리
+                    INTERACTION,//상호작용
+                    
+                    UNEQUIP,    //장착 해제
+                    EQUIP,      //장착
                 }
 
-                public abstract void DrawManual(Vector2f position, float rotation);
-                protected abstract void LogicProcess();
+                protected Hands hands;
 
+                public AnimationState state = AnimationState.EQUIP;
+                public float time = 0f, timeMax = 1f;
 
-                #region [기타 편의를 위한 메서드들]
-
-                public Vector2f position
+                public Animator(Hands hands) 
                 {
-                    get { return phasePro.position; }
-                    set => phase = new Phase(value, phase.rotation);
-                }
-                public float rotation
-                {
-                    get { return phasePro.rotation; }
-                    set => phase = new Phase(phase.position, value);
+                    this.hands = hands;
                 }
 
+                public abstract void DrawProcess();
+                public abstract void ChangeState(AnimationState newState);
 
-                public void Draw(Hands hands)
-                {
-                    Vector2f tPos = hands.handRot.ToRadian().ToVector() * phase.position.X +
-                         (hands.handRot + 90f).ToRadian().ToVector() * phase.position.Y +
-                         hands.handPos +
-                         hands.master.Position;
-                    float tRot = hands.handRot + phase.rotation;
-
-                    Phase newPhase = new Phase(tPos, tRot);
-
-                    DrawManual(newPhase);
-                }
-                public void DrawManual(Phase phase) => DrawManual(phase.position, phase.rotation);
-                #endregion
-
-                #region [애니메이터 탈부착]
-                protected Dictionary<Animator, Phase> attacheds = new Dictionary<Animator, Phase>();
-                protected Animator attachTo;
-
-                //피동 탈부착
-                public void BeAttach(Animator animator, Vector2f position, float rotation) => BeAttach(animator, new Phase(position, rotation));
-                public void BeAttach(Animator animator, Phase phase) => attacheds[animator] = phase;
-                public void BeDettach(Animator animator) => attacheds.Remove(animator);
-
-                //능동 탈부착
-                public void DoAttach(Animator animator, Vector2f position, float rotation) => DoAttach(animator, new Phase(position, rotation));
-                public void DoAttach(Animator animator, Phase phase)
-                {
-                    attachTo.BeAttach(animator, phase);
-                    attachTo = animator;
-                }
-                public void DoDettach()
-                {
-                    attachTo?.BeDettach(this);
-                    attachTo = null;
-                }
-
-                //프로세스
-                public void AttachesProcess()
-                {
-                    LogicProcess();
-
-                    foreach (Animator animator in attacheds.Keys) animator.AttachesProcess();
-                }
-
-                #endregion
-
-                #region [소멸자 처리]
-                public bool isDiposed = false;
                 ~Animator() => Dispose();
-                public void Dispose()
-                {
-                    isDiposed = true;
-
-                    foreach (Animator animator in attacheds.Keys) animator.DoDettach(); // 나에게 붙어있는 애니메이터들 제거.
-                    DoDettach();  //내가 붙어 있는 애니메이터에서 제거
-
-                    GC.SuppressFinalize(this);
-                }
-                #endregion
+                public virtual void Dispose() { GC.SuppressFinalize(this); }
+                
             }
 
-            protected abstract class HandableUnit : Animator
+            public class WeaponAnimator : Animator
             {
-                public HandableUnit(IHandable handable) : base(new Vector2f(), 90f, 1f)
+                public Weapon weapon;
+                public WeaponAnimator(Hands hands, Weapon weapon) : base(hands)
                 {
-                    this.handable = handable;
+                    this.weapon = weapon;
+
+                    rightShape = new RectangleShape(new Vector2f(8, 8));
+                    leftShape = new RectangleShape(new Vector2f(8, 8));
+
+                    weaponPhase = weapon.AbleSub() ? new Phase(new Vector2f(10f, -50f), 90f) : new Phase(new Vector2f(10f, 50f), -90f);
+                    rightPhase = weaponPhase.GetRelativePhase(new Phase(weapon.specialPos.pistolPos, 30f));
+                    leftPhase = weaponPhase.GetRelativePhase(new Phase(weapon.specialPos.secGripPos, 70f));
+                    magazinePhase = weaponPhase.GetRelativePhase(new Phase(weapon.specialPos.magPos, 0f));
+
+                    //DEBUG
+                    state = AnimationState.SPRINT;
                 }
 
-                protected IHandable handable;
+                Phase centralPhase;
+                Phase weaponPhase, rightPhase, leftPhase, magazinePhase;
+                RectangleShape rightShape, leftShape;
 
-                public override void DrawManual(Vector2f position, float rotation)
+                public override void DrawProcess()
                 {
-                    handable.DrawHandable(DrawManager.texWrHigher, position, rotation, new Vector2f(1f, 1f) * size, CameraManager.worldRenderState);
-                }
+                    //크기 제어
+                    float sizeRatio = 1.5f;
+                    bool isReversed = !Mathf.InRange(-90f, hands.handRot, 90f);
+                    Vector2f sizeVec = new Vector2f(1f, isReversed ? -1f : 1f) * sizeRatio;
 
-                protected override abstract void LogicProcess();
-            }
-
-
-            protected class HandUnit : Animator
-            {
-                public enum AnimationType
-                {
-                    LOOSE,
-                    IDLE,
-                }
-                public HandUnit(bool isRightArm) : base(Vector2fEx.Zero, 0f, 1f)
-                {
-                    this.isRightArm = isRightArm;
-
-                    phaseTarget = isRightArm ? new Phase(new Vector2f(50f, 100f), 0f) : new Phase(new Vector2f(-50f, 100f), 0f);
-                    animaType = AnimationType.IDLE;
-
-                    drawShape = new RectangleShape(new Vector2f(32, 32));
-                    drawShape.Origin = drawShape.Size / 2f;
-                    drawShape.Position = phase.position;
-                    drawShape.Rotation = phase.rotation;
-                    //drawShape.Texture = ResourceManager.textures["hand_idle"];
-
-                }
-
-                public RectangleShape drawShape;
-
-                public AnimationType animaType;
-                public Phase phaseTarget;   //사용자의 위상이 수렴하는 곳.
-                public bool isRightArm;
-
-                //피 부착을 위한 이동
-                public Animator grabTarget = null;
-                public Phase grabPhase;
-
-                public override void DrawManual(Vector2f position, float rotation)
-                {
-                    drawShape.Position = position;
-                    drawShape.Rotation = rotation;
-
-                    DrawManager.texWrHigher.Draw(drawShape, CameraManager.worldRenderState);
-                }
-
-                //
-                void SetGrab(Animator animator, Phase phase)
-                {
-                    grabTarget = animator;
-                    grabPhase = phase;
-                }
-                void CancelGrab()
-                {
-                    grabTarget = null;
-                }
-
-                protected void ChangeAnimation(AnimationType animationType)
-                {
-                    switch (animationType)
+                    switch (state)
                     {
-                        case AnimationType.IDLE:
-                            //SetGrab()
-                            break;
-                        case AnimationType.LOOSE:
-                            CancelGrab();
-                            phaseTarget = isRightArm ? new Phase(new Vector2f(50f, 100f), 0f) : new Phase(new Vector2f(-50f, 100f), 0f);
-                            break;
-                    }
-                }
+                        case AnimationState.IDLE:
+                            {
+                                //무기 위치 이동
+                                weaponPhase.position = weaponPhase.position / 1.07f;
+                                weaponPhase.rotation = (weaponPhase.rotation.ToRadian().ToVector() + 0f.ToVector()).ToDirection().ToDirection();
 
-                protected override void LogicProcess()
-                {
-                    switch (animaType)
-                    {
-                        case AnimationType.IDLE:
-                            //if (attachTo != null)
-                            //    Phase.Lerp(0.1f, phase, phaseTarget);
-                            break;
+                                centralPhase.position = weaponPhase.position + hands.handPosTremble + hands.handPosMovement;
+                                centralPhase.rotation = weaponPhase.rotation + hands.handRotTremble;
 
-                        case AnimationType.LOOSE:
-                            if (grabTarget != null) CancelGrab();
-                            break;
+                                //무기 위상에 맞게 세부 위상 조정
+                                rightPhase = PosRotToRelPhase(weapon.specialPos.pistolPos, 30f, isReversed);
+                                leftPhase = PosRotToRelPhase(weapon.specialPos.secGripPos, 70f, isReversed);
+                                magazinePhase = PosRotToRelPhase(weapon.specialPos.magPos, 0f, isReversed);
+                            } break;
+                        case AnimationState.FIRE: break;
+                        case AnimationState.SPRINT: 
+                            {
+                                //무기 위치 이동
+                                weaponPhase.position = weaponPhase.position +  / 1.07f;
+                                weaponPhase.rotation = (weaponPhase.rotation.ToRadian().ToVector() + 0f.ToVector()).ToDirection().ToDirection();
+
+                                centralPhase.position = weaponPhase.position + hands.handPosTremble + hands.handPosMovement;
+                                centralPhase.rotation = weaponPhase.rotation + hands.handRotTremble;
+
+                                //무기 위상에 맞게 세부 위상 조정
+                                rightPhase = PosRotToRelPhase(weapon.specialPos.pistolPos, 30f, isReversed);
+                                leftPhase = PosRotToRelPhase(weapon.specialPos.secGripPos, 70f, isReversed);
+                                magazinePhase = PosRotToRelPhase(weapon.specialPos.magPos, 0f, isReversed);
+                            } break;
+                        case AnimationState.ADS: break;
+
+                        case AnimationState.INVENTORY: break;
+                        case AnimationState.INTERACTION: break;
+
+                        case AnimationState.EQUIP: break;
+                        case AnimationState.UNEQUIP: break;
+                        default: break;
                     }
 
-                }
-            }
-            protected class WeaponUnit : HandableUnit
-            {
-                public WeaponUnit(Weapon weapon) : base(weapon) { }
+                    //드로우의 기준으로 잡을 위상 로드
+                    Vector2f centralPos = hands.master.Position + hands.handPos;
+                    float centralRot = hands.handRot;
 
-                protected override void LogicProcess() { }
-            }
+                    //손 도형의 위치와 회전 조정
+                    rightShape.Position = rightPhase.position.RotateFromZero(centralRot) * sizeRatio + centralPos;
+                    rightShape.Rotation = rightPhase.rotation + centralRot;
+                    leftShape.Position = leftPhase.position.RotateFromZero(centralRot) * sizeRatio + centralPos;
+                    leftShape.Rotation = leftPhase.rotation + centralRot;
+                    
+                    //무기와 탄창의 위치와 회전 조정
+                    Vector2f magPos = magazinePhase.position.RotateFromZero(centralRot) * sizeRatio + centralPos;
+                    float magRot = magazinePhase.rotation + centralRot;
+                    Vector2f weaPos = centralPhase.position.RotateFromZero(centralRot) * sizeRatio + centralPos;
+                    float weaRot = centralPhase.rotation + centralRot;
 
-            protected class ItemUnit : Animator
-            {
-                public ItemUnit(Item item, Vector2f position, float rotation) : base(position, rotation, 1f)
-                {
-                    this.item = item;
+                    //실제 드로우
+                    weapon.magazineAttached.DrawHandable(DrawManager.texWrHigher, magPos, magRot, CameraManager.worldRenderState, sizeVec);
+                    weapon.DrawHandable(DrawManager.texWrHigher, weaPos, weaRot, sizeVec, CameraManager.worldRenderState);
+                    rightShape.Draw(DrawManager.texWrHigher, CameraManager.worldRenderState);
+                    leftShape.Draw(DrawManager.texWrHigher, CameraManager.worldRenderState);
 
-                    shape = new RectangleShape(new Vector2f(64, 64));
-                    shape.Texture = ResourceManager.textures[item.spriteName];
-                    shape.Position = position;
-                    shape.Rotation = rotation;
-                }
-
-                Item item;
-                RectangleShape shape;
-
-                public override void DrawManual(Vector2f position, float rotation)
-                {
-                    shape.Position = position;
-                    shape.Rotation = rotation;
-                    DrawManager.texWrHigher.Draw(shape, CameraManager.worldRenderState);
                 }
 
-                protected override void LogicProcess() { }
+                public override void ChangeState(AnimationState newState)
+                {
+                    switch (newState)
+                    {
+                        case AnimationState.IDLE: break;
+                        case AnimationState.FIRE: break;
+                        case AnimationState.SPRINT: break;
+                        case AnimationState.ADS: break;
+
+                        case AnimationState.INVENTORY: break;
+                        case AnimationState.INTERACTION: break;
+
+                        case AnimationState.EQUIP: break;
+                        case AnimationState.UNEQUIP: break;
+                        default: break;
+                    }
+
+                }
+                Phase PosRotToRelPhase(Vector2f pos, float rot, bool isReversed)
+                {
+                    Vector2f phasePos = new Vector2f(pos.X, pos.Y * (isReversed ? -1f : 1f));
+                    return centralPhase.GetRelativePhase(new Phase(phasePos, rot * (isReversed ? -1f : 1f)));
+                }
+                Phase PosRotToAbsPhase(Vector2f pos, float rot, bool isReversed)
+                {
+                    Vector2f phasePos = new Vector2f(pos.X, pos.Y * (isReversed ? -1f : 1f));
+                    return new Phase(phasePos, rot * (isReversed ? -1f : 1f));
+
+                }
             }
 
-            List<Animator> animators;
-            public void AnimationInit()
-            {
-                animators = new List<Animator>
-                {
-                    new HandUnit(true),
-                    new HandUnit(false),
-                };
-            }
+
+            Animator nowAnimator;
             public void AnimationProcess()
             {
-
-            }
-            public void DrawAnimatorsProcess()
-            {
-                foreach (Animator ani in animators) ani.Draw(this);
+                nowAnimator?.DrawProcess();
             }
             #endregion
 

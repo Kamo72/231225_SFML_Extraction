@@ -48,6 +48,8 @@ namespace _231109_SFML_Test
 
         protected override void DrawProcess()
         {
+            if (isDisposed) return;
+
             base.DrawProcess();
 
             //마스크 그리기 (임시)

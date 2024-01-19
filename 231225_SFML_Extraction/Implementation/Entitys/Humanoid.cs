@@ -19,6 +19,7 @@ using SFML.Graphics;
 using System.IO.Ports;
 using System.Drawing;
 using static _231109_SFML_Test.Humanoid;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace _231109_SFML_Test
 {
@@ -48,13 +49,13 @@ namespace _231109_SFML_Test
         protected override void DrawProcess()
         {
             DrawManager.texWrHigher.Draw(mask, CameraManager.worldRenderState);
-            hands.DrawHandlingProcess();
-            hands.DrawAnimatorsProcess();
+            hands?.PhaseHandlingProcess();
+            hands?.AnimationProcess();
         }
 
         protected override void LogicProcess()
         {
-            hands.InteractableListRefresh();
+            hands?.InteractableListRefresh();
         }
 
 
@@ -66,7 +67,14 @@ namespace _231109_SFML_Test
 
         public override void Dispose()
         {
+            inventory = null;
+            hands = null;
+            health = null;
+            aim = null;
+            movement = null;
+
             base.Dispose();
+
 
             GamemodeIngame ingm = gamemode as GamemodeIngame;
             ingm.entitys.Remove(this);

@@ -65,7 +65,7 @@ namespace _231109_SFML_Test
                     float muzzleSmokeRatio = Math.Max(muzzleHeat, 0f) * 1f;
                     if(muzzleSmokeRatio > (float)random.NextDouble())
                     {
-                        Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos["muzzlePos"] : new Vector2f(specialPos["muzzlePos"].X, -specialPos["muzzlePos"].Y);
+                        Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos.muzzlePos : new Vector2f(specialPos.muzzlePos.X, -specialPos.muzzlePos.Y);
                         Vector2f muzzlePos = hands.master.Position + hands.handPos + muzzleSep.RotateFromZero(hands.handRot);
                         new MuzzleSmoke(gm, muzzlePos, hands.handRot);
                     }
@@ -159,7 +159,7 @@ namespace _231109_SFML_Test
             GamemodeIngame gm = Program.tm.gmNow as GamemodeIngame;
 
             //Y값이 뒤집힌경우 총구 편차 보정
-            Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos["muzzlePos"] : new Vector2f(specialPos["muzzlePos"].X, -specialPos["muzzlePos"].Y);
+            Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos.muzzlePos : new Vector2f(specialPos.muzzlePos.X, -specialPos.muzzlePos.Y);
 
             //총구 위치를 세계 좌표로 변환
             Vector2f muzzlePos = hands.master.Position + hands.handPos + muzzleSep.RotateFromZero(hands.handRot);
@@ -183,7 +183,7 @@ namespace _231109_SFML_Test
             delayNow = delayMax;
 
             //Y값이 뒤집힌경우 배출구 편차 보정
-            Vector2f chamberSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos["ejectPos"] : new Vector2f(specialPos["ejectPos"].X, -specialPos["ejectPos"].Y);
+            Vector2f chamberSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos.muzzlePos : new Vector2f(specialPos.muzzlePos.X, -specialPos.muzzlePos.Y);
 
             //배출구 위치를 세계 좌표로 변환
             Vector2f chamberPos = hands.master.Position + hands.handPos + chamberSep.RotateFromZero(hands.handRot);
@@ -208,10 +208,14 @@ namespace _231109_SFML_Test
         #endregion
 
         #region [파츠 시스템]
-        protected Magazine magazineAttached;
+        public Magazine magazineAttached;
 
-        protected Dictionary<string, Vector2f> specialPos;
-        //Vector2f magPos, muzzlePos, ejectPos, pistolPos, secGripPos, boltPos;
+        public (Vector2f magPos,
+            Vector2f muzzlePos,
+            Vector2f ejectPos,
+            Vector2f pistolPos,
+            Vector2f secGripPos,
+            Vector2f boltPos) specialPos;
         #endregion
 
         #region [주무기, 보조무기 장착 조건]

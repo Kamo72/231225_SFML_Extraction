@@ -46,9 +46,9 @@ namespace _231109_SFML_Test
                 },
                 timeDt = new WeaponStatus.TimeData()
                 {
-                    adsTime = 0.400f,
+                    adsTime = 0.200f,
                     reloadTime = (0.710f, 0.950f, 0.380f),
-                    sprintTime = 0.350f,
+                    sprintTime = 0.110f,
                     swapTime = 0.250f,
                 },
                 aimDt = new WeaponStatus.AimData()
@@ -129,15 +129,15 @@ namespace _231109_SFML_Test
 
             });
 
-            specialPos = new Dictionary<string, Vector2f>
-            {
-                ["magPos"] = new Vector2f(13.5f, -0.5f),
-                ["muzzlePos"] = new Vector2f(105.0f, -7.5f), 
-                ["ejectPos"] = new Vector2f(13.5f, +0.5f), 
-                ["pistolPos"] = new Vector2f(-2.5f, -6.5f), 
-                ["secGripPos"] = new Vector2f(23.5f, -3.5f),
-                ["boltPos"] = new Vector2f(14.5f, +0.5f),
-            };
+            specialPos =
+            (
+                magPos: new Vector2f(13.5f, -0.5f),
+                muzzlePos: new Vector2f(105.0f, -7.5f),
+                ejectPos: new Vector2f(13.5f, +0.5f),
+                pistolPos: new Vector2f(-5.5f, +5.0f),
+                secGripPos: new Vector2f(30.5f, -3.0f),
+                boltPos: new Vector2f(14.5f, +0.5f)
+            );
 
             //테스트
             magazineAttached = new FN_FAL_MAG10(typeof(mm7p39x51_AP));
@@ -145,18 +145,17 @@ namespace _231109_SFML_Test
 
         public override void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
         {
-            if (magazineAttached != null)
-            {
-                Vector2f magazinePos =
-                    specialPos["magPos"].X * (direction).ToRadian().ToVector() +
-                    specialPos["magPos"].Y * (direction-90f).ToRadian().ToVector() * (scaleRatio.Y < 0 ? 1f : -1f);
+            //if (magazineAttached != null)
+            //{
+            //    Vector2f magazinePos =
+            //        specialPos.magPos.X * (direction).ToRadian().ToVector() +
+            //        specialPos.magPos.Y * (direction-90f).ToRadian().ToVector() * (scaleRatio.Y < 0 ? 1f : -1f);
 
-                //magazineAttached.DrawHandable(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
-                magazineAttached.DrawHandable(texture,
-                    position + new Vector2f(magazinePos.X * Math.Abs(scaleRatio.X), magazinePos.Y * Math.Abs(scaleRatio.Y)),
-                    direction, renderStates, scaleRatio);
-            }
-
+            //    //magazineAttached.DrawHandable(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
+            //    magazineAttached.DrawHandable(texture,
+            //        position + new Vector2f(magazinePos.X * Math.Abs(scaleRatio.X), magazinePos.Y * Math.Abs(scaleRatio.Y)),
+            //        direction, renderStates, scaleRatio);
+            //}
 
             for (int i = topParts.Length-1; i >= 0; i--)
             {

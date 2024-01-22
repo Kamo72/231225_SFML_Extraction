@@ -64,6 +64,7 @@ namespace _231109_SFML_Test
 
 
         #region [UI 객체들]
+
         //조상 객체
         abstract class PlayerUiDrawer : IDisposable
         {
@@ -419,7 +420,7 @@ namespace _231109_SFML_Test
             float boxMargin = 15f, slotWidth;
 
             //장비
-            RectangleShape weaponMainShape, weaponSubShape,
+            RectangleShape weaponFirstShape, weaponSecondShape, weaponSubShape,
                 helmetShape, headgearShape, plateCarrierShape, armourPlateShape, backpackShape;
 
 
@@ -427,6 +428,8 @@ namespace _231109_SFML_Test
 
             public TabInventory(Player master, int index) : base(master, "장비", index)
             {
+                #region [Inventory & Container]
+
                 rareityBackColor = new Dictionary<Rarerity, Color>
                 {
                     {Rarerity.COMMON , new Color(90, 90, 90, 80)},
@@ -485,24 +488,79 @@ namespace _231109_SFML_Test
                 containerText.OutlineColor = Color.Black;
                 containerText.Position = containerBox.Position + new Vector2f(boxMargin, boxMargin) + new Vector2f(10f, 10f);
 
+                #endregion
 
+                #region [Equipment]
                 float equipmentSep = 0.025f, equipmentWid = 0.250f, equipmentSepOuter = 0.075f;
 
-
+                //보조 무기
                 weaponSubShape = new RectangleShape(
                     new Vector2f(
-                        equipmentBox.Size.X * (equipmentWid * 2f + equipmentSep),
+                        equipmentBox.Size.X * (equipmentWid * 1f),
                         equipmentBox.Size.Y * (equipmentWid * 1f)
                         )
                     );
+                weaponSubShape.FillColor = new Color(30, 30, 30);
+                weaponSubShape.OutlineThickness = 2f;
+                weaponSubShape.OutlineColor = new Color(15, 15, 15);
+                weaponSubShape.Position = new Vector2f(
+                        equipmentBox.Size.X * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 2f),
+                        equipmentBox.Size.Y * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 3f)
+                        );
 
-                weaponMainShape = new RectangleShape(weaponSubShape);
-
-                weaponMainShape.Size = new Vector2f(
+                //1번 무기
+                weaponFirstShape = new RectangleShape(weaponSubShape);
+                weaponFirstShape.Size = new Vector2f(
                         equipmentBox.Size.X * (equipmentWid * 2f + equipmentSep),
                         equipmentBox.Size.Y * (equipmentWid * 1f)
                         );
+                weaponFirstShape.Position = new Vector2f(
+                        equipmentBox.Size.X * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 0f),
+                        equipmentBox.Size.Y * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 3f)
+                        );
 
+                //2번 무기
+                weaponSecondShape = new RectangleShape(weaponFirstShape);
+                weaponSecondShape.Position = new Vector2f(
+                        equipmentBox.Size.X * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 0f),
+                        equipmentBox.Size.Y * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 4f)
+                        );
+
+                //헬멧 중앙 상단
+                helmetShape = new RectangleShape(weaponSubShape);
+                helmetShape.Position = new Vector2f(
+                        equipmentBox.Size.X * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 1f),
+                        equipmentBox.Size.Y * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 1f)
+                        );
+
+                //헤드기어 좌측 상단
+                headgearShape = new RectangleShape(weaponSubShape);
+                headgearShape.Position = new Vector2f(
+                        equipmentBox.Size.X * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 0f),
+                        equipmentBox.Size.Y * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 1f)
+                        );
+
+                //플레이트 캐리어 중앙
+                plateCarrierShape = new RectangleShape(weaponSubShape);
+                plateCarrierShape.Position = new Vector2f(
+                        equipmentBox.Size.X * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 1f),
+                        equipmentBox.Size.Y * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 2f)
+                        );
+
+                //가방 우측 상단
+                backpackShape = new RectangleShape(weaponSubShape);
+                backpackShape.Position = new Vector2f(
+                        equipmentBox.Size.X * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 2f),
+                        equipmentBox.Size.Y * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 1f)
+                        );
+
+                //방탄판 우측 중앙
+                armourPlateShape = new RectangleShape(weaponSubShape);
+                armourPlateShape.Position = new Vector2f(
+                        equipmentBox.Size.X * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 2f),
+                        equipmentBox.Size.Y * (equipmentSepOuter * 1f + (equipmentWid + equipmentSep) * 2f)
+                        );
+                #endregion
             }
 
             #region [스토리지, 창고 제어]
@@ -586,7 +644,45 @@ namespace _231109_SFML_Test
             }
             void DrawEquipSlot(Inventory.EquipSlot equipSlot, Vector2f originPos)
             {
+                RectangleShape socketShape = null;
+
+                switch (equipSlot.equipmentType)
+                {
+                    case EquipmentType.HEADGEAR:
+                        socketShape = headgearShape;
+                        break;
+                    case EquipmentType.HELMET:
+                        socketShape = helmetShape;
+                        break;
+                    case EquipmentType.BACKPACK:
+                        socketShape = backpackShape;
+                        break;
+                    case EquipmentType.PLATE_CARRIER:
+                        socketShape = plateCarrierShape;
+                        break;
+                    case EquipmentType.WEAPON:
+                        if (equipSlot is Inventory.EquipSlotWeapon wSlot)
+                        {
+                            //보조무기
+                            if (wSlot.isMain == false)
+                            {
+                                socketShape = weaponSubShape;
+                            }
+                            //1번 무기
+                            else if(wSlot.isFirst)
+                            {
+                                socketShape = weaponFirstShape;
+                            }
+                            //2번 무기
+                            else 
+                            {
+                                socketShape = weaponSecondShape;
+                            }
+                        }
+                        break;
+                }
                 
+                DrawManager.texUiPopup.Draw(socketShape);
             }
 
             //스토리지 && 슬롯 마우스 체크

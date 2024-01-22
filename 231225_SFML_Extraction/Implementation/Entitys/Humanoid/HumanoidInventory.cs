@@ -88,14 +88,13 @@ namespace _231109_SFML_Test
             {
                 public EquipSlotWeapon(bool isMain, bool isFirst) : base(EquipmentType.WEAPON) { this.isMain = isMain; }
 
-                bool isMain, isFirst;
+                public bool isMain, isFirst;
 
                 public override bool DoEquipItem(Item item)
                 {
                     // 무장인지?
                     if (item is Weapon weapon)
                     {
-
                         // 주무장 칸인데 주무장이 아니야?
                         if (weapon.AbleMain() != isMain)
                             return false;

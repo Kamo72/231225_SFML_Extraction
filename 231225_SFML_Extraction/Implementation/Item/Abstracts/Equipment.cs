@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace _231109_SFML_Test
 {
-
     //장비 가능한 아이템
     internal abstract class Equipable : Item, IEquipable
     {

@@ -418,6 +418,11 @@ namespace _231109_SFML_Test
 
             float boxMargin = 15f, slotWidth;
 
+            //장비
+            RectangleShape weaponMainShape, weaponSubShape,
+                helmetShape, headgearShape, plateCarrierShape, armourPlateShape, backpackShape;
+
+
             #endregion 
 
             public TabInventory(Player master, int index) : base(master, "장비", index)
@@ -475,11 +480,29 @@ namespace _231109_SFML_Test
                 slotText.FillColor = Color.White;
                 slotText.OutlineColor = Color.Black;
 
-
                 containerText = new Text("슬롯", Rm.fonts["Jalnan"], 25);
                 containerText.FillColor = Color.White;
                 containerText.OutlineColor = Color.Black;
                 containerText.Position = containerBox.Position + new Vector2f(boxMargin, boxMargin) + new Vector2f(10f, 10f);
+
+
+                float equipmentSep = 0.025f, equipmentWid = 0.250f, equipmentSepOuter = 0.075f;
+
+
+                weaponSubShape = new RectangleShape(
+                    new Vector2f(
+                        equipmentBox.Size.X * (equipmentWid * 2f + equipmentSep),
+                        equipmentBox.Size.Y * (equipmentWid * 1f)
+                        )
+                    );
+
+                weaponMainShape = new RectangleShape(weaponSubShape);
+
+                weaponMainShape.Size = new Vector2f(
+                        equipmentBox.Size.X * (equipmentWid * 2f + equipmentSep),
+                        equipmentBox.Size.Y * (equipmentWid * 1f)
+                        );
+
             }
 
             #region [스토리지, 창고 제어]

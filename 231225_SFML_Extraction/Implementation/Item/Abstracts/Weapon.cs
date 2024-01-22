@@ -37,21 +37,28 @@ namespace _231109_SFML_Test
                             if(isTrue == false) break;
                             if(delayNow > 0f) break;
                             if(triggeredBefore == true) break;
+                            if(hands.master.movement.nowMovement.handUsable == false) break;
 
                             Fire(hands);
 
                             break;
+
                         case SelectorType.AUTO:
                             if(isTrue == false) break;
                             if(delayNow > 0f) break;
+                            if(hands.master.movement.nowMovement.handUsable == false) break;
 
                             Fire(hands);
 
                             break;
+
                         case SelectorType.BURST2:
+                            if(hands.master.movement.nowMovement.handUsable == false) break;
                             Console.WriteLine("SelectorType.BURST2 구현안됨");
                             break;
+
                         case SelectorType.BURST3:
+                            if(hands.master.movement.nowMovement.handUsable == false) break;
                             Console.WriteLine("SelectorType.BURST3 구현안됨");
                             break;
                     }
@@ -158,11 +165,8 @@ namespace _231109_SFML_Test
         {
             GamemodeIngame gm = Program.tm.gmNow as GamemodeIngame;
 
-            //Y값이 뒤집힌경우 총구 편차 보정
-            Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos.muzzlePos : new Vector2f(specialPos.muzzlePos.X, -specialPos.muzzlePos.Y);
-
             //총구 위치를 세계 좌표로 변환
-            Vector2f muzzlePos = hands.master.Position + hands.handPos + muzzleSep.RotateFromZero(hands.handRot);
+            Vector2f muzzlePos = hands.master.Position + hands.handPos + hands.AnimationGetPos(specialPos.muzzlePos).RotateFromZero(hands.handRot);
 
             //AmmoStatus ammoStatus = status.typeDt.mechanismType == MechanismType.CLOSED_BOLT? magazineAttached.AmmoPeek() : chamber[0];
             Ammo ammo = magazineAttached.AmmoPeek();
@@ -188,7 +192,7 @@ namespace _231109_SFML_Test
             //배출구 위치를 세계 좌표로 변환
             Vector2f chamberPos = hands.master.Position + hands.handPos + chamberSep.RotateFromZero(hands.handRot);
 
-
+            //효과 이펙트
             for (int i = 0; i < 5; i++)
                 new MuzzleSmoke(gm, chamberPos, hands.handRot - 180f);
 
@@ -242,7 +246,6 @@ namespace _231109_SFML_Test
 
             foreach(RectangleShape r in topParts)
                 r?.Dispose();
-
         }
     }
 

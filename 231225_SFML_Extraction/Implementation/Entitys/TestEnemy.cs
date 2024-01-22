@@ -2,6 +2,7 @@
 using SFML.System;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,42 +15,103 @@ namespace _231109_SFML_Test
         {
             ((CircleShape)mask).FillColor = Color.Red;
             noise = new FastNoise((int)(VideoManager.GetTimeTotal() * 37));
-            movement.accelPer*= 0.9f;
+            movement.accelPer *= 0.9f;
+
+
+            // hands.handling = new FN_FAL();
+            inventory.weaponPrimary.DoEquipItem(new FN_FAL());
+            hands.SetHandling(inventory.weaponPrimary.item as Weapon);
         }
 
         Entity targetEntity = null;
         float aggre = 0f, aggreMax = 3f;
         FastNoise noise;
 
-        protected override void DrawProcess()
+        Dictionary<InputManager.CommandType, bool> aiCommandDic = new Dictionary<InputManager.CommandType, bool>()
         {
-            base.DrawProcess();
+            { InputManager.CommandType.FIRE, false },
+            { InputManager.CommandType.AIM, false },
+            //TODO
+        };
+
+        public void AiCommandProcess()
+        {
+            aggre -= VideoManager.GetTimeDelta();
 
             GamemodeIngame gm = gamemode as GamemodeIngame;
             Entity targetAble = gm.entitys[0];
             Line sightChecker = new Line(Position, targetAble.Position);
 
+            float targetDir = (targetAble.Position - Position).ToDirection().ToDirection();
+            float aimDir = aimPosition.ToDirection().ToDirection();
 
-            foreach (Structure str in gm.structures)
-                if (str.mask.IsCollision(sightChecker)) return;
+            if (Math.Abs(targetDir - aimDir) < 90f || Math.Abs(Math.Abs(targetDir - aimDir) - 360f) < 90f)
+            {
+                foreach (Structure str in gm.structures)
+                    if (str.mask.IsCollision(sightChecker)) return;
 
-            aggre = aggreMax;
-            targetEntity = targetAble;
+                aggre = aggreMax;
+                targetEntity = targetAble;
+            }
+
+
+            //상대 있음
+            if (targetEntity != null)
+            {
+                if (aggre < 0f) targetEntity = null;
+
+                movement.moveDir = (targetEntity.Position - Position).Normalize();
+
+                Vector2f tPos = targetEntity.Position +
+                    new Vector2f(
+                        noise.GetPerlin(VideoManager.GetTimeTotal() * 10f, 13),
+                        noise.GetPerlin(VideoManager.GetTimeTotal() * 10f, 1231)
+                        ) * 50f;
+
+                AimPosition = (AimPosition + tPos * 0.03f) / (1f + 0.03f);
+
+                float aimTargetDis = (AimPosition - targetEntity.Position).Magnitude();
+                float meTargetDis = (Position - targetEntity.Position).Magnitude();
+
+                aiCommandDic[InputManager.CommandType.AIM] = (aimTargetDis < 120f) && meTargetDis > 400f ? true : false;
+                aiCommandDic[InputManager.CommandType.FIRE] = (aimTargetDis < 50f) ? true : false;
+            }
+            //상대 없음
+            else
+            {
+                movement.moveDir = new Vector2f(
+                    noise.GetPerlin(VideoManager.GetTimeTotal() * 100f, 12531f),
+                    noise.GetPerlin(VideoManager.GetTimeTotal() * 100f, 1613f)).Normalize();
+
+                Vector2f tPos = Position +
+                    new Vector2f(
+                        noise.GetPerlin(VideoManager.GetTimeTotal() * 10f, 13),
+                        noise.GetPerlin(VideoManager.GetTimeTotal() * 10f, 1231)
+                        ) * 400f;
+
+                AimPosition = (AimPosition + tPos * 0.03f) / (1f + 0.03f);
+
+
+                aiCommandDic[InputManager.CommandType.AIM] = false;
+                aiCommandDic[InputManager.CommandType.FIRE] = false;
+
+            }
+        }
+
+        protected override void DrawProcess()
+        {
+            base.DrawProcess();
         }
 
         protected override void LogicProcess()
         {
             base.LogicProcess();
+            AiCommandProcess();
 
-            if (targetEntity != null)
-                movement.moveDir = (targetEntity.Position - Position).Normalize();
-            else
-                movement.moveDir = new Vector2f(
-                    noise.GetPerlin(VideoManager.GetTimeTotal() * 100f, 12531f),
-                    noise.GetPerlin(VideoManager.GetTimeTotal() * 100f, 1613f)).Normalize();
+            //손의 무기 제어
+            hands.LogicHandlingProcess(cmd => aiCommandDic[cmd]);
 
-            aggre -= VideoManager.GetTimeDelta();
-            if (aggre < 0f) targetEntity = null;
+
 
             GamemodeIngame gm = gamemode as GamemodeIngame;
             if (gm.entitys[0] == null) return;

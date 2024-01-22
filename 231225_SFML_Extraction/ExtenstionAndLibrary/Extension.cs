@@ -62,6 +62,12 @@ namespace _231109_SFML_Test
             return (float)System.Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
         }
     }
+
+    public static class FloatEx 
+    {
+        public static float Lerp(this float from, float to, float ratio) => from *(1f-ratio) + to * ratio;
+    }
+
     public class TypeEx 
     {
         public static bool IsChildByParent(Type childClass, Type parentClass)

@@ -48,7 +48,7 @@ namespace _231109_SFML_Test
                 {
                     adsTime = 0.200f,
                     reloadTime = (0.710f, 0.950f, 0.380f),
-                    sprintTime = 0.110f,
+                    sprintTime = 0.220f,
                     swapTime = 0.250f,
                 },
                 aimDt = new WeaponStatus.AimData()
@@ -57,15 +57,15 @@ namespace _231109_SFML_Test
                     {
                         stance = new WeaponStatus.AimData.HipData.HipStancelData()
                         {
-                            recovery = 4.50f,
-                            accuracy = 23.00f,
+                            recovery = 6.50f,
+                            accuracy = 90.00f,
                             accuracyAdjust = (crounch: 0.62f, walk: 1.95f),
                         },
                         recoil = new WeaponStatus.AimData.HipData.HipRecoilData()
                         {
                             recovery = 12.00f,
                             recoveryAdjust = (crounch: 1.74f, walk: 0.70f),
-                            strength = 39.00f,
+                            strength = 80.00f,
                         },
                         traggingSpeed = 18.00f,
                     },

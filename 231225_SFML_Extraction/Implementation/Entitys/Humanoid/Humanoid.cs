@@ -51,6 +51,9 @@ namespace _231109_SFML_Test
             DrawManager.texWrHigher.Draw(mask, CameraManager.worldRenderState);
             hands?.PhaseHandlingProcess();
             hands?.AnimationProcess();
+
+            //방향 최신화
+            Direction = aimPosition.ToDirection().ToDirection();
         }
 
         protected override void LogicProcess()
@@ -61,8 +64,8 @@ namespace _231109_SFML_Test
 
         protected override void PhysicsProcess()
         {
-            movement.MovementProcess();
-            aim.AimProcess();
+            movement?.MovementProcess();
+            aim?.AimProcess();
         }
 
         public override void Dispose()
@@ -74,7 +77,6 @@ namespace _231109_SFML_Test
             movement = null;
 
             base.Dispose();
-
 
             GamemodeIngame ingm = gamemode as GamemodeIngame;
             ingm.entitys.Remove(this);

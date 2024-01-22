@@ -62,8 +62,6 @@ namespace _231109_SFML_Test
                 );
             AimPosition += new Vector2f(InputManager.mouseDelta.X , InputManager.mouseDelta.Y);
 
-            //방향 최신화
-            Direction = aimPosition.ToDirection().ToDirection();
 
             //UI
             DrawHudProcess();
@@ -114,7 +112,7 @@ namespace _231109_SFML_Test
                 ptd?.LogicProcess();
 
                 //갖고 있는 아이템의 조작
-                hands.LogicHandlingProcess();
+                hands.LogicHandlingProcess(cmd => InputManager.CommandCheck(cmd));
             }
             catch (Exception ex)
             {

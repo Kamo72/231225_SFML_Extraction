@@ -45,10 +45,10 @@ namespace _231109_SFML_Test
             SoundManager.listener = entity;
 
             //적 테스트
-            //new TestEnemy(this, new Vector2f(1000, 1000));
-            //new TestEnemy(this, new Vector2f(-1000, 1000));
-            //new TestEnemy(this, new Vector2f(1000, -1000));
-            //new TestEnemy(this, new Vector2f(-1000, -1000));
+            new TestEnemy(this, new Vector2f(1000, 1000));
+            new TestEnemy(this, new Vector2f(-1000, 1000));
+            new TestEnemy(this, new Vector2f(1000, -1000));
+            new TestEnemy(this, new Vector2f(-1000, -1000));
 
             //적 스포너 테스트
             spawner = new Timer(2000f);

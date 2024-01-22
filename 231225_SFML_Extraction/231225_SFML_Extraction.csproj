@@ -92,7 +92,11 @@
     <Compile Include="GameMode\Ingame\IngameLightDrawer.cs" />
     <Compile Include="GameMode\Ingame\IngameWeatherTimeManager.cs" />
     <Compile Include="Implementation\Entitys\Container.cs" />
-    <Compile Include="Implementation\Entitys\HumanoidExtention.cs" />
+    <Compile Include="Implementation\Entitys\Humanoid\HumanoidAim.cs" />
+    <Compile Include="Implementation\Entitys\Humanoid\HumanoidHands.cs" />
+    <Compile Include="Implementation\Entitys\Humanoid\HumanoidHealth.cs" />
+    <Compile Include="Implementation\Entitys\Humanoid\HumanoidInventory.cs" />
+    <Compile Include="Implementation\Entitys\Humanoid\HumanoidMovement.cs" />
     <Compile Include="Implementation\Entitys\PlayerExtension.cs" />
     <Compile Include="Implementation\Entitys\Property\ILightSource.cs" />
     <Compile Include="Implementation\Entitys\TestEnemy.cs" />
@@ -101,7 +105,7 @@
     <Compile Include="Implementation\Item\Abstracts\MagazineAndAmmo.cs" />
     <Compile Include="Implementation\Item\Abstracts\Weapon.cs" />
     <Compile Include="Implementation\Entitys\DroppedItem.cs" />
-    <Compile Include="Implementation\Entitys\Humanoid.cs" />
+    <Compile Include="Implementation\Entitys\Humanoid\Humanoid.cs" />
     <Compile Include="Implementation\Entitys\Player.cs" />
     <Compile Include="Implementation\Entitys\Property\IInteractable.cs" />
     <Compile Include="Implementation\Item\Ammunition.cs" />

@@ -119,7 +119,7 @@ namespace _231109_SFML_Test
 
                 public override string GetCartegory()
                 {
-                    return isMain ? isFirst ? "주무장" : "부무장" : "보조무장";
+                    return isMain ? isFirst ? "부무장" : "주무장" : "보조무장";
                 }
             }
 

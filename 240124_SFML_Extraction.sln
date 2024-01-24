@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "240124_SFML_Extraction", "240124_SFML_Extraction\240124_SFML_Extraction.csproj", "{E6F2CB94-256C-4CB2-9037-4328E523836A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6F2CB94-256C-4CB2-9037-4328E523836A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F2CB94-256C-4CB2-9037-4328E523836A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F2CB94-256C-4CB2-9037-4328E523836A}.Debug|x64.ActiveCfg = Debug|x64
+		{E6F2CB94-256C-4CB2-9037-4328E523836A}.Debug|x64.Build.0 = Debug|x64
+		{E6F2CB94-256C-4CB2-9037-4328E523836A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F2CB94-256C-4CB2-9037-4328E523836A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6F2CB94-256C-4CB2-9037-4328E523836A}.Release|x64.ActiveCfg = Release|x64
+		{E6F2CB94-256C-4CB2-9037-4328E523836A}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A8997B7-9A78-4EF6-ABEA-9028D9B888C3}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,53 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "240124_SFML_Extraction/1.0.0": {
+        "dependencies": {
+          "SFML.Net.x64": "2.4.0"
+        },
+        "runtime": {
+          "240124_SFML_Extraction.dll": {}
+        }
+      },
+      "SFML.Net.x64/2.4.0": {
+        "runtime": {
+          "lib/sfmlnet-audio-2.dll": {
+            "assemblyVersion": "2.4.0.0",
+            "fileVersion": "2.4.0.0"
+          },
+          "lib/sfmlnet-graphics-2.dll": {
+            "assemblyVersion": "2.4.0.0",
+            "fileVersion": "2.4.0.0"
+          },
+          "lib/sfmlnet-system-2.dll": {
+            "assemblyVersion": "2.4.0.0",
+            "fileVersion": "2.4.0.0"
+          },
+          "lib/sfmlnet-window-2.dll": {
+            "assemblyVersion": "2.4.0.0",
+            "fileVersion": "2.4.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "240124_SFML_Extraction/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SFML.Net.x64/2.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-O58BiDq7tO0TfRv/rywjMGfB9wow55k75NP+oMBQpas3mdMPLOOgTJ/pGJJiIEhbl64dgB1aK4+EQz4ghpntlA==",
+      "path": "sfml.net.x64/2.4.0",
+      "hashPath": "sfml.net.x64.2.4.0.nupkg.sha512"
+    }
+  }
+}

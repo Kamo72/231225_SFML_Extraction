@@ -27,11 +27,21 @@ namespace _231109_SFML_Test
             Console.WriteLine("gamemode Now is " + tm.gmNow.GetType().ToString());
             this.logicFps = logicFps;
 
+            deltaClock = new Clock();
+
             //로직 타이머 시작
             timer = new Timer(1000d / logicFps);
             timer.Elapsed += (s, e) => {
-                logicEvent?.Invoke();   //로직 처리 호출
-                InputManager.inputManagerProcess();
+                try
+                {
+                    logicEvent?.Invoke();   //로직 처리 호출
+                    InputManager.inputManagerProcess();
+
+
+                    deltaTime = deltaClock.ElapsedTime.AsSeconds();
+                    deltaClock.Restart();
+                }
+                catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
             };
             timer.Start();
 
@@ -48,7 +58,9 @@ namespace _231109_SFML_Test
         public readonly double logicFps;
         Timer timer;
 
-        protected Clock clock;
+        protected Clock clock, deltaClock;
+
+        public float deltaTime = 0f;
 
         //로직, 드로우, 드로우 UI 등의 이벤트
         public event Action logicEvent;

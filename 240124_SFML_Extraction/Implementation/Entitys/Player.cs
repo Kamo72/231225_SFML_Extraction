@@ -37,12 +37,12 @@ namespace _231109_SFML_Test
             hands.SetHandling(inventory.weaponPrimary.item as Weapon);
 
             //UI 객체들 초기화
-            DrawUiInit(new PlayerUiDrawer[] {
+            DrawUiInit([
                 new PlayerCrosshairDrawer(this),
                 new PlayerHpDrawer(this),
                 new PlayerTabDrawer(this),
                 new PlayerAdsDrawer(this),
-            });
+            ]);
         }
 
 
@@ -108,7 +108,7 @@ namespace _231109_SFML_Test
                 base.PhysicsProcess();
 
                 //플레이어 탭 드로워.로직 프로세스
-                PlayerTabDrawer ptd = uiList.Find(ui => ui is PlayerTabDrawer) as PlayerTabDrawer;
+                PlayerTabDrawer ptd = uiList?.Find(ui => ui is PlayerTabDrawer) as PlayerTabDrawer;
                 ptd?.LogicProcess();
 
                 //갖고 있는 아이템의 조작

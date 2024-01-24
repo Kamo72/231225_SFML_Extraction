@@ -72,7 +72,7 @@ namespace _231109_SFML_Test
 
             public void AdsProcess()
             {
-                float deltaTime = VideoManager.GetTimeDelta();
+                float deltaTime = master.gamemode.deltaTime;
 
                 //조준 중(1으로 수렴)
                 if (isAds)
@@ -342,7 +342,7 @@ namespace _231109_SFML_Test
             static FastNoise noise = new FastNoise();
             void AdsStanceVectorProcess()
             {
-                time += VideoManager.GetTimeDelta() * adsStanceAccuracy + (1f + recoilVec.Magnitude() / 10f);
+                time += master.gamemode.deltaTime * adsStanceAccuracy + (1f + recoilVec.Magnitude() / 10f);
 
                 float x = adsStanceAccuracy * noise.GetPerlin(0f, time);
                 float y = adsStanceAccuracy * noise.GetPerlin(1335f, time);

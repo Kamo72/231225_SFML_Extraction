@@ -68,7 +68,7 @@ namespace _231109_SFML_Test
                     triggeredBefore = isTrue;
 
 
-                    muzzleHeat -= VideoManager.GetTimeDelta();
+                    muzzleHeat -= gm.deltaTime * 0.4f;
                     muzzleHeat = Mathf.Clamp(0f, muzzleHeat, muzzleHeatMax);
 
                     float muzzleSmokeRatio = Math.Max(muzzleHeat, 0f) * 1f;
@@ -77,20 +77,19 @@ namespace _231109_SFML_Test
                         Vector2f muzzlePos = hands.master.Position + hands.handPos + hands.AnimationGetPos(specialPos.muzzlePos).RotateFromZero(hands.handRot);
                         new MuzzleSmoke(gm, muzzlePos, hands.handRot);
                     }
+
                 } },
                 { InputManager.CommandType.AIM, (hands, isTrue) =>
                 {
                     hands.master.aim.isAds = isTrue;
                 } },
-                //{ InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => {
-
-                //} },
-                //{ InputManager.CommandType.SPRINT, (hands, isTrue) => {
-
-                //} },
+                { InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => 
+                {
+                    hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_CHANGE);
+                } },
                 //{ InputManager.CommandType.MELEE, (hand, isTrue) => {
 
-                //} }
+                //} },
             };
         }
 
@@ -201,7 +200,7 @@ namespace _231109_SFML_Test
         float delayNow = 0f;
         bool triggeredBefore = false;
         SelectorType selectorNow;
-        float muzzleHeat = 0f, muzzleHeatDelta = 0.12f, muzzleHeatMax = 1f;
+        float muzzleHeat = 0f, muzzleHeatDelta = 0.02f, muzzleHeatMax = 1f;
 
         void Fire(Humanoid.Hands hands) 
         {
@@ -249,6 +248,9 @@ namespace _231109_SFML_Test
             hands.master.aim.GetRecoilVector();
 
             muzzleHeat += muzzleHeatDelta;
+
+            //애니메이션 적용
+            hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.FIRE);
         }
 
         #endregion

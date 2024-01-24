@@ -28,4 +28,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Sprites\WEAPONS_DMR\FN_FAL_PARTS\" />
+  </ItemGroup>
+
 </Project>

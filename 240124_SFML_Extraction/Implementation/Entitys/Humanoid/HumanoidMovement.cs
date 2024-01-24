@@ -89,7 +89,7 @@ namespace _231109_SFML_Test
 
             void StateProcess()
             {
-                float deltaTime = VideoManager.GetTimeDelta();
+                float deltaTime = master.gamemode.deltaTime;
 
                 switch (targetIndex)
                 {

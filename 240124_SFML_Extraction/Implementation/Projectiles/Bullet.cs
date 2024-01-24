@@ -77,8 +77,9 @@ namespace _231109_SFML_Test
                     hittedBefore.Add(ent);
                     //Console.WriteLine("데미지 체크! " + Vm.GetTimeTotal());
 
+                    human.movement.speed += rotation.ToRadian().ToVector() * speed.Magnitude() * 10f;
+
                     float ret = human.health.GetDamage(damage);
-                    human.movement.speed += rotation.ToRadian().ToVector() * speed.Magnitude() / 10f;
                     for (int i = 0; i < 30; i++)
                         new BloodSpray(gamemode, position, rotation);
 

@@ -31,12 +31,15 @@ namespace _231109_SFML_Test
         {
             { InputManager.CommandType.FIRE, false },
             { InputManager.CommandType.AIM, false },
+            { InputManager.CommandType.MAGAZINE_CHANGE, false },
             //TODO
         };
 
         public void AiCommandProcess()
         {
-            aggre -= VideoManager.GetTimeDelta();
+            if (isDisposed) return;
+
+            aggre -= gamemode.deltaTime;
 
             GamemodeIngame gm = gamemode as GamemodeIngame;
             Entity targetAble = gm.entitys[0];
@@ -58,7 +61,11 @@ namespace _231109_SFML_Test
             //상대 있음
             if (targetEntity != null)
             {
-                if (aggre < 0f) targetEntity = null;
+                if (aggre < 0f)
+                {
+                    targetEntity = null;
+                    return;
+                }
 
                 movement.moveDir = (targetEntity.Position - Position).Normalize();
 
@@ -109,7 +116,7 @@ namespace _231109_SFML_Test
             AiCommandProcess();
 
             //손의 무기 제어
-            hands.LogicHandlingProcess(cmd => aiCommandDic[cmd]);
+            hands.LogicHandlingProcess(cmd => aiCommandDic.ContainsKey(cmd)? aiCommandDic[cmd] : false);
 
 
 

@@ -119,7 +119,7 @@ namespace _231109_SFML_Test
             public void PhaseHandlingProcess()
             {
                 //handPosTremble / handRotTremble
-                trembleTime += VideoManager.GetTimeDelta() * 100f;
+                trembleTime += master.gamemode.deltaTime * 100f;
                 trembleTime += master.aim.moveRatio * 2f;
 
                 handPosMovement = master.movement.speed.Normalize() * master.aim.moveRatio * 5f;
@@ -146,6 +146,8 @@ namespace _231109_SFML_Test
             public void LogicHandlingProcess(Func<InputManager.CommandType, bool> commandFunc)
             {
                 //조작 가능 체크
+                if (Program.tm == null) return;
+                if (master.gamemode == null) return;
                 if (handling == null) return;
                 if (handling.commandsReact == null) return;
                 if (master.hands.onInventory == true) return;
@@ -207,6 +209,11 @@ namespace _231109_SFML_Test
 
                 UNEQUIP,    //장착 해제
                 EQUIP,      //장착
+
+                MAGAZINE_CHANGE,    //탄창 교체
+                MAGAZINE_INSPECT,   //탄창 확인
+                MAGAZINE_REMOVE,    //탄창 제거
+                MAGAZINE_ATTACH,    //탄창 부착
             }
             public abstract class Animator : IDisposable
             {
@@ -248,6 +255,7 @@ namespace _231109_SFML_Test
                 public Phase weaponPhase, rightPhase, leftPhase, magazinePhase;
                 RectangleShape rightShape, leftShape;
                 float sprintTime = 0f;
+                static Random random = new Random();
 
                 public override void DrawProcess()
                 {
@@ -274,9 +282,31 @@ namespace _231109_SFML_Test
                             }
                             break;
 
+                        case AnimationState.FIRE:
+                            {
+                                //이동할 무기위치를 찾기
+                                float timeRatio = hands.time / hands.timeMax;
+                                Phase tPhase = new Phase( new Vector2f(0f - 
+                                    timeRatio * ((float)random.NextDouble() + 2f) * 10f,
+                                    timeRatio * (float)(random.NextDouble()-0.5f) * 10f ) , -timeRatio);
+
+                                //무기 위치 이동
+                                weaponPhase.position = (weaponPhase.position + tPhase.position * 0.12f) / 1.12f;
+                                weaponPhase.rotation = (weaponPhase.rotation.ToRadian().ToVector() + (tPhase.rotation).ToRadian().ToVector()).ToDirection().ToDirection();
+
+                                centralPhase.position = weaponPhase.position + hands.handPosTremble + hands.handPosMovement;
+                                centralPhase.rotation = weaponPhase.rotation + hands.handRotTremble;
+
+                                //무기 위상에 맞게 세부 위상 조정
+                                rightPhase = PosRotToRelPhase(weapon.specialPos.pistolPos, 30f, isReversed);
+                                leftPhase = PosRotToRelPhase(weapon.specialPos.secGripPos, 70f, isReversed);
+                                magazinePhase = PosRotToRelPhase(weapon.specialPos.magPos, 0f, isReversed);
+
+                            }
+                            break;
                         case AnimationState.SPRINT:
                             {
-                                sprintTime += VideoManager.GetTimeDelta() * 10f * hands.master.aim.moveRatio;
+                                sprintTime += hands.master.gamemode.deltaTime * 10f * hands.master.aim.moveRatio;
                                 float timeRatio = (float)Math.Pow(hands.time / hands.timeMax, 2f);
 
                                 //무기 위치 이동
@@ -354,7 +384,19 @@ namespace _231109_SFML_Test
                                 magazinePhase = PosRotToRelPhase(weapon.specialPos.magPos, 0f, isReversed);
                             }
                             break;
-                        default: break;
+
+                        case AnimationState.MAGAZINE_REMOVE:
+                            {
+
+                            }
+                            break;
+                        case AnimationState.MAGAZINE_ATTACH:
+                            {
+
+                            }
+                            break;
+
+                        default: Console.WriteLine("정의되지 않은 애니메이션 타입");  break;
                     }
 
                     #region [드로우 수행 위치]
@@ -402,7 +444,7 @@ namespace _231109_SFML_Test
                             {
                                 //시간값 제어 = 질주태세
                                 if ((int)hands.master.movement.targetIndex <= 1.01f)
-                                    hands.time -= VideoManager.GetTimeDelta() * 2f;
+                                    hands.time -= hands.master.gamemode.deltaTime * 2f;
 
                                 else if (hands.time < 0.01f)
                                     hands.time += 0.02f;
@@ -422,7 +464,8 @@ namespace _231109_SFML_Test
                         case AnimationState.UNEQUIP: { } break;
                     }
 
-                    hands.time += VideoManager.GetTimeDelta();
+                    hands.time += hands.master.gamemode.deltaTime;
+                    Console.WriteLine($"{ hands.state} - { hands.time}/{ hands.timeMax }");
                 }
 
                 public override void ChangeState(AnimationState newState)
@@ -437,7 +480,14 @@ namespace _231109_SFML_Test
                                 changeStateCallback = null;
                             }
                             break;
-                        case AnimationState.FIRE: break;
+                        case AnimationState.FIRE: 
+                            {
+                                hands.state = AnimationState.FIRE;
+                                hands.time = 0f;
+                                hands.timeMax = 0.01f;
+                                changeStateCallback = () => ChangeState(AnimationState.IDLE);
+                            }
+                            break;
                         case AnimationState.SPRINT:
                             {
                                 hands.state = AnimationState.SPRINT;
@@ -480,7 +530,7 @@ namespace _231109_SFML_Test
 
             public AnimationState state = AnimationState.EQUIP;
             public float time = 0f, timeMax = 1f;
-            Animator nowAnimator;
+            public Animator nowAnimator;
             public void AnimationProcess()
             {
                 nowAnimator?.DrawProcess();

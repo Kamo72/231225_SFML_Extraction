@@ -420,8 +420,6 @@ namespace _231109_SFML_Test
             float boxMargin = 15f, slotWidth;
 
             //장비
-            RectangleShape weaponFirstShape, weaponSecondShape, weaponSubShape,
-                helmetShape, headgearShape, plateCarrierShape, armourPlateShape, backpackShape;
             RectangleShape smallEquipShape, bigEquipShape, smallItemShape, bigItemShape;
             const float equipmentSep = 0.025f, equipmentWid = 0.250f, equipmentSepOuter = 0.075f;
 
@@ -634,7 +632,14 @@ namespace _231109_SFML_Test
                     if (equipSlot.item is IHandable ih)
                     {
                         float drawSize = 2.5f;
-                        ih.DrawHandable(DrawManager.texUiPopup, socketShape.Position + new Vector2f(socketShape.Size.X / 3f, socketShape.Size.Y / 2f), 0f, new Vector2f(1f, 1f) * drawSize, RenderStates.Default);
+                        Vector2f centerPos = new Vector2f(socketShape.Size.X / 3f, socketShape.Size.Y / 2f);
+
+                        if (equipSlot.item is Weapon wp) 
+                        {
+                            wp.magazineAttached?.DrawHandable(DrawManager.texUiPopup, socketShape.Position + centerPos + wp.specialPos.magPos * drawSize, 0f, new Vector2f(1f, 1f) * drawSize);
+                        }
+
+                        ih.DrawHandable(DrawManager.texUiPopup, socketShape.Position + centerPos, 0f, new Vector2f(1f, 1f) * drawSize, RenderStates.Default);
                     }
                     else
                     {

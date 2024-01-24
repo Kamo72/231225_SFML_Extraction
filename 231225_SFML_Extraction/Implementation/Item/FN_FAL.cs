@@ -105,6 +105,12 @@ namespace _231109_SFML_Test
                     effectiveRange = 750f,
                     barrelLength = 50f,
                 }, 
+                attachDt = new WeaponStatus.AttachData() 
+                {
+                    socketList = new List<AttachSocket> {
+                        new AttachSocket(AttachmentType.BARREL, new Vector2f(13.5f, -2.5f), true, null),
+                    },
+                },
             };
 
             WeaponLibrary.Set("FN_FAL", status);
@@ -131,12 +137,12 @@ namespace _231109_SFML_Test
 
             specialPos =
             (
-                magPos: new Vector2f(13.5f, -0.5f),
-                muzzlePos: new Vector2f(105.0f, -7.5f),
-                ejectPos: new Vector2f(13.5f, +0.5f),
-                pistolPos: new Vector2f(-5.5f, +5.0f),
-                secGripPos: new Vector2f(30.5f, -3.0f),
-                boltPos: new Vector2f(14.5f, +0.5f)
+                magPos: new Vector2f(13.5f, 1.5f),
+                muzzlePos: new Vector2f(105.0f, -0.5f),
+                ejectPos: new Vector2f(13.5f, -2.5f),
+                pistolPos: new Vector2f(-5.5f, +2.0f),
+                secGripPos: new Vector2f(30.5f, -6.0f),
+                boltPos: new Vector2f(14.5f, -2.5f)
             );
 
             //테스트
@@ -145,24 +151,8 @@ namespace _231109_SFML_Test
 
         public override void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
         {
-            //if (magazineAttached != null)
-            //{
-            //    Vector2f magazinePos =
-            //        specialPos.magPos.X * (direction).ToRadian().ToVector() +
-            //        specialPos.magPos.Y * (direction-90f).ToRadian().ToVector() * (scaleRatio.Y < 0 ? 1f : -1f);
-
-            //    //magazineAttached.DrawHandable(texture, position + (direction / 5.8f).ToVector() * 100f, rotation, direction, renderStates, 3.5f);
-            //    magazineAttached.DrawHandable(texture,
-            //        position + new Vector2f(magazinePos.X * Math.Abs(scaleRatio.X), magazinePos.Y * Math.Abs(scaleRatio.Y)),
-            //        direction, renderStates, scaleRatio);
-            //}
-
             for (int i = topParts.Length-1; i >= 0; i--)
-            {
-                RectangleShape shape = topParts[i];
-                DrawHandablePart(texture, shape, position,  direction, scaleRatio, renderStates);
-            }
-
+                DrawHandablePart(texture, topParts[i], position,  direction, scaleRatio, renderStates);
             
         }
     }
@@ -180,15 +170,17 @@ namespace _231109_SFML_Test
                 },
                 adjusts = new List<WeaponAdjust>()
                 {
-                    new WeaponAdjust("조준 시간 감소", WeaponAdjustType.PROS, (ws)=> ws.timeDt.adsTime *= 0.81f),
+                    new WeaponAdjust("조준 시간 감소", WeaponAdjustType.PROS,
+                    ws => {return ws with {timeDt.adsTime *= 0.81f}; }  ),
                     new WeaponAdjust("재장전 시간 감소", WeaponAdjustType.PROS,
-                    (ws)=> {
-                        ws.timeDt.reloadTime.Item1  *= 0.85f;
+                    ws => {
                         ws.timeDt.reloadTime.Item2  *= 0.74f;
                         ws.timeDt.reloadTime.Item3  *= 0.92f;
+                        ws.timeDt.reloadTime.Item1  *= 0.85f;
+                        return ws;
                     }),
-                    new WeaponAdjust("이동 속도 증가", WeaponAdjustType.PROS, (ws)=> ws.moveDt.speed *= 1.09f),
-                    new WeaponAdjust("탄약 감소", WeaponAdjustType.CONS, (ws)=>{ }),
+                    new WeaponAdjust("이동 속도 증가", WeaponAdjustType.PROS, ws => { ws.moveDt.speed *= 1.09f; return ws; }),
+                    new WeaponAdjust("탄약 감소", WeaponAdjustType.CONS, ws => ws),
                 },
             };
             MagazineLibrary.Set("FN_FAL_MAG10", status); 
@@ -233,6 +225,32 @@ namespace _231109_SFML_Test
             {
                 ResourceManager.textures["FN_FAL_MAG20"],
             });
+        }
+    }
+
+    internal class FN_FAL_Barrel_533mm : Attachment
+    {
+        public FN_FAL_Barrel_533mm() : base(AttachmentType.BARREL, new List<WeaponAdjust>() 
+        {
+            new WeaponAdjust("", WeaponAdjustType.PROS, status => status.)
+        })
+        {
+            base.SetupBasicData(
+                //아이템 이름
+                "FN FAL 533mm 총열",
+                //스프라이트 이름
+                "FN_FAL_barrel_533mm",
+                //설명
+                "FN FAL이 기본적으로 사용하는 533mm 길이의 총열입니다. 7.51x51mm NATO 총알을 충분한 속도로 발사하는데 적합하며, 다루기 좋은 길이 덕분에 전반적으로 사용하기 좋습니다.",
+                //무게
+                0.670f,
+                //아이템 크기
+                new Vector2i(3, 1),
+                //희귀도
+                Rarerity.COMMON,
+                //가격
+                3700f
+                );
         }
     }
 }

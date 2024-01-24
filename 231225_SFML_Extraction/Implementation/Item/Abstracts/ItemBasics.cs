@@ -35,7 +35,7 @@ namespace _231109_SFML_Test
             }
         }
 
-        public Vector2i size; // 저장공간 크기
+        public Vector2i size { get; set; } // 저장공간 크기
         List<Type> whiteList; //화이트리스트 whiteList.Count() == 0? 전체 허용
         public List<StorageNode> itemList = new List<StorageNode>();    //저장 노드 리스트
 
@@ -250,7 +250,8 @@ namespace _231109_SFML_Test
         public string name; //아이템 이름
         public string description; //아이템 설명
         public float mass;  //질량
-        public Vector2i size; //인벤토리 크기
+        protected Vector2i sizeOrigin;
+        public virtual Vector2i size { get => sizeOrigin; set => sizeOrigin = value; } //인벤토리 크기
         public Rarerity rare;   //희귀도
         public float value; //상점 가치
 

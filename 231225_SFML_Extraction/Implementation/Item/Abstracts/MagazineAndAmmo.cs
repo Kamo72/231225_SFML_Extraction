@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace _231109_SFML_Test
 {
-
     internal abstract class Magazine : Item
     {
         public Magazine(string magazineCode)
@@ -138,8 +137,7 @@ namespace _231109_SFML_Test
         public int stackMax { get; set; }
     }
 
-
-    #region [탄창$탄약 기본 정보]
+    #region [탄창&탄약 기본 정보]
     internal struct MagazineStatus
     {
         public MagazineStatus(int ammoSize, List<CaliberType> whiteList, List<WeaponAdjust> adjusts)

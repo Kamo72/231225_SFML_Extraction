@@ -100,6 +100,7 @@
     <Compile Include="Implementation\Entitys\PlayerExtension.cs" />
     <Compile Include="Implementation\Entitys\Property\ILightSource.cs" />
     <Compile Include="Implementation\Entitys\TestEnemy.cs" />
+    <Compile Include="Implementation\Item\Abstracts\Attachment.cs" />
     <Compile Include="Implementation\Item\Abstracts\ItemBasics.cs" />
     <Compile Include="Implementation\Item\Abstracts\Equipment.cs" />
     <Compile Include="Implementation\Item\Abstracts\MagazineAndAmmo.cs" />

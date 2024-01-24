@@ -10,10 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using static _231109_SFML_Test.Weapon;
+using static _231109_SFML_Test.WeaponStatus;
 
 namespace _231109_SFML_Test
 {
-    internal abstract class Weapon : Equipable, IHandable, IDurable
+    internal abstract class Weapon : Equipable, IHandable, IDurable, IAttachable
     {
         static Random random = new Random();
         static Weapon() { }
@@ -72,8 +74,7 @@ namespace _231109_SFML_Test
                     float muzzleSmokeRatio = Math.Max(muzzleHeat, 0f) * 1f;
                     if(muzzleSmokeRatio > (float)random.NextDouble())
                     {
-                        Vector2f muzzleSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos.muzzlePos : new Vector2f(specialPos.muzzlePos.X, -specialPos.muzzlePos.Y);
-                        Vector2f muzzlePos = hands.master.Position + hands.handPos + muzzleSep.RotateFromZero(hands.handRot);
+                        Vector2f muzzlePos = hands.master.Position + hands.handPos + hands.AnimationGetPos(specialPos.muzzlePos).RotateFromZero(hands.handRot);
                         new MuzzleSmoke(gm, muzzlePos, hands.handRot);
                     }
                 } },
@@ -100,15 +101,54 @@ namespace _231109_SFML_Test
         public float durableNow { get; set; } = 100f;
         public float durableMax { get; set; } = 0f;
         public bool zeroToDestruct { get; set; } = true;
-        
+
         //허용된 조작 목록
         public Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>> commandsReact { get; set; }
-            
+
 
         //스테이터스
         public WeaponStatus statusOrigin { get { return WeaponLibrary.Get(weaponCode); } }
         public WeaponStatus status;
         string weaponCode;
+
+        //size 재정의
+        public override Vector2i size
+        {
+            get
+            {
+                (int top, int bottom, int left, int right) GetAllSizeAdjust(AttachSocket socket) 
+                {
+
+                    if (socket.attachment == null) return (0, 0, 0, 0);
+                    if (socket.attachment is Attachment atc)
+                    {
+                        var retSize = atc.sizeAdjust;
+                        if (atc is IAttachable attachable) 
+                        {
+                            foreach (var sAtc in attachable.attachments)
+                            {
+                                var tSize = GetAllSizeAdjust(sAtc);
+                                retSize = (retSize.top + tSize.top, retSize.bottom + tSize.bottom, retSize.left + tSize.left, retSize.right + tSize.right);
+                            }
+                        }
+
+                        return retSize;
+                    }
+                    return (0, 0, 0, 0);
+                }
+                
+                Vector2i ret = sizeOrigin;
+
+                foreach (var item in attachments) 
+                {
+                    var ttSize = GetAllSizeAdjust(item);
+                    ret += new Vector2i(ttSize.right + ttSize.left, ttSize.top + ttSize.bottom);
+                }
+
+                return ret;
+            }
+        }
+
         #endregion
 
         #region [탑뷰 스프라이트]
@@ -156,6 +196,8 @@ namespace _231109_SFML_Test
         #region [격발 시스템]
 
         float delayMax { get { return status.detailDt.RoundDelay; } }
+
+
         float delayNow = 0f;
         bool triggeredBefore = false;
         SelectorType selectorNow;
@@ -220,7 +262,20 @@ namespace _231109_SFML_Test
             Vector2f pistolPos,
             Vector2f secGripPos,
             Vector2f boltPos) specialPos;
+
+        public List<AttachSocket> attachments { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public bool isValidAttachments()
+        {
+            foreach (var item in attachments)
+                if (item.isNeccesary == true && item.attachment == null)
+                    return false;
+
+            return true;
+        }
+
         #endregion
+
 
         #region [주무기, 보조무기 장착 조건]
         //주무기 장착 조건, 보조무기 장착 조건
@@ -289,13 +344,23 @@ namespace _231109_SFML_Test
 
     public struct WeaponStatus
     {
-        public WeaponStatus(TypeData typeData, AimData aimData, TimeData timeData, MovementData movementData, DetailData detailData)
+        public WeaponStatus(WeaponStatus status)
+        {
+            this.typeDt = status.typeDt;
+            this.aimDt = status.aimDt;
+            this.timeDt = status.timeDt;
+            this.moveDt = status.moveDt;
+            this.detailDt = status.detailDt;
+            this.attachDt = status.attachDt;
+        }
+        public WeaponStatus(TypeData typeData, AimData aimData, TimeData timeData, MovementData movementData, DetailData detailData, AttachData attachData)
         { 
             this.typeDt = typeData;
             this.aimDt = aimData;
             this.timeDt = timeData;
             this.moveDt = movementData;
             this.detailDt = detailData;
+            this.attachDt = attachData;
         }
 
 
@@ -474,7 +539,32 @@ namespace _231109_SFML_Test
             public float barrelLength;      //총기 전장
         }
 
+        public AttachData attachDt;
+        public struct AttachData
+        {
+            internal List<AttachSocket> socketList;
+        }
+    }
+    public static class WeaponStatusEx
+    {
+        internal static List<AttachSocket> CopyList(this AttachData attachDt) 
+        {
+            List < AttachSocket >  list = new List<AttachSocket>(attachDt.socketList);
 
+            for (int i = 0; i < list.Count; i++) 
+            {
+                AttachSocket socket = list[i];
+                if (socket.attachment != null) 
+                {
+                    AttachSocket originSocket = attachDt.socketList[i];
+                    Type originType = originSocket.attachment.GetType();
+                    var newItem = Activator.CreateInstance(originType);
+                    socket.attachment = newItem as IAttachment;
+                }
+            }
+
+            return list;
+        }
     }
     #endregion
 
@@ -488,7 +578,7 @@ namespace _231109_SFML_Test
     }
     public struct WeaponAdjust
     {
-        public WeaponAdjust(string description, WeaponAdjustType adjustType, Action<WeaponStatus> adjustFun)
+        public WeaponAdjust(string description, WeaponAdjustType adjustType, Func<WeaponStatus, WeaponStatus> adjustFun)
         {
             this.description = description;
             this.adjustType = adjustType;
@@ -497,11 +587,10 @@ namespace _231109_SFML_Test
 
         public string description;
         public WeaponAdjustType adjustType;
-        public Action<WeaponStatus> adjustFun;
+        public Func<WeaponStatus, WeaponStatus> adjustFun;
     }
 
     #endregion
-
 
     #region [총기 데이터셋 제공자]
     internal static class WeaponLibrary
@@ -531,4 +620,5 @@ namespace _231109_SFML_Test
     }
 
     #endregion
+
 }

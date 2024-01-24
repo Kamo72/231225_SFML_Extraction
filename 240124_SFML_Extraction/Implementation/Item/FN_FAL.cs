@@ -67,7 +67,7 @@ namespace _231109_SFML_Test
                             recoveryAdjust = (crounch: 1.74f, walk: 0.70f),
                             strength = 80.00f,
                         },
-                        traggingSpeed = 18.00f,
+                        traggingSpeed = 10.00f,
                     },
                     ads = new WeaponStatus.AimData.AdsData()
                     {

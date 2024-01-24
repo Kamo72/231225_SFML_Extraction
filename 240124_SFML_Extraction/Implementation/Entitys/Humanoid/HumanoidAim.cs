@@ -76,18 +76,20 @@ namespace _231109_SFML_Test
 
                 //조준 중(1으로 수렴)
                 if (isAds)
+                {
                     adsValue =
                         adsValue < 0.01f ?
                             Math.Min(adsValue + 1f / sprintTime * deltaTime, 1f) :
                             Math.Min(adsValue + 1f / adsTime * deltaTime, 1f);
-
+                    master.movement.targetIndex = Movement.MovementState.IDLE;
+                }
                 //질주 중(-1으로 수렴)
                 else if (master.movement.targetIndex == Movement.MovementState.SPRINT)
                     adsValue =
                         adsValue < -0.01f ?
                             Math.Max(adsValue - 1f / sprintTime * deltaTime, -1f) :
                             Math.Max(adsValue - 1f / adsTime * deltaTime, -1f);
-                
+
                 //둘 모두 아닌 상태(0으로 수렴)
                 else
                     adsValue =

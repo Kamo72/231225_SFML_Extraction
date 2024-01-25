@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace _231109_SFML_Test
 {
 
-    #region [7.39x51mm NATO]
-    internal class mm7p39x51_AP : Ammo
+    #region [7.62x51mm NATO]
+    internal class mm7p62x51_AP : Ammo
     {
-        static mm7p39x51_AP()
+        static mm7p62x51_AP()
         {
             AmmoStatus status = new AmmoStatus()
             {
@@ -38,9 +38,9 @@ namespace _231109_SFML_Test
                 },
             };
 
-            AmmoLibrary.Set("7.39x51mm_AP", status);
+            AmmoLibrary.Set("7.62x51mm_AP", status);
         }
-        public mm7p39x51_AP() : base("7.39x51mm_AP") { }
+        public mm7p62x51_AP() : base("7.62x51mm_AP") { }
     }
     #endregion
 

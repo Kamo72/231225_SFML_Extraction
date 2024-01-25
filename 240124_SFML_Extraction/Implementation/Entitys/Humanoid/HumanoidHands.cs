@@ -810,7 +810,7 @@ namespace _231109_SFML_Test
                                 if (weapon.magazineAttached != null) break;
 
                                 //새 탄창을 가져옴.
-                                magazineNew = new FN_FAL_MAG20(typeof(mm7p39x51_AP));
+                                magazineNew = new FN_FAL_MAG20(typeof(mm7p62x51_AP));
 
                                 hands.state = AnimationState.MAGAZINE_ATTACH;
                                 hands.time = 0f;

@@ -168,8 +168,8 @@ namespace _231109_SFML_Test
 
         public override void Dispose()
         {
-            DrawUiDispose();
             base.Dispose();
+            DrawUiDispose();
         }
 
     }

@@ -69,13 +69,14 @@ namespace _231109_SFML_Test
 
         public override void Dispose()
         {
+            base.Dispose();
+
             inventory = null;
             hands = null;
             health = null;
             aim = null;
             movement = null;
 
-            base.Dispose();
 
             GamemodeIngame ingm = gamemode as GamemodeIngame;
             ingm.entitys.Remove(this);

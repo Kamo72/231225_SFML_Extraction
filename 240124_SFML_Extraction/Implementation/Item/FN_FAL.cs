@@ -153,7 +153,7 @@ namespace _231109_SFML_Test
             );
 
             //테스트
-            magazineAttached = new FN_FAL_MAG10(typeof(mm7p39x51_AP));
+            magazineAttached = new FN_FAL_MAG10(typeof(mm7p62x51_AP));
         }
 
         public override void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
@@ -292,22 +292,21 @@ namespace _231109_SFML_Test
                 //스프라이트 이름
                 "FN_FAL_handGuard_dsArms",
                 //설명
-                "FN FAL의 533mm 총열에 맞는 크기의 총열 덮개입니다. 낮은 확장성이 발목을 잡지만, 튼튼하고 다루기 쉬워 아직까지도 널리 쓰이고 있습니다.",
+                "FN FAL의 533mm 총열에 맞는 크기의 총열 덮개입니다. 낮은 확장성이 발목을 잡지만, 튼튼하고 다루기 쉬워 아직까지도 널리 쓰이고 있습니다. 양각대를 부착해 고정 사수 역할을 수행 할 수도 있습니다.",
                 //무게
-                0.670f,
+                0.350f,
                 //아이템 크기
-                new Vector2i(3, 1),
+                new Vector2i(2, 1),
                 //희귀도
                 Rarerity.COMMON,
                 //가격
-                3700f
+                2800f
                 );
 
             //부착물 슬롯들
             attachments = new List<AttachSocket>
             {
-                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(20f, 0f), false, null, null),
-                new AttachSocket(AttachmentType.HANDGUARD, new Vector2f(0f, 0f), true, null, null),
+                new AttachSocket(AttachmentType.FOREGRIP, new Vector2f(14f, -3f), false, null, null),
             };
 
         }

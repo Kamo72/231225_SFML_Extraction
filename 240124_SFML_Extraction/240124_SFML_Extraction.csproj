@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS\**" />
+    <EmbeddedResource Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS\**" />
+    <None Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="SFML.Net.x64" Version="2.4.0" />
   </ItemGroup>
 
@@ -29,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Sprites\WEAPONS_DMR\FN_FAL_PARTS\" />
+    <Folder Include="Sprites\WEAPONS_DMR\FN_FAL_ATTACH\" />
   </ItemGroup>
 
 </Project>

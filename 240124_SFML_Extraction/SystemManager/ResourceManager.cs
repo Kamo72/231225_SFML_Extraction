@@ -94,6 +94,7 @@ namespace _231109_SFML_Test
                 string header = @"Assets\Sounds\";
                 sfxs.Add("SpiralMissileFly", new SoundBuffer(header + "SpiralMissileFly.ogg"));
                 sfxs.Add("EnemyHit", new SoundBuffer(header + "EnemyHit.ogg"));
+                sfxs.Add("FireDmr", new SoundBuffer(header + "FireDmr.wav"));
             }
         }
 

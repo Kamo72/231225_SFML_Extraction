@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("240124_SFML_Extraction")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+907e501fd1b177cba33a0bd43950be21305f8276")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b96948858f070a73382b9e7c38fc0dc73e8237ca")]
 [assembly: System.Reflection.AssemblyProductAttribute("240124_SFML_Extraction")]
 [assembly: System.Reflection.AssemblyTitleAttribute("240124_SFML_Extraction")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

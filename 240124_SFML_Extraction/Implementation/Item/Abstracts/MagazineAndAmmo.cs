@@ -128,6 +128,7 @@ namespace _231109_SFML_Test
             status = AmmoLibrary.Get(ammoCode);
         }
 
+        public bool isUsed = false;
         public string ammoCode;
 
         public AmmoStatus status;

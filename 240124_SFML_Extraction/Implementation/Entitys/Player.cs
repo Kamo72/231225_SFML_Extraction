@@ -34,7 +34,9 @@ namespace _231109_SFML_Test
 
             // hands.handling = new FN_FAL();
             inventory.weaponPrimary.DoEquipItem(new FN_FAL());
-            hands.SetHandling(inventory.weaponPrimary.item as Weapon);
+
+            if(inventory.weaponPrimary.item != null)
+                hands.SetHandling(inventory.weaponPrimary.item as Weapon);
 
             //UI 객체들 초기화
             DrawUiInit([

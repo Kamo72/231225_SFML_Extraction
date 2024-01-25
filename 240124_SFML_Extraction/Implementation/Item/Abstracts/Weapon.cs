@@ -25,21 +25,37 @@ namespace _231109_SFML_Test
             status = statusOrigin;
             selectorNow = status.typeDt.selectorList[1];
             this.attachments = status.attachDt.CopyList();
+            chambers = new List<Ammo>(status.detailDt.chamberSize);
 
             commandsReact = new Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>>()
             {
                 { InputManager.CommandType.FIRE, (hands, isTrue) => {
 
                     GamemodeIngame gm = Program.tm.gmNow as GamemodeIngame;
+                    
+                    //격발 딜레이
                     delayNow -= 1f/(float)gm.logicFps;
 
+                    //과열 시간 제어
+                    muzzleHeat -= gm.deltaTime * 0.4f;
+                    muzzleHeat = Mathf.Clamp(0f, muzzleHeat, muzzleHeatMax);
+
+                    //과열 파티클 이펙트
+                    float muzzleSmokeRatio = Math.Max(muzzleHeat, 0f) * 1f;
+                    if(muzzleSmokeRatio > (float)random.NextDouble())
+                    {
+                        Vector2f muzzlePos = hands.master.Position + hands.handPos + hands.AnimationGetPos(specialPos.muzzlePos).RotateFromZero(hands.handRot);
+                        new MuzzleSmoke(gm, muzzlePos, hands.handRot);
+                    }
+
+                    //격발 판단
                     switch (selectorNow)
                     {
                         case SelectorType.SEMI:
                             if(isTrue == false) break;
                             if(delayNow > 0f) break;
                             if(triggeredBefore == true) break;
-                            if(hands.master.movement.nowMovement.handUsable == false) break;
+                            if(isFireableState(hands.state) == false) break;
 
                             Fire(hands);
 
@@ -48,35 +64,25 @@ namespace _231109_SFML_Test
                         case SelectorType.AUTO:
                             if(isTrue == false) break;
                             if(delayNow > 0f) break;
-                            if(hands.master.movement.nowMovement.handUsable == false) break;
+                            if(isFireableState(hands.state) == false) break;
 
                             Fire(hands);
 
                             break;
 
                         case SelectorType.BURST2:
-                            if(hands.master.movement.nowMovement.handUsable == false) break;
+                            if(isFireableState(hands.state) == false) break;
                             Console.WriteLine("SelectorType.BURST2 구현안됨");
                             break;
 
                         case SelectorType.BURST3:
-                            if(hands.master.movement.nowMovement.handUsable == false) break;
+                            if(isFireableState(hands.state) == false) break;
                             Console.WriteLine("SelectorType.BURST3 구현안됨");
                             break;
                     }
 
                     triggeredBefore = isTrue;
 
-
-                    muzzleHeat -= gm.deltaTime * 0.4f;
-                    muzzleHeat = Mathf.Clamp(0f, muzzleHeat, muzzleHeatMax);
-
-                    float muzzleSmokeRatio = Math.Max(muzzleHeat, 0f) * 1f;
-                    if(muzzleSmokeRatio > (float)random.NextDouble())
-                    {
-                        Vector2f muzzlePos = hands.master.Position + hands.handPos + hands.AnimationGetPos(specialPos.muzzlePos).RotateFromZero(hands.handRot);
-                        new MuzzleSmoke(gm, muzzlePos, hands.handRot);
-                    }
 
                 } },
                 { InputManager.CommandType.AIM, (hands, isTrue) =>
@@ -85,7 +91,19 @@ namespace _231109_SFML_Test
                 } },
                 { InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => 
                 {
-                    hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_CHANGE);
+                    if(isTrue)
+                        hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_CHANGE);
+
+                    if(isFireableState(hands.state) == false) return;
+                    if(magazineAttached == null) return;
+                    if(magazineAttached?.AmmoPeek() == null) return;
+                    if(status.typeDt.mechanismType == MechanismType.NONE) return;
+                    if(status.typeDt.magazineType == MagazineType.SYLINDER) return;
+                    if(chambers.Capacity == 0) return;
+                    if(chambers.Capacity == chambers.FindAll(a => a.isUsed == false).Count) return;
+
+                    hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.BOLT_ROUND);
+
                 } },
                 //{ InputManager.CommandType.MELEE, (hand, isTrue) => {
 
@@ -103,7 +121,6 @@ namespace _231109_SFML_Test
 
         //허용된 조작 목록
         public Dictionary<InputManager.CommandType, Action<Humanoid.Hands, bool>> commandsReact { get; set; }
-
 
         //스테이터스
         public WeaponStatus statusOrigin { get { return WeaponLibrary.Get(weaponCode); } }
@@ -173,7 +190,6 @@ namespace _231109_SFML_Test
         //인게임 총기 스프라이트를 생성형으로 반환
         public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
         {
-
             for (int i = topParts.Length - 1; i >= 0; i--)
             {
                 RectangleShape shape = topParts[i];
@@ -193,10 +209,28 @@ namespace _231109_SFML_Test
         #endregion
 
         #region [격발 시스템]
+        
+        public List<Ammo> chambers;
 
-        float delayMax { get { return status.detailDt.RoundDelay; } }
+        float delayMax => status.detailDt.RoundDelay;
 
-
+        List<Humanoid.Hands.AnimationState> nonFireableStates = new List<Humanoid.Hands.AnimationState>
+        {
+            Humanoid.Hands.AnimationState.FIRE,
+            Humanoid.Hands.AnimationState.MAGAZINE_ATTACH,
+            Humanoid.Hands.AnimationState.MAGAZINE_INSPECT,
+            Humanoid.Hands.AnimationState.MAGAZINE_CHANGE,
+            Humanoid.Hands.AnimationState.BOLT_BACK,
+            Humanoid.Hands.AnimationState.BOLT_ROUND,
+            Humanoid.Hands.AnimationState.BOLT_FOWARD,
+            Humanoid.Hands.AnimationState.SPRINT,
+            Humanoid.Hands.AnimationState.INVENTORY,
+            Humanoid.Hands.AnimationState.EQUIP,
+            Humanoid.Hands.AnimationState.UNEQUIP,
+        };
+        public bool isFireableState(Humanoid.Hands.AnimationState state) =>
+            nonFireableStates.Contains(state) == false;
+        
         float delayNow = 0f;
         bool triggeredBefore = false;
         SelectorType selectorNow;
@@ -205,19 +239,22 @@ namespace _231109_SFML_Test
         void Fire(Humanoid.Hands hands) 
         {
             GamemodeIngame gm = Program.tm.gmNow as GamemodeIngame;
+            if(gm == null) throw new NullReferenceException("Weapon - fire 함수에서 gm이 null값입니다!" + nameof(gm));
 
             //총구 위치를 세계 좌표로 변환
             Vector2f muzzlePos = hands.master.Position + hands.handPos + hands.AnimationGetPos(specialPos.muzzlePos).RotateFromZero(hands.handRot);
 
-            //AmmoStatus ammoStatus = status.typeDt.mechanismType == MechanismType.CLOSED_BOLT? magazineAttached.AmmoPeek() : chamber[0];
-            Ammo ammo = magazineAttached.AmmoPeek();
+            Ammo ammo = status.typeDt.mechanismType == MechanismType.OPEN_BOLT ? magazineAttached.AmmoPop() : chambers.Find(a => a.isUsed == false);
             if (ammo == null) return;
 
+            ammo.isUsed = true;
+
+            //투사체 생성
             for (int i = 0; i < ammo.status.lethality.pellitCount; i++)
             {
                 //총탄 생성 및 저장
                 Vector2f moaSpray = ((float)random.NextDouble() * 360f).ToRadian().ToVector()
-                    * status.aimDt.ads.moa;
+                    * status.aimDt.ads.moa /10f;
                 Vector2f hipSpray = ((float)random.NextDouble() * 360f).ToRadian().ToVector()
                     * hands.master.aim.hipSpray;
                 Vector2f dynamicDot = hands.master.aim.dynamicDot - (Vector2f)VideoManager.resolutionNow / 2f + CameraManager.position;
@@ -225,6 +262,8 @@ namespace _231109_SFML_Test
                 Projectile bullet = new Bullet(gm, ammo.status, muzzlePos, dynamicDot + moaSpray + hipSpray, status.detailDt.muzzleVelocity / 240f);
                 gm.projs.Add(bullet);
             }
+            
+            //격발 간격 설정
             delayNow = delayMax;
 
             //Y값이 뒤집힌경우 배출구 편차 보정
@@ -233,7 +272,7 @@ namespace _231109_SFML_Test
             //배출구 위치를 세계 좌표로 변환
             Vector2f chamberPos = hands.master.Position + hands.handPos + chamberSep.RotateFromZero(hands.handRot);
 
-            //효과 이펙트
+            //파티클 이펙트
             for (int i = 0; i < 5; i++)
                 new MuzzleSmoke(gm, chamberPos, hands.handRot - 180f);
 
@@ -247,10 +286,14 @@ namespace _231109_SFML_Test
             hands.master.aim.GetHipRecoil();
             hands.master.aim.GetRecoilVector();
 
+            //총열 과열 적용
             muzzleHeat += muzzleHeatDelta;
 
             //애니메이션 적용
             hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.FIRE);
+
+            //사운드 이펙트
+            SoundManager.waveEffect.AddSound(ResourceManager.sfxs["FireDmr"], muzzlePos, status.detailDt.loudness, 0.1f);
         }
 
         #endregion
@@ -264,6 +307,9 @@ namespace _231109_SFML_Test
             Vector2f pistolPos,
             Vector2f secGripPos,
             Vector2f boltPos) specialPos;
+
+        public (Vector2f backwardVec, Vector2f lockVec) boltVec;
+        public (float backwardValue, float lockValue) boltValue = (0f, 0f);
 
         public List<AttachSocket> attachments { get; set; }
 
@@ -341,6 +387,7 @@ namespace _231109_SFML_Test
     {
         ACTIVATE,       //전탄 소진 시 노리쇠 후퇴 고정 ex M4A1
         ONLY_MANUAL,    //수동으로만 노리쇠 후퇴 고정 ex MP5
+        LOCK_TO_FIRE,   //볼트를 잠궈야 사격 가능 ex karabiner 98
         NONE,           //노리쇠 후퇴 고정 불가 ex AK47
     }
 
@@ -539,6 +586,7 @@ namespace _231109_SFML_Test
             public float muzzleVelocity;    //총구 속도
             public float effectiveRange;    //유효 사거리
             public float barrelLength;      //총기 전장
+            public float loudness;          //소음 크기 (거리로 ex 10000)
         }
 
         public AttachData attachDt;

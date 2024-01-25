@@ -1,4 +1,5 @@
-﻿using SFML.Graphics;
+﻿using _231109_SFML_Test;
+using SFML.Graphics;
 using SFML.System;
 using System;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace _231109_SFML_Test
                 timeDt = new WeaponStatus.TimeData()
                 {
                     adsTime = 0.200f,
-                    reloadTime = (0.710f, 0.950f, 0.380f),
+                    reloadTime = (2.850f, 3.500f, 3.000f),
                     sprintTime = 0.220f,
                     swapTime = 0.250f,
                 },
@@ -83,7 +84,7 @@ namespace _231109_SFML_Test
                             recovery = 28.50f,
                             strengthAdjust = (crounch: 0.48f, walk: 1.22f),
                         },
-                        moa = 1f,
+                        moa = 3.5f,
                         adsName = adsName,
                     },
                 },
@@ -104,6 +105,7 @@ namespace _231109_SFML_Test
                     roundPerMinute = 700f,
                     effectiveRange = 750f,
                     barrelLength = 50f,
+                    loudness = 10000f,
                 }, 
                 attachDt = new WeaponStatus.AttachData() 
                 {
@@ -138,11 +140,16 @@ namespace _231109_SFML_Test
             specialPos =
             (
                 magPos: new Vector2f(13.5f, 1.5f),
-                muzzlePos: new Vector2f(105.0f, -0.5f),
+                muzzlePos: new Vector2f(105.0f, -0f),
                 ejectPos: new Vector2f(13.5f, -2.5f),
-                pistolPos: new Vector2f(-5.5f, +2.0f),
-                secGripPos: new Vector2f(30.5f, -6.0f),
+                pistolPos: new Vector2f(-5.5f, +5.0f),
+                secGripPos: new Vector2f(30.5f, -3.0f),
                 boltPos: new Vector2f(14.5f, -2.5f)
+            );
+            boltVec =
+            (
+                backwardVec: new Vector2f(-10.0f, 0.0f),
+                lockVec: new Vector2f(0.0f, 0.0f)
             );
 
             //테스트
@@ -228,13 +235,16 @@ namespace _231109_SFML_Test
         }
     }
 
-    internal class FN_FAL_Barrel_533mm : Attachment
+    internal class FN_FAL_Barrel_533mm : Attachment, IAttachable
     {
-        public FN_FAL_Barrel_533mm() : base(AttachmentType.BARREL, new List<WeaponAdjust>() 
+        public FN_FAL_Barrel_533mm() : base(AttachmentType.BARREL, new List<WeaponAdjust>
         {
-            //new WeaponAdjust("", WeaponAdjustType.PROS, status => status.)
+            //부착물 옵션
+            new WeaponAdjust("총기 명중률 감소", WeaponAdjustType.CONS, ws => {ws.aimDt.ads.moa *= 1.10f; return ws; }),
+            new WeaponAdjust("조준점 이동 속도 증가", WeaponAdjustType.PROS, ws => {ws.aimDt.hip.traggingSpeed *= 1.05f; return ws; }),
         })
         {
+            //아이템 정보
             base.SetupBasicData(
                 //아이템 이름
                 "FN FAL 533mm 총열",
@@ -251,6 +261,57 @@ namespace _231109_SFML_Test
                 //가격
                 3700f
                 );
+
+            //부착물 슬롯들
+            attachments = new List<AttachSocket>
+            {
+                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(20f, 0f), false, null, null),
+                new AttachSocket(AttachmentType.HANDGUARD, new Vector2f(0f, 0f), true, null, null),
+            };
+
         }
+        public List<AttachSocket> attachments { get; set; }
+
+    }
+
+
+
+    internal class FN_FAL_HandGuard_DsArms : Attachment, IAttachable
+    {
+        public FN_FAL_HandGuard_DsArms() : base(AttachmentType.BARREL, new List<WeaponAdjust>
+        {
+            //부착물 옵션
+            new WeaponAdjust("총기 명중률 감소", WeaponAdjustType.CONS, ws => {ws.aimDt.ads.moa *= 1.10f; return ws; }),
+            new WeaponAdjust("조준 속도 증가", WeaponAdjustType.PROS, ws => {ws.timeDt.adsTime *= 0.97f; return ws; }),
+        })
+        {
+            //아이템 정보
+            base.SetupBasicData(
+                //아이템 이름
+                "FN FAL DS Arms 총열덮개",
+                //스프라이트 이름
+                "FN_FAL_handGuard_dsArms",
+                //설명
+                "FN FAL의 533mm 총열에 맞는 크기의 총열 덮개입니다. 낮은 확장성이 발목을 잡지만, 튼튼하고 다루기 쉬워 아직까지도 널리 쓰이고 있습니다.",
+                //무게
+                0.670f,
+                //아이템 크기
+                new Vector2i(3, 1),
+                //희귀도
+                Rarerity.COMMON,
+                //가격
+                3700f
+                );
+
+            //부착물 슬롯들
+            attachments = new List<AttachSocket>
+            {
+                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(20f, 0f), false, null, null),
+                new AttachSocket(AttachmentType.HANDGUARD, new Vector2f(0f, 0f), true, null, null),
+            };
+
+        }
+        public List<AttachSocket> attachments { get; set; }
+
     }
 }

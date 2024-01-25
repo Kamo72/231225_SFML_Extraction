@@ -75,13 +75,13 @@ namespace _231109_SFML_Test
 
                 return sound;
             }
-            public Sound AddSound(SoundBuffer soundBuf, Vector2f position, float distance)
+            public Sound AddSound(SoundBuffer soundBuf, Vector2f position, float distance, float volume = 1f)
             {
                 Sound sound = new Sound(soundBuf);
                 lock (soundList)
                     soundList[sound] = position;
 
-                sound.Volume *= vol * Sm.totalVol * 10f;
+                sound.Volume *= vol * Sm.totalVol * 10f * volume;
                 sound.RelativeToListener = true;
                 sound.MinDistance = distance;
                 sound.Play();

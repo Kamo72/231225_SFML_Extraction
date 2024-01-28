@@ -110,7 +110,14 @@ namespace _231109_SFML_Test
                 attachDt = new WeaponStatus.AttachData() 
                 {
                     socketList = new List<AttachSocket> {
-                        new AttachSocket(AttachmentType.BARREL, new Vector2f(13.5f, -2.5f), true, null),
+                        new AttachSocket( AttachmentType.BARREL,
+                            new Vector2f(13.5f, -2.5f), true,
+                            new List<Type>
+                            {
+                                typeof(FN_FAL_Barrel_533mm),
+                            },
+                            new FN_FAL_Barrel_533mm()
+                        ),
                     },
                 },
             };
@@ -121,7 +128,7 @@ namespace _231109_SFML_Test
         {
             SetupBasicData(
                 "FN FAL",
-                null,
+                "Undefined",
                 "7.62x51mm NATO탄을 사용하는 벨기에제 지정사수 소총입니다. 튼튼하고 다루기 쉬운데도 불구하고 강력한 전자동 사격 기능을 가지고 있습니다.",
                 3.5f, new Vector2i(4, 2), Rarerity.COMMON, 20000f);
             InitHandableParts(new Vector2i(200, 100), new Texture[]
@@ -265,8 +272,19 @@ namespace _231109_SFML_Test
             //부착물 슬롯들
             attachments = new List<AttachSocket>
             {
-                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(20f, 0f), false, null, null),
-                new AttachSocket(AttachmentType.HANDGUARD, new Vector2f(0f, 0f), true, null, null),
+                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(20f, 0f),
+                    false,
+                    null,
+                    null
+                ),
+                new AttachSocket(AttachmentType.HANDGUARD, new Vector2f(0f, 0f),
+                    true,
+                    new List<Type>()
+                    {
+                        typeof(FN_FAL_HandGuard_DsArms),
+                    },
+                    new FN_FAL_HandGuard_DsArms()
+                ),
             };
 
         }

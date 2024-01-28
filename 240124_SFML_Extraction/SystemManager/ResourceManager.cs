@@ -51,7 +51,7 @@ namespace _231109_SFML_Test
                 textures.Add("texGrass", new Texture(header + "texGrassCompressed.jpg"));
                 textures.Add("texConcrete", new Texture(header + "texConcrete.jpg"));
 
-                textures.Add("Undefined", new Texture(header + "Undefined.jpg"));
+                textures.Add("Undefined", new Texture(header + "Undefined.png"));
 
                 {
                     {
@@ -115,7 +115,7 @@ namespace _231109_SFML_Test
             //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape
             string tdirPath;
             {
-                tdirPath = slnPath + @"\Sprites";
+                tdirPath = slnPath + @"\Sprites\";
                 //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites
                 {
                     dirPath = tdirPath;

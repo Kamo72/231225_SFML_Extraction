@@ -1,6 +1,8 @@
-﻿using SFML.System;
+﻿using SFML.Graphics;
+using SFML.System;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -41,6 +43,7 @@ namespace _231109_SFML_Test
     {
         IAttachable attachedBy { get; set; }
         AttachmentType attachmentType { get; set; }
+        Rectangle attachmentShape { get; set; }
 
         bool IsAttachable(IAttachable iAttachable);
         bool DoAttach(IAttachable iAttachable, AttachSocket socket);
@@ -96,6 +99,14 @@ namespace _231109_SFML_Test
             attachedBy = null;
         }
 
+        public void SetAttachmentShape()
+        {
+            Texture tex = ResourceManager.textures[spriteName];
+            attachmentShape = new RectangleShape((Vector2f)tex.Size);
+            attachmentShape.Texture = tex;
+        }
+
+
         //무기 보정 옵션들
         public List<WeaponAdjust> weaponAdjusts;
         
@@ -130,6 +141,7 @@ namespace _231109_SFML_Test
 
         public AttachmentType attachmentType { get; set; }
         public IAttachable attachedBy { get; set; }
+        public RectangleShape attachmentShape { get; set; }
 
 
         #region [탈부착 함수들]

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -57,6 +58,8 @@ namespace _231109_SFML_Test
                             if(triggeredBefore == true) break;
                             if(isFireableState(hands.state) == false) break;
 
+                            if(IsValidAttachments(this) == false) break;
+
                             Fire(hands);
 
                             break;
@@ -66,17 +69,25 @@ namespace _231109_SFML_Test
                             if(delayNow > 0f) break;
                             if(isFireableState(hands.state) == false) break;
 
+                            if(IsValidAttachments(this) == false) break;
+
                             Fire(hands);
 
                             break;
 
                         case SelectorType.BURST2:
                             if(isFireableState(hands.state) == false) break;
+
+                            if(IsValidAttachments(this) == false) break;
+
                             Console.WriteLine("SelectorType.BURST2 구현안됨");
                             break;
 
                         case SelectorType.BURST3:
                             if(isFireableState(hands.state) == false) break;
+
+                            if(IsValidAttachments(this) == false) break;
+
                             Console.WriteLine("SelectorType.BURST3 구현안됨");
                             break;
                     }
@@ -194,6 +205,12 @@ namespace _231109_SFML_Test
             {
                 RectangleShape shape = topParts[i];
                 DrawHandablePart(texture, shape, position, direction, scaleRatio, renderStates);
+            }
+
+            foreach (var socket in attachments) 
+            {
+                if (socket.attachment == null) continue;
+
             }
         }
         public void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio) { DrawHandable(texture, position, direction, scaleRatio, RenderStates.Default); }
@@ -313,11 +330,18 @@ namespace _231109_SFML_Test
 
         public List<AttachSocket> attachments { get; set; }
 
-        public bool isValidAttachments()
+        public bool IsValidAttachments(IAttachable iatc)
         {
-            foreach (var item in attachments)
+            foreach (var item in iatc.attachments)
+            {
                 if (item.isNeccesary == true && item.attachment == null)
                     return false;
+
+                if(item.attachment == null) continue;
+
+                if(item.attachment is IAttachable iatcInner)
+                    if(IsValidAttachments(iatcInner) == false) return false;
+            }
 
             return true;
         }

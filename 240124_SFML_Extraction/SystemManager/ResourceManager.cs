@@ -50,6 +50,9 @@ namespace _231109_SFML_Test
                 textures.Add("valve", new Texture(header + "valveOnSanghan.png"));
                 textures.Add("texGrass", new Texture(header + "texGrassCompressed.jpg"));
                 textures.Add("texConcrete", new Texture(header + "texConcrete.jpg"));
+
+                textures.Add("Undefined", new Texture(header + "Undefined.jpg"));
+
                 {
                     {
                         textures.Add("FN_FAL_bolt", new Texture(header + "FN_FAL_bolt.png"));
@@ -110,9 +113,19 @@ namespace _231109_SFML_Test
             slnPath = System.IO.Path.GetDirectoryName(slnPath);
 
             //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape
-
+            string tdirPath;
             {
-                var tdirPath = slnPath + @"\Sprites\WEAPONS_DMR";
+                tdirPath = slnPath + @"\Sprites";
+                //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites
+                {
+                    dirPath = tdirPath;
+                    //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites
+
+                    CopyFile(dirPath + @"Undefined.png", @"Assets\Textures\");
+                }
+
+
+                tdirPath = slnPath + @"\Sprites\WEAPONS_DMR";
                 //S:\[GitHub]\231126_SFML_Escape\231126_SFML_Escape\Sprites\WEAPONS_DMR
 
                 {

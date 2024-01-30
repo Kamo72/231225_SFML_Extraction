@@ -45,7 +45,8 @@ namespace _231109_SFML_Test
         {
             SetupBasicData("7.62x51mm NATO M61",
                 "Undefined",
-                "150.5 그레인(9.8 g) 7.62×51mm NATO 철갑탄. 장갑을 관통하기 위해 만들어졌으며 우수한 관통력을 보여줍니다.", 0.02f, new Vector2i(1, 1), Rarerity.RARE, 1800f);
+                "150.5 그레인(9.8 g) 7.62×51mm NATO 철갑탄. 장갑을 관통하기 위해 만들어졌으며 우수한 관통력을 보여줍니다.",
+                0.02f, new Vector2i(1, 1), Rarerity.RARE, 1800f);
         }
     }
 

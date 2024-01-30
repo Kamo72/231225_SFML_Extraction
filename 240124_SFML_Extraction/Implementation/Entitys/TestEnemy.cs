@@ -11,10 +11,13 @@ namespace _231109_SFML_Test
 {
     internal class TestEnemy : Humanoid
     {
+        int sidValue;
         public TestEnemy(Gamemode gamemode, Vector2f position) : base(gamemode, position)
         {
+            sidValue = (int)(position.X* 125 + position.Y);
+
             ((CircleShape)mask).FillColor = Color.Red;
-            noise = new FastNoise((int)(VideoManager.GetTimeTotal() * 37));
+            noise = new FastNoise((int)(sidValue));
             movement.accelPer *= 0.9f;
 
 

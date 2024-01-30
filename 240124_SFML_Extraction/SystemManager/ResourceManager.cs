@@ -60,7 +60,7 @@ namespace _231109_SFML_Test
                         textures.Add("FN_FAL_pistolGrip_basic", new Texture(header + "FN_FAL_pistolGrip_basic.png"));
                         textures.Add("FN_FAL_stock_basic", new Texture(header + "FN_FAL_stock_basic.png"));
                         textures.Add("FN_FAL_barrel_533mm", new Texture(header + "FN_FAL_barrel_533mm.png"));
-                        textures.Add("FN_FAL_muzzle_Israeli", new Texture(header + "FN_FAL_muzzle_Israeli.png"));
+                        textures.Add("FN_FAL_flashhider_fnAmerica", new Texture(header + "FN_FAL_flashhider_fnAmerica.png"));
                         textures.Add("FN_FAL_handGuard_dsArms", new Texture(header + "FN_FAL_handGuard_dsArms.png"));
                         textures.Add("FN_FAL_chargingHandle", new Texture(header + "FN_FAL_chargingHandle.png"));
                     }
@@ -98,6 +98,7 @@ namespace _231109_SFML_Test
                 sfxs.Add("SpiralMissileFly", new SoundBuffer(header + "SpiralMissileFly.ogg"));
                 sfxs.Add("EnemyHit", new SoundBuffer(header + "EnemyHit.ogg"));
                 sfxs.Add("FireDmr", new SoundBuffer(header + "FireDmr.wav"));
+                sfxs.Add("Hitted", new SoundBuffer(header + "Hitted.wav"));
             }
         }
 
@@ -137,7 +138,7 @@ namespace _231109_SFML_Test
                     CopyFile(dirPath + @"FN_FAL_pistolGrip_basic.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_stock_basic.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_barrel_533mm.png", @"Assets\Textures\");
-                    CopyFile(dirPath + @"FN_FAL_muzzle_Israeli.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_flashhider_fnAmerica.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_handGuard_dsArms.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_chargingHandle.png", @"Assets\Textures\");
                 }

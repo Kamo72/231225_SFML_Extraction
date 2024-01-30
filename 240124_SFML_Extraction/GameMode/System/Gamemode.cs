@@ -69,7 +69,11 @@ namespace _231109_SFML_Test
         //TM에서 접근하는 드로우 이벤트
         public void DoDraw()
         {
-            drawEvent?.Invoke();   //월드 드로우 처리 호출
+            try
+            {
+                drawEvent?.Invoke();   //월드 드로우 처리 호출
+            }
+            catch (Exception ex) { Console.WriteLine($"====================[최상위 오류 처리문]====================\n{ex.Message}\n{ex.StackTrace}"); }
         }
 
         protected abstract void LogicProcess();

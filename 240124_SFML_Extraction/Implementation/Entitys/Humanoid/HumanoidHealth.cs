@@ -175,6 +175,10 @@ namespace _231109_SFML_Test
                             damageStatus.pierce /= 2f;
                             damageStatus.pierce = -0.7f;
 
+                            if (master is Player) 
+                            {
+                                SoundManager.waveEffect.AddSound(ResourceManager.sfxs["Hitted"]);
+                            }
                         }
                         break;
                     case DamageType.BLEEDING:

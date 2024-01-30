@@ -262,7 +262,7 @@ namespace _231109_SFML_Test
         {
         }
 
-        public void SetupBasicData(string name, string spriteName, string description, float mass, Vector2i size, Rarerity rare, float value) 
+        public virtual void SetupBasicData(string name, string spriteName, string description, float mass, Vector2i size, Rarerity rare, float value) 
         {
             this.name = name;
             this.spriteName = spriteName;

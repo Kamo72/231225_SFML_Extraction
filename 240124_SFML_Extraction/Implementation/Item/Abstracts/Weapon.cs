@@ -102,10 +102,21 @@ namespace _231109_SFML_Test
                 } },
                 { InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => 
                 {
-                    if(isTrue)
-                        hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_CHANGE);
+                    if(isTrue){
 
-                    if(isFireableState(hands.state) == false) return;
+                        if ((int)hands.master.movement.targetIndex >= 1.99f
+                            && hands.master.movement.nowValue > 0.99f)
+                            hands.master.movement.targetIndex = Humanoid.Movement.MovementState.IDLE;
+
+
+                        if(isFireableState(hands.state))
+                            if(magazineAttached != null)
+                                hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_CHANGE);
+                            else
+                                hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_ATTACH);
+                    }
+
+                    if(hands.state != Humanoid.Hands.AnimationState.IDLE) return;
                     if(magazineAttached == null) return;
                     if(magazineAttached?.AmmoPeek() == null) return;
                     if(status.typeDt.mechanismType == MechanismType.NONE) return;
@@ -114,6 +125,7 @@ namespace _231109_SFML_Test
                     if(chambers.Capacity == chambers.FindAll(a => a.isUsed == false).Count) return;
 
                     hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.BOLT_ROUND);
+
 
                 } },
                 //{ InputManager.CommandType.MELEE, (hand, isTrue) => {
@@ -179,38 +191,71 @@ namespace _231109_SFML_Test
         #endregion
 
         #region [탑뷰 스프라이트]
-        protected void InitHandableParts(Vector2i topSpriteSize, params Texture[] textures)
+        protected void InitHandableParts(Vector2i topSpriteSize, List<Texture> textures, List<Texture> boltTexs)
         {
             this.topSpriteSize = topSpriteSize;
 
-            RectangleShape[] rects = new RectangleShape[textures.Length];
-            for (int i = 0; i < textures.Length; i++)
+            RectangleShape[] norms = new RectangleShape[textures.Count];
+            List<RectangleShape> bolts = new List<RectangleShape>();
+
+            for (int i = 0; i < textures.Count; i++)
             {
-                rects[i] = new RectangleShape((Vector2f)topSpriteSize);
-                rects[i].Texture = textures[i];
-                rects[i].Origin = new Vector2f(50, 50);
+                RectangleShape shape = new RectangleShape((Vector2f)topSpriteSize);
+                norms[i] = shape;
+                norms[i].Texture = textures[i];
+                norms[i].Origin = new Vector2f(50, 50);
+
+
+                if (boltTexs.Contains(textures[i]) == true) bolts.Add(shape);
             }
 
-            topParts = rects;
+            topParts = norms;
+            boltParts = bolts;
         }
 
         //탑뷰 드로우를 위한 Rects
         protected RectangleShape[] topParts;
+        protected List<RectangleShape> boltParts;
         public Vector2i topSpriteSize;
 
         //인게임 총기 스프라이트를 생성형으로 반환
+
+
+        void DrawAttachmentFunc(IAttachment iatchment, RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
+        {
+            if (iatchment == null) return;
+            DrawHandablePart(texture, iatchment.attachmentShape, position, direction, scaleRatio, renderStates);
+
+            if (iatchment is IAttachable iattachable)
+                foreach (var socket in iattachable.attachments)
+                {
+                    if (socket.attachment == null) continue;
+                    if (socket.attachment.attachmentShape == null) continue;
+
+                    Vector2f tPosition = position + socket.attachPos.RotateFromZero(direction);
+                    DrawAttachmentFunc(socket.attachment, texture, tPosition, direction, scaleRatio, renderStates);
+                }
+        }
+
         public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
         {
+
+            Vector2f boltAdjust = boltVec.backwardVec * boltValue.backwardValue
+                + boltVec.lockVec * boltValue.lockValue;
+
             for (int i = topParts.Length - 1; i >= 0; i--)
             {
-                RectangleShape shape = topParts[i];
-                DrawHandablePart(texture, shape, position, direction, scaleRatio, renderStates);
+                Vector2f pos = boltParts.Contains(topParts[i]) == true ? position
+                    + boltAdjust.RotateFromZero(direction) : position;
+                DrawHandablePart(texture, topParts[i], pos, direction, scaleRatio, renderStates);
             }
-
-            foreach (var socket in attachments) 
+            foreach (var socket in attachments)
             {
                 if (socket.attachment == null) continue;
+                if (socket.attachment.attachmentShape == null) continue;
 
+                Vector2f tPosition = position + socket.attachPos.RotateFromZero(direction);
+                DrawAttachmentFunc(socket.attachment, texture, tPosition, direction, scaleRatio, renderStates);
             }
         }
         public void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio) { DrawHandable(texture, position, direction, scaleRatio, RenderStates.Default); }
@@ -234,6 +279,7 @@ namespace _231109_SFML_Test
         List<Humanoid.Hands.AnimationState> nonFireableStates = new List<Humanoid.Hands.AnimationState>
         {
             Humanoid.Hands.AnimationState.FIRE,
+            Humanoid.Hands.AnimationState.MAGAZINE_REMOVE,
             Humanoid.Hands.AnimationState.MAGAZINE_ATTACH,
             Humanoid.Hands.AnimationState.MAGAZINE_INSPECT,
             Humanoid.Hands.AnimationState.MAGAZINE_CHANGE,

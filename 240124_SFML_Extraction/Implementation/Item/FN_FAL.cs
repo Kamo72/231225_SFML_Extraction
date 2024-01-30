@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -48,7 +49,7 @@ namespace _231109_SFML_Test
                 timeDt = new WeaponStatus.TimeData()
                 {
                     adsTime = 0.200f,
-                    reloadTime = (2.850f, 3.500f, 3.000f),
+                    reloadTime = (2.250f, 2.600f, 2.400f),
                     sprintTime = 0.220f,
                     swapTime = 0.250f,
                 },
@@ -111,11 +112,10 @@ namespace _231109_SFML_Test
                 {
                     socketList = new List<AttachSocket> {
                         new AttachSocket( AttachmentType.BARREL,
-                            new Vector2f(13.5f, -2.5f), true,
-                            new List<Type>
-                            {
+                            new Vector2f(58f, -1f), true,
+                            [
                                 typeof(FN_FAL_Barrel_533mm),
-                            },
+                            ],
                             new FN_FAL_Barrel_533mm()
                         ),
                     },
@@ -131,18 +131,19 @@ namespace _231109_SFML_Test
                 "Undefined",
                 "7.62x51mm NATO탄을 사용하는 벨기에제 지정사수 소총입니다. 튼튼하고 다루기 쉬운데도 불구하고 강력한 전자동 사격 기능을 가지고 있습니다.",
                 3.5f, new Vector2i(4, 2), Rarerity.COMMON, 20000f);
-            InitHandableParts(new Vector2i(200, 100), new Texture[]
-            {
+            InitHandableParts(new Vector2i(200, 100),
+            [
                 ResourceManager.textures["FN_FAL_chargingHandle"],
-                ResourceManager.textures["FN_FAL_handGuard_dsArms"],
-                ResourceManager.textures["FN_FAL_muzzle_Israeli"],
-                ResourceManager.textures["FN_FAL_barrel_533mm"],
                 ResourceManager.textures["FN_FAL_stock_basic"],
                 ResourceManager.textures["FN_FAL_pistolGrip_basic"],
                 ResourceManager.textures["FN_FAL_body"],
                 ResourceManager.textures["FN_FAL_bolt"],
 
-            });
+            ],
+            [
+                ResourceManager.textures["FN_FAL_chargingHandle"],
+                ResourceManager.textures["FN_FAL_bolt"],
+            ]);
 
             specialPos =
             (
@@ -155,7 +156,7 @@ namespace _231109_SFML_Test
             );
             boltVec =
             (
-                backwardVec: new Vector2f(-10.0f, 0.0f),
+                backwardVec: new Vector2f(-20.0f, 0.0f),
                 lockVec: new Vector2f(0.0f, 0.0f)
             );
 
@@ -163,13 +164,8 @@ namespace _231109_SFML_Test
             magazineAttached = new FN_FAL_MAG10(typeof(mm7p62x51_AP));
         }
 
-        public override void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
-        {
-            for (int i = topParts.Length-1; i >= 0; i--)
-                DrawHandablePart(texture, topParts[i], position,  direction, scaleRatio, renderStates);
-            
-        }
     }
+
 
     internal class FN_FAL_MAG10 : Magazine
     {
@@ -204,10 +200,10 @@ namespace _231109_SFML_Test
         public FN_FAL_MAG10(Type ammoType) : base("FN_FAL_MAG10", ammoType)
         {
             SetupBasicData("FN FAL 10발 들이 탄창", "FN_FAL_MAG10", "FN FAL의 10발 들이 탄창입니다.", 0.25f, new Vector2i(1, 1), Rarerity.COMMON, 2000);
-            InitTopParts(new Vector2i(45, 45), new Texture[]
-            {
+            InitTopParts(new Vector2i(45, 45),
+            [
                 ResourceManager.textures["FN_FAL_MAG10"],
-            });
+            ]);
         }
     }
 
@@ -226,8 +222,6 @@ namespace _231109_SFML_Test
                 {
                 },
             };
-
-            MagazineLibrary.Set("FN_FAL_MAG20", status);
             MagazineLibrary.Set("FN_FAL_MAG20", status);
         }
         
@@ -241,6 +235,7 @@ namespace _231109_SFML_Test
             });
         }
     }
+
 
     internal class FN_FAL_Barrel_533mm : Attachment, IAttachable
     {
@@ -272,10 +267,13 @@ namespace _231109_SFML_Test
             //부착물 슬롯들
             attachments = new List<AttachSocket>
             {
-                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(20f, 0f),
+                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(46f, 00f),
                     false,
-                    null,
-                    null
+                    new List<Type>()
+                    {
+                        typeof(FN_FAL_Flashhider_FnAmerica),
+                    },
+                    new FN_FAL_Flashhider_FnAmerica()
                 ),
                 new AttachSocket(AttachmentType.HANDGUARD, new Vector2f(0f, 0f),
                     true,
@@ -291,8 +289,6 @@ namespace _231109_SFML_Test
         public List<AttachSocket> attachments { get; set; }
 
     }
-
-
 
     internal class FN_FAL_HandGuard_DsArms : Attachment, IAttachable
     {
@@ -324,11 +320,49 @@ namespace _231109_SFML_Test
             //부착물 슬롯들
             attachments = new List<AttachSocket>
             {
-                new AttachSocket(AttachmentType.FOREGRIP, new Vector2f(14f, -3f), false, null, null),
+                new AttachSocket(AttachmentType.FOREGRIP, new Vector2f(14f, -3f),
+                    false,
+                    null,
+                    null
+                ),
             };
 
         }
         public List<AttachSocket> attachments { get; set; }
+
+    }
+
+    internal class FN_FAL_Flashhider_FnAmerica : Attachment
+    {
+        public FN_FAL_Flashhider_FnAmerica() : base(AttachmentType.MUZZLE, new List<WeaponAdjust>
+        {
+            //부착물 옵션
+            new WeaponAdjust("수직 반동 감소", WeaponAdjustType.PROS, ws => {ws.aimDt.ads.recoil.fix *= 0.850f; return ws; }),
+            new WeaponAdjust("조준 속도 감소", WeaponAdjustType.CONS, ws => {ws.timeDt.adsTime *= 1.05f; return ws; }),
+            new WeaponAdjust("조준점 이동 속도 감소", WeaponAdjustType.CONS, ws => {ws.timeDt.adsTime *= 0.94f; return ws; }),
+            new WeaponAdjust("소음 감소", WeaponAdjustType.PROS, ws => {ws.detailDt.loudness *= 0.81f; return ws; }),
+            new WeaponAdjust("지향 반동 감소", WeaponAdjustType.PROS, ws => {ws.aimDt.hip.recoil.strength *= 0.92f; return ws; }),
+        })
+        {
+            //아이템 정보
+            base.SetupBasicData(
+                //아이템 이름
+                "FN America FAL Flash Hider",
+                //스프라이트 이름
+                "FN_FAL_flashhider_fnAmerica",
+                //설명
+                "FN America사의 FN FAL 소염기입니다. 길쭉한 외향 때문에 총기가 길어진다는 단점이 있지만 총기 반동와 총구 화염을 효과적으로 줄여줍니다.",
+                //무게
+                0.080f,
+                //아이템 크기
+                new Vector2i(2, 1),
+                //희귀도
+                Rarerity.COMMON,
+                //가격
+                2500f
+                );
+            sizeAdjust = (0, 0, 0, 1);
+        }
 
     }
 }

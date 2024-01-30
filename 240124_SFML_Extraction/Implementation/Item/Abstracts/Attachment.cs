@@ -43,7 +43,7 @@ namespace _231109_SFML_Test
     {
         IAttachable attachedBy { get; set; }
         AttachmentType attachmentType { get; set; }
-        Rectangle attachmentShape { get; set; }
+        RectangleShape attachmentShape { get; set; }
 
         bool IsAttachable(IAttachable iAttachable);
         bool DoAttach(IAttachable iAttachable, AttachSocket socket);
@@ -99,13 +99,15 @@ namespace _231109_SFML_Test
             attachedBy = null;
         }
 
-        public void SetAttachmentShape()
+        public override void SetupBasicData(string name, string spriteName, string description, float mass, Vector2i size, Rarerity rare, float value)
         {
+            base.SetupBasicData(name, spriteName, description, mass, size, rare, value);
+
             Texture tex = ResourceManager.textures[spriteName];
             attachmentShape = new RectangleShape((Vector2f)tex.Size);
+            attachmentShape.Origin = attachmentShape.Size / 2f;
             attachmentShape.Texture = tex;
         }
-
 
         //무기 보정 옵션들
         public List<WeaponAdjust> weaponAdjusts;

@@ -66,13 +66,27 @@ namespace _231109_SFML_Test
             this.gamemode = gamemode;
 
             Type type = gmEnumToType[this.gamemode];
-            gmNow = (Gamemode)Activator.CreateInstance(type, this);
+
+
+            gmNow = TryCreateInstance(type) as Gamemode;
+        }
+
+        object? TryCreateInstance(Type type)
+        {
+            try
+            {
+                return (Gamemode)Activator.CreateInstance(type, this);
+            }
+            catch
+            {
+                return TryCreateInstance(type);
+            }
         }
 
     }
 
 
- 
+
 
     public enum GamemodeType
     {

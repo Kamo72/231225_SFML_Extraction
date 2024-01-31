@@ -390,7 +390,6 @@ namespace _231109_SFML_Test
 
                             }
                             break;
-
                         case AnimationState.BOLT_BACK:
                             {
                                 float timeRatio = hands.time / hands.timeMax;
@@ -601,7 +600,6 @@ namespace _231109_SFML_Test
 
                             }
                             break;
-
                         case AnimationState.BOLT_FOWARD:
                             {
                                 float timeRatio = hands.time / hands.timeMax;
@@ -625,9 +623,6 @@ namespace _231109_SFML_Test
                                     {
                                         boltVec = new Vector2f(1f, 0f);
 
-
-                                        boltVec = new Vector2f(Mathf.Clamp(0f, 1f - inTimeRatio, 1f), 0f);
-
                                         Phase boltPhase = PosRotToRelPhase(weapon.specialPos.boltPos
                                             + boltVec.X * weapon.boltVec.backwardVec
                                             + boltVec.Y * weapon.boltVec.lockVec, 70f, isReversed);
@@ -637,7 +632,7 @@ namespace _231109_SFML_Test
                                     }
                                     else
                                     {
-                                        boltVec = new Vector2f(Mathf.Clamp(0f, 1f - (float)Math.Sqrt(inTimeRatio), 1f), 0f);
+                                        boltVec = new Vector2f(1f,  1f);
 
                                         lhPhase = PosRotToRelPhase(new Vector2f(
                                                 weapon.specialPos.secGripPos.X.Lerp(weapon.specialPos.ejectPos.X, inTimeRatio),
@@ -652,7 +647,6 @@ namespace _231109_SFML_Test
                                     inTimeRatio = (timeRatio - 0.42f) / (0.67f - 0.42f);
 
                                     float lerpValue = MathF.Pow(inTimeRatio, 2f);
-
                                     float trembleRatio = (inTimeRatio > 0.5f) ? (inTimeRatio - 0.5f) * 2f : 0f;
 
                                     wPhase = new Phase(
@@ -670,12 +664,17 @@ namespace _231109_SFML_Test
 
                                     if (weapon.status.typeDt.mechanismType == MechanismType.MANUAL_RELOAD)
                                     {
-                                        boltVec = new Vector2f(Mathf.Clamp(0f, inTimeRatio, 1f), 0f);
+                                        boltVec = new Vector2f(Mathf.Clamp(0f, 1f -inTimeRatio, 1f), 0f);
 
+                                        Phase boltPhase = PosRotToRelPhase(weapon.specialPos.boltPos
+                                            + boltVec.X * weapon.boltVec.backwardVec
+                                            + boltVec.Y * weapon.boltVec.lockVec, 70f, isReversed);
+
+                                        lhPhase = boltPhase;
                                     }
                                     else
                                     {
-                                        boltVec = new Vector2f(Mathf.Clamp(0f, (float)Math.Pow(inTimeRatio, 0.1f), 1f), 0f);
+                                        boltVec = new Vector2f(Mathf.Clamp(0f, 1f - (float)Math.Pow(inTimeRatio, 2f), 1f), 0f);
 
                                         Phase ejectPhase = PosRotToRelPhase(weapon.specialPos.ejectPos, 30f, isReversed);
                                         lhPhase = ejectPhase;
@@ -717,9 +716,9 @@ namespace _231109_SFML_Test
 
                                     Phase secGripPhase = PosRotToRelPhase(weapon.specialPos.secGripPos, 70f, isReversed);
                                     lhPhase = PosRotToAbsPhase(new Vector2f(
-                                        lhPhase.position.X.Lerp(secGripPhase.position.X, 0.01f),
-                                        lhPhase.position.Y.Lerp(secGripPhase.position.Y, 0.01f)),
-                                        lhPhase.rotation.Lerp(secGripPhase.rotation, 0.01f),
+                                        lhPhase.position.X.Lerp(secGripPhase.position.X, 0.03f),
+                                        lhPhase.position.Y.Lerp(secGripPhase.position.Y, 0.03f)),
+                                        lhPhase.rotation.Lerp(secGripPhase.rotation, 0.03f),
                                         isReversed);
 
                                 }
@@ -1491,7 +1490,392 @@ namespace _231109_SFML_Test
                                 leftPhase = PosRotToRelPhase(weapon.specialPos.pistolPos, 30f, isReversed);
                                 magazinePhase = mPhase;
                             } break;
+                        case AnimationState.MAGAZINE_INSPECT:
+                            {
+                                float timeRatio = hands.time / hands.timeMax;
+                                float inTimeRatio = 0f;
 
+                                Phase rhPhase = new Phase();
+                                Phase wPhase = new Phase();
+                                Phase mPhase = new Phase();
+
+                                //탄창 붙잡기, 무기 들기
+                                if (Mathf.InRange(0f, timeRatio, 0.16f))
+                                {
+                                    inTimeRatio = (timeRatio - 0f) / (0.16f - 0f);
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        0f.Lerp(+5f, lerpValue),
+                                        0f.Lerp(+3f, lerpValue)),
+                                        0f.Lerp(isReversed ? 45f : -45f, lerpValue)
+                                        );
+
+                                    mPhase = PosRotToRelPhase(weapon.specialPos.magPos, 0f, isReversed);
+
+                                    rhPhase = PosRotToRelPhase(new Vector2f(
+                                            weapon.specialPos.secGripPos.X.Lerp(weapon.specialPos.magPos.X, inTimeRatio),
+                                            weapon.specialPos.secGripPos.Y.Lerp(weapon.specialPos.magPos.Y, inTimeRatio)),
+                                            70f.Lerp(mPhase.rotation - 20f, inTimeRatio), isReversed);
+                                }
+                                //탄창 탈착
+                                else if (Mathf.InRange(0.16f, timeRatio, 0.25f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.16f) / (0.25f - 0.16f);
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        +05f + (float)Math.Sin(lerpValue * Math.PI) * -2f,
+                                        +03f + (float)Math.Sin(lerpValue * Math.PI) * -7f),
+                                        (isReversed ? 45f : -45f) + (float)Math.Sin(lerpValue * Math.PI) * 10f
+                                        );
+
+                                    mPhase = PosRotToRelPhase(
+                                        new Vector2f(
+                                            weapon.specialPos.magPos.X,
+                                            weapon.specialPos.magPos.Y + ((float)Math.Sin(Mathf.Clamp(0f, lerpValue * 10f, 1f) * Math.PI) * -3f) + (lerpValue * -2f)
+                                            ),
+                                        0f.Lerp(-10f, lerpValue)
+                                        + ((float)Math.Sin(Mathf.Clamp(0f, lerpValue * 10f, 1f) * Math.PI) * -10f),
+                                        isReversed
+                                        );
+
+                                    rhPhase = PosRotToAbsPhase(
+                                        mPhase.position,
+                                        mPhase.rotation - 20f,
+                                        false
+                                        );
+                                }
+                                //탄창 탈착 후 이동
+                                else if (Mathf.InRange(0.25f, timeRatio, 0.32f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.25f) / (0.32f - 0.25f);
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+                                    float powValue = MathF.Pow(inTimeRatio, 2f);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        +05f,
+                                        +03f),
+                                        isReversed ? 45f : -45f
+                                        );
+
+                                    mPhase = PosRotToRelPhase(
+                                        new Vector2f(
+                                            (weapon.specialPos.magPos.X + 0f).Lerp(weapon.specialPos.magPos.X + 5f, powValue),
+                                            (weapon.specialPos.magPos.Y + -2f).Lerp(weapon.specialPos.magPos.Y + 15f, powValue)
+                                            ),
+                                        (-10f).Lerp(50f, powValue),
+                                        isReversed
+                                        );
+
+                                    rhPhase = PosRotToAbsPhase(
+                                        mPhase.position,
+                                        mPhase.rotation - 20f,
+                                        false
+                                        );
+                                }
+                                //탄창 확인
+                                else if (Mathf.InRange(0.32f, timeRatio, 0.73f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.32f) / (0.73f - 0.32f);
+
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+                                    float powValue = MathF.Pow(inTimeRatio, 2f);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        +05f,
+                                        +03f),
+                                        isReversed ? 45f : -45f
+                                        );
+
+
+                                    Vector2f trembleVec = new Vector2f(
+                                        noise.GetPerlin(VideoManager.GetTimeTotal() * 300f, 1531) * 4f,
+                                        noise.GetPerlin(VideoManager.GetTimeTotal() * 300f, 17) * 4f
+                                        );
+                                    float trembleRot = noise.GetPerlin(VideoManager.GetTimeTotal() * 300f, 9071) * 5f;
+
+                                    mPhase = PosRotToRelPhase(
+                                        new Vector2f(
+                                            weapon.specialPos.magPos.X + 05f + trembleVec.X,
+                                            weapon.specialPos.magPos.Y + 15f + trembleVec.Y
+                                            ),
+                                        50f + trembleRot,
+                                        isReversed
+                                        );
+
+                                    rhPhase = PosRotToAbsPhase(
+                                        mPhase.position,
+                                        mPhase.rotation - 20f,
+                                        false
+                                        );
+
+                                }
+                                //탄창 장착 전 이동
+                                else if (Mathf.InRange(0.73f, timeRatio, 0.80f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.73f) / (0.80f - 0.73f);
+
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+                                    float powValue = MathF.Pow(inTimeRatio, 2f);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        +05f,
+                                        +03f),
+                                        isReversed ? 45f : -45f
+                                        );
+
+                                    mPhase = PosRotToRelPhase(
+                                        new Vector2f(
+                                            (weapon.specialPos.magPos.X + 5f).Lerp(weapon.specialPos.magPos.X + 0f, lerpValue),
+                                            (weapon.specialPos.magPos.Y + 15f).Lerp(weapon.specialPos.magPos.Y - 2f, lerpValue)
+                                            ),
+                                        50f.Lerp(0f, lerpValue),
+                                        isReversed
+                                        );
+
+                                    rhPhase = PosRotToAbsPhase(
+                                        mPhase.position,
+                                        mPhase.rotation - 20f,
+                                        false
+                                        );
+
+                                }
+                                //탄창 장착
+                                else if (Mathf.InRange(0.80f, timeRatio, 0.90f))
+                                {
+
+                                    inTimeRatio = (timeRatio - 0.80f) / (0.90f - 0.80f);
+
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+                                    float powValue = MathF.Pow(inTimeRatio, 2f);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        +05f + (float)Math.Sin(lerpValue * Math.PI) * -2f,
+                                        +03f + (float)Math.Sin(lerpValue * Math.PI) * -7f),
+                                        (isReversed ? 45f : -45f) + (float)Math.Sin(lerpValue * Math.PI) * 10f
+                                        );
+
+                                    mPhase = PosRotToRelPhase(
+                                        new Vector2f(
+                                            weapon.specialPos.magPos.X,
+                                            weapon.specialPos.magPos.Y + ((float)Math.Sin(Mathf.Clamp(0f, lerpValue * 10f, 1f) * Math.PI) * -3f) + ((1f - lerpValue) * -2f)
+                                            ),
+                                        (-10f).Lerp(0f, lerpValue)
+                                        + ((float)Math.Sin(Mathf.Clamp(0f, lerpValue * 10f, 1f) * Math.PI) * -10f),
+                                        isReversed
+                                        );
+
+                                    rhPhase = PosRotToAbsPhase(
+                                        mPhase.position,
+                                        mPhase.rotation - 20f,
+                                        false
+                                        );
+                                }
+                                // 총기 원 위치, 다시 전방 손잡이 잡기
+                                else if (Mathf.InRange(0.90f, timeRatio, 1.01f))
+                                {
+                                    if (magazineOld != null) magazineOld = null;
+
+                                    inTimeRatio = (timeRatio - 0.90f) / (1.01f - 0.90f);
+
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+                                    float powValue = MathF.Pow(inTimeRatio, 2f);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        +5f.Lerp(0f, lerpValue),
+                                        +3f.Lerp(0f, lerpValue)),
+                                        (isReversed ? 45f : -45f).Lerp(0f, lerpValue)
+                                        );
+
+                                    mPhase = PosRotToRelPhase(
+                                       new Vector2f(
+                                           weapon.specialPos.magPos.X,
+                                           weapon.specialPos.magPos.Y
+                                           ),
+                                       0f,
+                                       isReversed
+                                       );
+
+                                    rhPhase = PosRotToRelPhase(new Vector2f(
+                                            mPhase.position.X.Lerp(weapon.specialPos.secGripPos.X, lerpValue),
+                                            mPhase.position.Y.Lerp(weapon.specialPos.secGripPos.Y, lerpValue)
+                                        ),
+                                        mPhase.rotation + (-20f).Lerp(70f, lerpValue),
+                                        isReversed
+                                        );
+                                }
+
+                                //무기 위치 이동
+                                weaponPhase.position = (weaponPhase.position + wPhase.position * 0.12f) / 1.12f;
+                                weaponPhase.rotation = (weaponPhase.rotation.ToRadian().ToVector() + (wPhase.rotation).ToRadian().ToVector()).ToDirection().ToDirection();
+
+                                centralPhase.position = weaponPhase.position + hands.handPosTremble + hands.handPosMovement;
+                                centralPhase.rotation = weaponPhase.rotation + hands.handRotTremble;
+
+                                //무기 위상에 맞게 세부 위상 조정
+                                rhPhase.position = isReversed ? new Vector2f(rhPhase.position.X, rhPhase.position.Y) : rhPhase.position;
+                                rightPhase = rhPhase;
+                                leftPhase = PosRotToRelPhase(weapon.specialPos.pistolPos, 30f, isReversed);
+                                magazinePhase = mPhase;
+                            } break;
+
+                        case AnimationState.SELECTOR_CHANGE:
+                            {
+                                float timeRatio = hands.time / hands.timeMax;
+                                float inTimeRatio;
+
+                                Phase wPhase = new Phase();
+
+                                //볼트 잡기
+                                if (Mathf.InRange(0f, timeRatio, 0.10f))
+                                {
+                                    inTimeRatio = (timeRatio - 0f) / (0.10f - 0f);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        0f.Lerp(-5f, inTimeRatio),
+                                        0f.Lerp(-2f, inTimeRatio)),
+                                        0f.Lerp(-5f, inTimeRatio)
+                                        );
+                                }
+                                //볼트 잡고 대기 - 볼트액션 잠금 해제
+                                else if (Mathf.InRange(0.10f, timeRatio, 0.22f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.10f) / (0.22f - 0.10f);
+
+                                    wPhase = new Phase(new Vector2f(-5f, -2f), -5f);
+                                }
+                                //볼트 당기기
+                                else if (Mathf.InRange(0.22f, timeRatio, 0.39f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.22f) / (0.39f - 0.22f);
+
+                                    float lerpValue = MathF.Pow(inTimeRatio, 2f);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        -5f.Lerp(-6f, lerpValue),
+                                        -2f.Lerp(+2f, lerpValue))
+                                        + new Vector2f((float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f) * 20f * lerpValue,
+                                        -5f.Lerp(-10f, lerpValue)
+                                        + ((float)random.NextDouble() - 0.5f) * 20f * lerpValue
+                                        );
+                                }
+
+                                else if (Mathf.InRange(0.39f, timeRatio, 0.63f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.39f) / (0.63f - 0.39f);
+
+                                    float lerpValue = MathF.Pow(inTimeRatio, 2f);
+
+                                    wPhase = new Phase(
+                                        new Vector2f(
+                                            -6f.Lerp(2f, lerpValue),
+                                            +2f.Lerp(0f, lerpValue)
+                                            ),
+                                        -10f.Lerp(5f, lerpValue)
+                                        );
+                                }
+                                //다시 전방 손잡이 잡기
+                                else if (Mathf.InRange(0.63f, timeRatio, 0.82f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.63f) / (0.82f - 0.63f);
+
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        + 2f.Lerp(-1f, lerpValue),
+                                        + 0f.Lerp(-1f, lerpValue))
+                                        + new Vector2f((float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f) * 2f * lerpValue,
+                                        + 5f.Lerp(-2f, lerpValue)
+                                        + ((float)random.NextDouble() - 0.5f) * 2f * lerpValue
+                                        );
+                                }
+                                //후 딜레이
+                                else if (Mathf.InRange(0.82f, timeRatio, 1.01f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.82f) / (1.00f - 0.82f);
+
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        -1f.Lerp(0f, lerpValue),
+                                        -1f.Lerp(0f, lerpValue)),
+                                        -2f.Lerp(0f, lerpValue)
+                                        );
+                                }
+
+                                //무기 위치 이동
+                                weaponPhase.position = (weaponPhase.position + wPhase.position * 0.12f) / 1.12f;
+                                weaponPhase.rotation = (weaponPhase.rotation.ToRadian().ToVector() + (wPhase.rotation).ToRadian().ToVector()).ToDirection().ToDirection();
+
+                                centralPhase.position = weaponPhase.position + hands.handPosTremble + hands.handPosMovement;
+                                centralPhase.rotation = weaponPhase.rotation + hands.handRotTremble;
+
+                                //무기 위상에 맞게 세부 위상 조정
+                                rightPhase = PosRotToRelPhase(weapon.specialPos.pistolPos, 30f, isReversed);
+                                leftPhase = PosRotToRelPhase(weapon.specialPos.secGripPos, 70f, isReversed);
+                                magazinePhase = PosRotToRelPhase(weapon.specialPos.magPos, 0f, isReversed);
+
+                            }
+                            break;
+                        case AnimationState.WEAPON_INSPECT_SHORT:
+                            {
+
+                                float timeRatio = hands.time / hands.timeMax;
+                                float inTimeRatio;
+
+                                Phase wPhase = new Phase();
+
+                                //볼트 잡기
+                                if (Mathf.InRange(0f, timeRatio, 0.10f))
+                                {
+                                    inTimeRatio = (timeRatio - 0f) / (0.10f - 0f);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        0f.Lerp(-5f, inTimeRatio),
+                                        0f.Lerp(-2f, inTimeRatio)),
+                                        0f.Lerp(-5f, inTimeRatio)
+                                        );
+                                }
+                                //볼트 잡고 대기 - 볼트액션 잠금 해제
+                                else if (Mathf.InRange(0.10f, timeRatio, 0.90f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.10f) / (0.90f - 0.10f);
+
+                                    wPhase = new Phase(new Vector2f(-5f, -2f), -5f);
+                                }
+                                //후 딜레이
+                                else if (Mathf.InRange(0.90f, timeRatio, 1.01f))
+                                {
+                                    inTimeRatio = (timeRatio - 0.90f) / (1.00f - 0.90f);
+
+                                    float lerpValue = MathF.Sqrt(inTimeRatio);
+
+                                    wPhase = new Phase(new Vector2f(
+                                        -5f.Lerp(0f, lerpValue),
+                                        -2f.Lerp(0f, lerpValue)),
+                                        -5f.Lerp(0f, lerpValue)
+                                        );
+                                }
+
+
+                                //무기 위치 이동
+                                weaponPhase.position = (weaponPhase.position + wPhase.position * 0.12f) / 1.12f;
+                                weaponPhase.rotation = (weaponPhase.rotation.ToRadian().ToVector() + (wPhase.rotation).ToRadian().ToVector()).ToDirection().ToDirection();
+
+                                centralPhase.position = weaponPhase.position + hands.handPosTremble + hands.handPosMovement;
+                                centralPhase.rotation = weaponPhase.rotation + hands.handRotTremble;
+
+                                //무기 위상에 맞게 세부 위상 조정
+                                rightPhase = PosRotToRelPhase(weapon.specialPos.pistolPos, 30f, isReversed);
+                                leftPhase = PosRotToRelPhase(weapon.specialPos.secGripPos, 70f, isReversed);
+                                magazinePhase = PosRotToRelPhase(weapon.specialPos.magPos, 0f, isReversed);
+                            }
+                            break;
+                        case AnimationState.TDEVICE_INTERACTION:
+                            {
+                                
+                            } break;
                         default: Console.WriteLine("정의되지 않은 애니메이션 타입"); break;
                     }
 
@@ -1569,6 +1953,13 @@ namespace _231109_SFML_Test
                                 if ((int)hands.master.movement.targetIndex >= 1.99f
                                     && hands.master.movement.nowValue > 0.99f)
                                     hands.master.movement.targetIndex = Movement.MovementState.IDLE;
+
+
+                                if (hands.time < weapon.status.timeDt.reloadTime.Item3 * 0.2f
+                                && hands.time + hands.master.gamemode.deltaTime > weapon.status.timeDt.reloadTime.Item3 * 0.2f)
+                                {
+                                    DoEject();
+                                }
                             }
                             break;
                         case AnimationState.BOLT_FOWARD:
@@ -1582,7 +1973,15 @@ namespace _231109_SFML_Test
                                 if ((int)hands.master.movement.targetIndex >= 1.99f
                                     && hands.master.movement.nowValue > 0.99f)
                                     hands.master.movement.targetIndex = Movement.MovementState.IDLE;
+
+                                if (hands.time < weapon.status.timeDt.reloadTime.Item3 * 0.5f
+                                && hands.time + hands.master.gamemode.deltaTime > weapon.status.timeDt.reloadTime.Item3 * 0.5f) 
+                                {
+                                    DoEject();
+                                }
+
                             } break;
+                        
                         case AnimationState.MAGAZINE_ATTACH:
                             {
                                 if ((int)hands.master.movement.targetIndex >= 1.99f
@@ -1596,6 +1995,12 @@ namespace _231109_SFML_Test
                                     hands.master.movement.targetIndex = Movement.MovementState.IDLE;
                             } break;
                         case AnimationState.MAGAZINE_CHANGE:
+                            {
+                                if ((int)hands.master.movement.targetIndex >= 1.99f
+                                    && hands.master.movement.nowValue > 0.99f)
+                                    hands.master.movement.targetIndex = Movement.MovementState.IDLE;
+                            } break;
+                        case AnimationState.MAGAZINE_INSPECT:
                             {
                                 if ((int)hands.master.movement.targetIndex >= 1.99f
                                     && hands.master.movement.nowValue > 0.99f)
@@ -1633,8 +2038,7 @@ namespace _231109_SFML_Test
                                     //탄창이 실린더가 아니라면?
                                     if (weapon.status.typeDt.magazineType == MagazineType.SYLINDER) return;
 
-                                    //약실의 탄피 제거
-                                    weapon.chambers.Remove(weapon.chambers.Find(a => a.isUsed));
+                                    DoEject();
 
                                     //탄창에서 새 탄을 받음.
                                     Ammo? newAmmo = weapon.magazineAttached != null ? weapon.magazineAttached.AmmoPop() : null;
@@ -1698,9 +2102,6 @@ namespace _231109_SFML_Test
                                     //탄창이 실린더가 아니라면?
                                     if (weapon.status.typeDt.magazineType == MagazineType.SYLINDER) return;
 
-                                    //약실의 탄피 제거
-                                    weapon.chambers.Remove(weapon.chambers.Find(a => a.isUsed));
-
                                     //탄창에서 새 탄을 받음.
                                     Ammo newAmmo = weapon.magazineAttached.AmmoPop();
 
@@ -1712,7 +2113,6 @@ namespace _231109_SFML_Test
                                 };
                             }
                             break;
-
                         case AnimationState.BOLT_BACK:
                             {
                                 if (weapon.isFireableState(hands.state) == false) break;
@@ -1729,9 +2129,6 @@ namespace _231109_SFML_Test
                                     //탄창이 실린더가 아니라면?
                                     if (weapon.status.typeDt.magazineType == MagazineType.SYLINDER) return;
 
-                                    //약실의 탄피 제거
-                                    weapon.chambers.Remove(weapon.chambers.Find(a => a.isUsed));
-
                                     //볼트 고정
                                     if (weapon.status.typeDt.boltLockerType == BoltLockerType.LOCK_TO_FIRE)
                                     {
@@ -1746,16 +2143,15 @@ namespace _231109_SFML_Test
                                 };
                             }
                             break;
-
                         case AnimationState.BOLT_FOWARD:
                             {
                                 if (weapon.isFireableState(hands.state) == false) break;
-                                hands.state = AnimationState.BOLT_ROUND;
+                                hands.state = AnimationState.BOLT_FOWARD;
                                 hands.time = 0f;
                                 hands.timeMax = weapon.status.timeDt.reloadTime.Item3 * 0.30f;
                                 changeStateCallback = () =>
                                 {
-                                    ChangeState(AnimationState.BOLT_FOWARD);
+                                    ChangeState(AnimationState.IDLE);
 
                                     //볼트가 존재하고
                                     if (weapon.status.typeDt.mechanismType == MechanismType.NONE) return;
@@ -1846,10 +2242,89 @@ namespace _231109_SFML_Test
 
                             }
                             break;
+                        case AnimationState.MAGAZINE_INSPECT:
+                            {
+                                if (weapon.isFireableState(hands.state) == false) break;
+                                if (weapon.magazineAttached == null) break;
+
+                                hands.state = AnimationState.MAGAZINE_INSPECT;
+                                hands.time = 0f;
+                                hands.timeMax = weapon.status.timeDt.reloadTime.Item1 * 0.50f + weapon.status.timeDt.reloadTime.Item2 * 0.50f;
+
+                                changeStateCallback = () =>
+                                {
+                                    ChangeState(AnimationState.IDLE);
+                                };
+                            }
+                            break;
+
+                        case AnimationState.SELECTOR_CHANGE:
+                            {
+                                hands.state = AnimationState.SELECTOR_CHANGE;
+                                hands.time = 0f;
+                                hands.timeMax = 0.30f;
+
+                                changeStateCallback = () =>
+                                {
+                                    int nowIndex = weapon.status.typeDt.selectorList.IndexOf(weapon.selectorNow);
+
+                                    SelectorType newSel = weapon.status.typeDt.selectorList.Count == (nowIndex + 1) ?
+                                        weapon.status.typeDt.selectorList[0] :
+                                        weapon.status.typeDt.selectorList[nowIndex + 1];
+
+                                    weapon.selectorNow = newSel;
+
+                                    ChangeState(AnimationState.IDLE);
+                                };
+                            } break;
+                        case AnimationState.WEAPON_INSPECT_SHORT:
+                            {
+                                hands.state = AnimationState.WEAPON_INSPECT_SHORT;
+                                hands.time = 0f;
+                                hands.timeMax = 0.60f;
+
+                                changeStateCallback = () =>
+                                {
+                                    ChangeState(AnimationState.IDLE);
+                                };
+                            } break;
+                        case AnimationState.TDEVICE_INTERACTION:
+                            {
+                                hands.state = AnimationState.TDEVICE_INTERACTION;
+                                hands.time = 0f;
+                                hands.timeMax = 0.30f;
+
+                                changeStateCallback = () =>
+                                {
+                                    ChangeState(AnimationState.IDLE);
+                                };
+                            } break;
+
                         default: break;
                     }
                 }
 
+                void DoEject() 
+                {
+                    //약실의 탄피 제거
+                    bool isEjected = false;
+                    if (weapon.chambers.Remove(weapon.chambers.Find(a => a.isUsed)))
+                        isEjected = true;
+
+                    else if (weapon.chambers.Count != 0 && weapon.chambers.Remove(weapon.chambers[0]))
+                        isEjected = true;
+
+                    if (isEjected)
+                    {
+                        //Y값이 뒤집힌경우 배출구 편차 보정
+                        Vector2f chamberSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? weapon.specialPos.ejectPos : new Vector2f(weapon.specialPos.ejectPos.X, -weapon.specialPos.ejectPos.Y);
+
+                        //배출구 위치를 세계 좌표로 변환
+                        Vector2f chamberPos = hands.master.Position + hands.handPos + chamberSep.RotateFromZero(hands.handRot);
+
+                        new CartridgeBig(hands.master.gamemode, chamberPos, 50f);
+                    }
+                }
                 public Phase PosRotToRelPhase(Vector2f pos, float rot, bool isReversed)
                 {
                     Vector2f phasePos = new Vector2f(pos.X, pos.Y * (isReversed ? -1f : 1f));

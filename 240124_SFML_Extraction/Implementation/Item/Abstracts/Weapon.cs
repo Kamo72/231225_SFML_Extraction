@@ -98,9 +98,54 @@ namespace _231109_SFML_Test
                 } },
                 { InputManager.CommandType.AIM, (hands, isTrue) =>
                 {
-                    hands.master.aim.isAds = isTrue;
+                    hands.master.aim.isAds =false;
+
+                    if(isTrue)
+                    {
+                        if(isFireableState(hands.state) )
+                        {
+                           hands.master.aim.isAds = true;
+                        }
+                    }
                 } },
-                { InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) => 
+                { InputManager.CommandType.BOLT_ROUND, (hands, isTrue) => {
+
+                    if(isTrue){
+
+                        if ((int)hands.master.movement.targetIndex >= 1.99f
+                            && hands.master.movement.nowValue > 0.99f)
+                            hands.master.movement.targetIndex = Humanoid.Movement.MovementState.IDLE;
+
+                        if(isFireableState(hands.state))
+                        {
+                            if(magazineAttached != null)
+                                hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.BOLT_ROUND);
+                        }
+                    }
+                } },
+                { InputManager.CommandType.MAGAZINE_REMOVE, (hands, isTrue) => {
+
+                    if(isTrue){
+
+                        if ((int)hands.master.movement.targetIndex >= 1.99f
+                            && hands.master.movement.nowValue > 0.99f)
+                            hands.master.movement.targetIndex = Humanoid.Movement.MovementState.IDLE;
+
+
+                        if(isFireableState(hands.state))
+                        {
+                            if(magazineAttached != null)
+                                hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_REMOVE);
+                        }
+                    }
+                } },
+                { InputManager.CommandType.MAGAZINE_INSPECT, (hands, isTrue) => {
+                    if(isTrue)
+                    {
+                        hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_INSPECT);
+                    }
+                } },
+                { InputManager.CommandType.MAGAZINE_CHANGE, (hands, isTrue) =>
                 {
                     if(isTrue){
 
@@ -110,10 +155,12 @@ namespace _231109_SFML_Test
 
 
                         if(isFireableState(hands.state))
+                        {
                             if(magazineAttached != null)
                                 hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_CHANGE);
                             else
                                 hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.MAGAZINE_ATTACH);
+                        }
                     }
 
                     if(hands.state != Humanoid.Hands.AnimationState.IDLE) return;
@@ -124,9 +171,52 @@ namespace _231109_SFML_Test
                     if(chambers.Capacity == 0) return;
                     if(chambers.Capacity == chambers.FindAll(a => a.isUsed == false).Count) return;
 
-                    hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.BOLT_ROUND);
 
+                    if(status.typeDt.mechanismType == MechanismType.OPEN_BOLT)
+                    {
+                        hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.BOLT_BACK);
+                    }
+                    else{
+                        if(boltValue.backwardValue > 0.99f)
+                        {
+                            hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.BOLT_FOWARD);
+                        }
+                        else
+                        {
+                            hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.BOLT_ROUND);
+                        }
+                    }
+                } },
 
+                { InputManager.CommandType.TDEVICE_CHANGE, (hands, isTrue) => {
+
+                } },
+                { InputManager.CommandType.TDEVICE_POWER, (hands, isTrue) =>{
+
+                    if(isTrue)
+                        if(isFireableState(hands.state))
+                        {
+                            if(magazineAttached != null)
+                                hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.TDEVICE_INTERACTION);
+                        }
+                } },
+                { InputManager.CommandType.SELECTOR_INSPECT, (hands, isTrue) => {
+
+                    if(isTrue)
+                        if(isFireableState(hands.state))
+                        {
+                            if(magazineAttached != null)
+                                hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.WEAPON_INSPECT_SHORT);
+                        }
+                } },
+                { InputManager.CommandType.SELECTOR_CHANGE, (hands, isTrue) => {
+
+                    if(isTrue)
+                        if(isFireableState(hands.state))
+                        {
+                            if(magazineAttached != null)
+                                hands.nowAnimator.ChangeState(Humanoid.Hands.AnimationState.SELECTOR_CHANGE);
+                        }
                 } },
                 //{ InputManager.CommandType.MELEE, (hand, isTrue) => {
 
@@ -279,24 +369,33 @@ namespace _231109_SFML_Test
         List<Humanoid.Hands.AnimationState> nonFireableStates = new List<Humanoid.Hands.AnimationState>
         {
             Humanoid.Hands.AnimationState.FIRE,
+            Humanoid.Hands.AnimationState.SPRINT,
+
+            Humanoid.Hands.AnimationState.INVENTORY,
+
+            Humanoid.Hands.AnimationState.EQUIP,
+            Humanoid.Hands.AnimationState.UNEQUIP,
+
+            Humanoid.Hands.AnimationState.BOLT_BACK,
+            Humanoid.Hands.AnimationState.BOLT_ROUND,
+            Humanoid.Hands.AnimationState.BOLT_FOWARD,
+
             Humanoid.Hands.AnimationState.MAGAZINE_REMOVE,
             Humanoid.Hands.AnimationState.MAGAZINE_ATTACH,
             Humanoid.Hands.AnimationState.MAGAZINE_INSPECT,
             Humanoid.Hands.AnimationState.MAGAZINE_CHANGE,
-            Humanoid.Hands.AnimationState.BOLT_BACK,
-            Humanoid.Hands.AnimationState.BOLT_ROUND,
-            Humanoid.Hands.AnimationState.BOLT_FOWARD,
-            Humanoid.Hands.AnimationState.SPRINT,
-            Humanoid.Hands.AnimationState.INVENTORY,
-            Humanoid.Hands.AnimationState.EQUIP,
-            Humanoid.Hands.AnimationState.UNEQUIP,
+
+            Humanoid.Hands.AnimationState.SELECTOR_CHANGE,
+            Humanoid.Hands.AnimationState.WEAPON_INSPECT_SHORT,
+
+            Humanoid.Hands.AnimationState.TDEVICE_INTERACTION,
         };
         public bool isFireableState(Humanoid.Hands.AnimationState state) =>
             nonFireableStates.Contains(state) == false;
         
         float delayNow = 0f;
         bool triggeredBefore = false;
-        SelectorType selectorNow;
+        public SelectorType selectorNow;
         float muzzleHeat = 0f, muzzleHeatDelta = 0.02f, muzzleHeatMax = 1f;
 
         void Fire(Humanoid.Hands hands) 
@@ -330,7 +429,7 @@ namespace _231109_SFML_Test
             delayNow = delayMax;
 
             //Y값이 뒤집힌경우 배출구 편차 보정
-            Vector2f chamberSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos.muzzlePos : new Vector2f(specialPos.muzzlePos.X, -specialPos.muzzlePos.Y);
+            Vector2f chamberSep = (-90f <= hands.handRot && hands.handRot <= 90f) ? specialPos.ejectPos : new Vector2f(specialPos.ejectPos.X, -specialPos.ejectPos.Y);
 
             //배출구 위치를 세계 좌표로 변환
             Vector2f chamberPos = hands.master.Position + hands.handPos + chamberSep.RotateFromZero(hands.handRot);
@@ -342,7 +441,6 @@ namespace _231109_SFML_Test
             for (int i = 0; i < 30; i++)
                 new MuzzleSmoke(gm, muzzlePos, hands.handRot);
 
-            new CartridgeBig(gm, chamberPos, 50f);
             new MuzzleFlash(gm, muzzlePos, 300);
 
             //에임에 반동 적용

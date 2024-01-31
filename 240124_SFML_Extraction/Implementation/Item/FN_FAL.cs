@@ -118,6 +118,34 @@ namespace _231109_SFML_Test
                             ],
                             new FN_FAL_Barrel_533mm()
                         ),
+                        new AttachSocket( AttachmentType.,
+                            new Vector2f(58f, -1f), true,
+                            [
+                                typeof(FN_FAL_Barrel_533mm),
+                            ],
+                            new FN_FAL_Barrel_533mm()
+                        ),
+                        new AttachSocket( AttachmentType.TOP_RECIEVER,
+                            new Vector2f(58f, -1f), true,
+                            [
+                                typeof(FN_FAL_Barrel_533mm),
+                            ],
+                            new FN_FAL_Barrel_533mm()
+                        ),
+                        new AttachSocket( AttachmentType.PISTOL_GRIP,
+                            new Vector2f(58f, -1f), true,
+                            [
+                                typeof(FN_FAL_Barrel_533mm),
+                            ],
+                            new FN_FAL_Barrel_533mm()
+                        ),
+                        new AttachSocket( AttachmentType.TOP_RECIEVER,
+                            new Vector2f(58f, -1f), true,
+                            [
+                                typeof(FN_FAL_Barrel_533mm),
+                            ],
+                            new FN_FAL_Barrel_533mm()
+                        ),
                     },
                 },
             };
@@ -263,6 +291,7 @@ namespace _231109_SFML_Test
                 //가격
                 3700f
                 );
+            sizeAdjust = (0, 0, 0, 3);
 
             //부착물 슬롯들
             attachments = new List<AttachSocket>
@@ -365,4 +394,107 @@ namespace _231109_SFML_Test
         }
 
     }
+
+    internal class FN_FAL_Polymer_Stock : Attachment
+    {
+        public FN_FAL_Polymer_Stock() : base(AttachmentType.STOCK, new List<WeaponAdjust>
+        {
+            //부착물 옵션
+            new WeaponAdjust("반동 감소", WeaponAdjustType.PROS, ws =>
+            {
+                ws.aimDt.ads.recoil.fix *= 0.320f;
+                ws.aimDt.ads.recoil.random *= 0.210f;
+                ws.aimDt.hip.recoil.strength *= 0.385f;
+                return ws;
+            }),
+            new WeaponAdjust("반동 회복 가속", WeaponAdjustType.PROS, ws =>
+            {
+                ws.aimDt.ads.recoil.recovery *= 2.400f;
+                ws.aimDt.hip.recoil.recovery *= 1.800f;
+                return ws;
+            }),
+            new WeaponAdjust("조준 안정 증가", WeaponAdjustType.PROS, ws => {ws.aimDt.ads.stance.accuracy *= 0.16f; return ws; }),
+            new WeaponAdjust("이동 속도 증가", WeaponAdjustType.PROS, ws => {ws.moveDt.speed *= 1.07f; return ws; }),
+
+            new WeaponAdjust("조준 속도 감소", WeaponAdjustType.CONS, ws => {ws.timeDt.adsTime *= 2.67f; return ws; }),
+            new WeaponAdjust("조준점 이동 속도 감소", WeaponAdjustType.CONS, ws => {ws.timeDt.adsTime *= 0.59f; return ws; }),
+        })
+        {
+            //아이템 정보
+            base.SetupBasicData(
+                //아이템 이름
+                "FN FAL 폴리머 개머리판",
+                //스프라이트 이름
+                "FN_FAL_stock_basic",
+                //설명
+                "FN FAL의 고분자 폴리머 소재 개머리판입니다. 뭉특한 생김새에 걸맞게 튼튼하지만 가벼워 다루기 쉽습니다. 제거해도 사용은 가능하지만 권장되지 않습니다.",
+                //무게
+                1.200f,
+                //아이템 크기
+                new Vector2i(2, 1),
+                //희귀도
+                Rarerity.COMMON,
+                //가격
+                2200f
+                );
+            sizeAdjust = (0, 0, 1, 0);
+        }
+    }
+
+    internal class FN_FAL_PistolGrip_ArBased : Attachment
+    {
+        public FN_FAL_PistolGrip_ArBased() : base(AttachmentType.PISTOL_GRIP, new List<WeaponAdjust>
+        {
+            //부착물 옵션
+        })
+        {
+            //아이템 정보
+            base.SetupBasicData(
+                //아이템 이름
+                "FN FAL AR기반 권총 손잡이",
+                //스프라이트 이름
+                "FN_FAL_pistolGrip_arBased",
+                //설명
+                "FN FAL 전용 폴리머 권총 손잡이입니다. 표면 처리 없이 단순한 권총 손잡이의 형태를 띄고 있습니다.",
+                //무게
+                0.100f,
+                //아이템 크기
+                new Vector2i(1, 1),
+                //희귀도
+                Rarerity.COMMON,
+                //가격
+                1100f
+                );
+            sizeAdjust = (0, 1, 0, 0);
+        }
+    }
+
+    internal class FN_FAL_DuskCover_Basic : Attachment
+    {
+        public FN_FAL_DuskCover_Basic() : base(AttachmentType.TOP_RECIEVER, new List<WeaponAdjust>
+        {
+            //부착물 옵션
+            new WeaponAdjust("조준 속도 증가", WeaponAdjustType.PROS, ws => {ws.timeDt.adsTime *= 0.98f; return ws; }),
+        })
+        {
+            //아이템 정보
+            base.SetupBasicData(
+                //아이템 이름
+                "FN FAL 먼지덮게",
+                //스프라이트 이름
+                "Undefined",
+                //설명
+                "",
+                //무게
+                0.060f,
+                //아이템 크기
+                new Vector2i(2, 1),
+                //희귀도
+                Rarerity.COMMON,
+                //가격
+                700f
+                );
+        }
+    }
+
 }

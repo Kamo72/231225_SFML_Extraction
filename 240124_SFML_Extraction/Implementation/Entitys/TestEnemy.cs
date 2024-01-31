@@ -85,6 +85,19 @@ namespace _231109_SFML_Test
 
                 aiCommandDic[InputManager.CommandType.AIM] = (aimTargetDis < 120f) && meTargetDis > 400f ? true : false;
                 aiCommandDic[InputManager.CommandType.FIRE] = (aimTargetDis < 50f) ? true : false;
+
+
+                aiCommandDic[InputManager.CommandType.MAGAZINE_CHANGE] = false;
+                if (hands.handling is Weapon w) 
+                {
+                    if (w.magazineAttached != null) 
+                    {
+                        if (w.magazineAttached.ammoCount == 0)
+                        {
+                            aiCommandDic[InputManager.CommandType.MAGAZINE_CHANGE] = true;
+                        }
+                    }
+                }
             }
             //상대 없음
             else

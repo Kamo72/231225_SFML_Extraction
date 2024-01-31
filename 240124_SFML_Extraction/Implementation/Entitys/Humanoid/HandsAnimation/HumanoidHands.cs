@@ -214,6 +214,12 @@ namespace _231109_SFML_Test
                 MAGAZINE_INSPECT,   //탄창 확인
                 MAGAZINE_REMOVE,    //탄창 제거
                 MAGAZINE_ATTACH,    //탄창 부착
+
+                SELECTOR_CHANGE,    //조정간 교체
+
+                WEAPON_INSPECT_SHORT,   //빠른 총기 점검 > 조정간 확인
+
+                TDEVICE_INTERACTION,      //전술 장비 조작 > 전술 장비 전원, 전술 장비 교체
             }
             public abstract class Animator : IDisposable
             {

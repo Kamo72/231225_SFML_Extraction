@@ -47,6 +47,8 @@ namespace _231109_SFML_Test
         #region [탄 관리]
         Stack<Ammo> ammoStack; //탄창 내 탄약 <스택>
 
+        public int ammoCount => ammoStack.Count;
+
         public bool AmmoPush(Ammo ammo)
         {
             //예외

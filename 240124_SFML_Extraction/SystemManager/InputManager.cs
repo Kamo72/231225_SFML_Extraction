@@ -210,7 +210,6 @@ namespace _231109_SFML_Test
 
             SPRINT,
             CROUNCH,
-            PRONE,
 
             INTERACT,
             INVENTORY,
@@ -218,12 +217,17 @@ namespace _231109_SFML_Test
             FIRE,
             AIM,
 
+            BOLT_ROUND,
+
             MAGAZINE_CHANGE,
             MAGAZINE_INSPECT,
             MAGAZINE_REMOVE,
 
             SELECTOR_CHANGE,
             SELECTOR_INSPECT,
+
+            TDEVICE_CHANGE,
+            TDEVICE_POWER,
 
             MELEE,
             GRANADE,
@@ -244,16 +248,24 @@ namespace _231109_SFML_Test
 
             commandDic[CommandType.SPRINT] = new CommandData("달리기", KeyReadType.PRESS, new KeyData(Keyboard.Key.LShift));
             commandDic[CommandType.CROUNCH] = new CommandData("숙이기", KeyReadType.PRESS, new KeyData(Keyboard.Key.C));
-            //commandDic[CommandType.PRONE] = new CommandData("포복", KeyReadType.TOGGLE, new KeyData(KeyCode.X));
 
             commandDic[CommandType.INTERACT] = new CommandData("상호작용", KeyReadType.PRESS, new KeyData(Keyboard.Key.F));
             commandDic[CommandType.INVENTORY] = new CommandData("인벤토리", KeyReadType.PRESS, new KeyData(Keyboard.Key.Tab));
 
             commandDic[CommandType.FIRE] = new CommandData("격발", KeyReadType.PRESSING, new KeyData(Mouse.Button.Left));
             commandDic[CommandType.AIM] = new CommandData("조준", KeyReadType.PRESSING, new KeyData(Mouse.Button.Right));
+
             commandDic[CommandType.MAGAZINE_CHANGE] = new CommandData("재장전", KeyReadType.PRESS, new KeyData(Keyboard.Key.R));
-            //commandDic[CommandType.MAGAZINE_INSPECT] = new CommandData("잔탄 확인", KeyReadType.PRESS, new KeyData(KeyCode.LeftControl), new KeyData(KeyCode.R));
-            //commandDic[CommandType.MAGAZINE_REMOVE] = new CommandData("탄창 제거", KeyReadType.PRESS, new KeyData(KeyCode.LeftAlt), new KeyData(KeyCode.R));
+            commandDic[CommandType.MAGAZINE_INSPECT] = new CommandData("탄창 확인", KeyReadType.PRESS, new KeyData(Keyboard.Key.LControl), new KeyData(Keyboard.Key.R));
+            commandDic[CommandType.MAGAZINE_REMOVE] = new CommandData("탄창 제거", KeyReadType.PRESS, new KeyData(Keyboard.Key.LAlt), new KeyData(Keyboard.Key.R));
+
+            commandDic[CommandType.SELECTOR_CHANGE] = new CommandData("조정간 조작", KeyReadType.PRESS, new KeyData(Keyboard.Key.B));
+            commandDic[CommandType.SELECTOR_INSPECT] = new CommandData("조정간 확인", KeyReadType.PRESS, new KeyData(Keyboard.Key.LControl), new KeyData(Keyboard.Key.B));
+
+            commandDic[CommandType.TDEVICE_CHANGE] = new CommandData("전술장비 변경", KeyReadType.PRESS, new KeyData(Keyboard.Key.LControl), new KeyData(Keyboard.Key.T));
+            commandDic[CommandType.TDEVICE_POWER] = new CommandData("전술장비 전원", KeyReadType.PRESS, new KeyData(Keyboard.Key.T));
+
+            commandDic[CommandType.BOLT_ROUND] = new CommandData("노리쇠 후퇴전진", KeyReadType.PRESS, new KeyData(Keyboard.Key.LShift), new KeyData(Keyboard.Key.T));
 
             //commandDic[CommandType.MELEE] = new CommandData("근접 공격", KeyReadType.PRESS, new KeyData(KeyCode.V));
             //commandDic[CommandType.GRANADE] = new CommandData("살상 장비", KeyReadType.RELEASE, new KeyData(KeyCode.E));

@@ -132,7 +132,7 @@ namespace _231109_SFML_Test
             AiCommandProcess();
 
             //손의 무기 제어
-            hands.LogicHandlingProcess(cmd => aiCommandDic.ContainsKey(cmd)? aiCommandDic[cmd] : false);
+            hands?.LogicHandlingProcess(cmd => aiCommandDic.ContainsKey(cmd)? aiCommandDic[cmd] : false);
 
 
 

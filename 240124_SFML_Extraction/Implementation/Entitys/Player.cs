@@ -101,12 +101,15 @@ namespace _231109_SFML_Test
                 if (Im.CommandCheck(Im.CommandType.CROUNCH)) movement.targetIndex = movement.targetIndex == Movement.MovementState.CROUNCH ? Movement.MovementState.IDLE : Movement.MovementState.CROUNCH;
 
                 //이동 방향 지정
-                movement.moveDir = Vector2fEx.Zero;
-                if (Im.CommandCheck(Im.CommandType.MOVE_LEFT))      movement.moveDir += (+180f).ToRadian().ToVector();
-                if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT))     movement.moveDir += (+000f).ToRadian().ToVector();
-                if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD))  movement.moveDir += (+090f).ToRadian().ToVector();
-                if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD))   movement.moveDir += (+270f).ToRadian().ToVector();
+                if (movement != null)
+                {
+                    movement.moveDir = Vector2fEx.Zero;
 
+                    if (Im.CommandCheck(Im.CommandType.MOVE_LEFT)) movement.moveDir += (+180f).ToRadian().ToVector();
+                    if (Im.CommandCheck(Im.CommandType.MOVE_RIGHT)) movement.moveDir += (+000f).ToRadian().ToVector();
+                    if (Im.CommandCheck(Im.CommandType.MOVE_BACKWARD)) movement.moveDir += (+090f).ToRadian().ToVector();
+                    if (Im.CommandCheck(Im.CommandType.MOVE_FORWARD)) movement.moveDir += (+270f).ToRadian().ToVector();
+                }
                 base.PhysicsProcess();
 
                 //플레이어 탭 드로워.로직 프로세스

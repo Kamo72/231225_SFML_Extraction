@@ -77,8 +77,9 @@ namespace _231109_SFML_Test
             {
                 return (Gamemode)Activator.CreateInstance(type, this);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString() + ex.StackTrace);
                 return TryCreateInstance(type);
             }
         }

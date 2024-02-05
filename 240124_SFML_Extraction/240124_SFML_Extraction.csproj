@@ -10,9 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS\**" />
-    <EmbeddedResource Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS\**" />
-    <None Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS\**" />
+    <Compile Remove="Sprites\WEAPONS_DMR\FN_FAL_ATTACH\**" />
+    <Compile Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS - 복사\**" />
+    <EmbeddedResource Remove="Sprites\WEAPONS_DMR\FN_FAL_ATTACH\**" />
+    <EmbeddedResource Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS - 복사\**" />
+    <None Remove="Sprites\WEAPONS_DMR\FN_FAL_ATTACH\**" />
+    <None Remove="Sprites\WEAPONS_DMR\FN_FAL_PARTS - 복사\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Sprites\WEAPONS_DMR\FN_FAL_ATTACH\" />
+    <Folder Include="Sprites\WEAPONS_DMR\FN_FAL_PARTS\" />
   </ItemGroup>
 
 </Project>

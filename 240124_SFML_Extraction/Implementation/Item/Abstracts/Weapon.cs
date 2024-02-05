@@ -38,7 +38,7 @@ namespace _231109_SFML_Test
                     delayNow -= 1f/(float)gm.logicFps;
 
                     //과열 시간 제어
-                    muzzleHeat -= gm.deltaTime * 0.4f;
+                    muzzleHeat -= gm.deltaTime * muzzleHeatReduce;
                     muzzleHeat = Mathf.Clamp(0f, muzzleHeat, muzzleHeatMax);
 
                     //과열 파티클 이펙트
@@ -93,7 +93,6 @@ namespace _231109_SFML_Test
                     }
 
                     triggeredBefore = isTrue;
-
 
                 } },
                 { InputManager.CommandType.AIM, (hands, isTrue) =>
@@ -322,14 +321,14 @@ namespace _231109_SFML_Test
                     if (socket.attachment == null) continue;
                     if (socket.attachment.attachmentShape == null) continue;
 
-                    Vector2f tPosition = position + socket.attachPos.RotateFromZero(direction);
+                    Vector2f sepPos = new Vector2f(socket.attachPos.X * scaleRatio.X, socket.attachPos.Y * scaleRatio.Y).RotateFromZero(direction);
+                    Vector2f tPosition = position + sepPos;
                     DrawAttachmentFunc(socket.attachment, texture, tPosition, direction, scaleRatio, renderStates);
                 }
         }
 
         public virtual void DrawHandable(RenderTexture texture, Vector2f position, float direction, Vector2f scaleRatio, RenderStates renderStates)
         {
-
             Vector2f boltAdjust = boltVec.backwardVec * boltValue.backwardValue
                 + boltVec.lockVec * boltValue.lockValue;
 
@@ -344,7 +343,9 @@ namespace _231109_SFML_Test
                 if (socket.attachment == null) continue;
                 if (socket.attachment.attachmentShape == null) continue;
 
-                Vector2f tPosition = position + socket.attachPos.RotateFromZero(direction);
+                //Vector2f sepPos = Mathf.InRange(-90f, direction, 90f) ? socket.attachPos.RotateFromZero(direction) : new Vector2f(socket.attachPos.X, -socket.attachPos.Y).RotateFromZero(direction);
+                Vector2f sepPos = new Vector2f(socket.attachPos.X * scaleRatio.X, socket.attachPos.Y * scaleRatio.Y).RotateFromZero(direction);
+                Vector2f tPosition = position + sepPos;
                 DrawAttachmentFunc(socket.attachment, texture, tPosition, direction, scaleRatio, renderStates);
             }
         }
@@ -396,7 +397,7 @@ namespace _231109_SFML_Test
         float delayNow = 0f;
         bool triggeredBefore = false;
         public SelectorType selectorNow;
-        float muzzleHeat = 0f, muzzleHeatDelta = 0.02f, muzzleHeatMax = 1f;
+        float muzzleHeat = 0f, muzzleHeatDelta = 0.10f, muzzleHeatReduce = 0.20f, muzzleHeatMax = 1f;
 
         void Fire(Humanoid.Hands hands) 
         {

@@ -169,6 +169,8 @@ namespace _231109_SFML_Test
 
             public override void DrawProcess()
             {
+                if (master.aim == null) return;
+
                 staticDot.Position = master.aimPosition + (Vector2f)Vm.resolutionNow / 2f;
                 DrawManager.texUiInterface.Draw(staticDot);
 
@@ -950,6 +952,7 @@ namespace _231109_SFML_Test
 
 
                 //상호작용 중인 컨테이너 제어
+                if (master.hands != null)
                 if (master.hands.interactingTarget is Container container)
                 {
                     storage = container.storage;

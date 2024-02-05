@@ -57,12 +57,13 @@ namespace _231109_SFML_Test
                     {
                         textures.Add("FN_FAL_bolt", new Texture(header + "FN_FAL_bolt.png"));
                         textures.Add("FN_FAL_body", new Texture(header + "FN_FAL_body.png"));
-                        textures.Add("FN_FAL_pistolGrip_basic", new Texture(header + "FN_FAL_pistolGrip_basic.png"));
+                        textures.Add("FN_FAL_pistolGrip_arBased", new Texture(header + "FN_FAL_pistolGrip_arBased.png"));
                         textures.Add("FN_FAL_stock_basic", new Texture(header + "FN_FAL_stock_basic.png"));
                         textures.Add("FN_FAL_barrel_533mm", new Texture(header + "FN_FAL_barrel_533mm.png"));
                         textures.Add("FN_FAL_flashhider_fnAmerica", new Texture(header + "FN_FAL_flashhider_fnAmerica.png"));
                         textures.Add("FN_FAL_handGuard_dsArms", new Texture(header + "FN_FAL_handGuard_dsArms.png"));
                         textures.Add("FN_FAL_chargingHandle", new Texture(header + "FN_FAL_chargingHandle.png"));
+                        textures.Add("FN_FAL_dustCover_basic", new Texture(header + "FN_FAL_dustCover_basic.png"));
                     }
                     {
                         textures.Add("FN_FAL_MAG10", new Texture(header + "FN_FAL_MAG10.png"));
@@ -135,12 +136,13 @@ namespace _231109_SFML_Test
 
                     CopyFile(dirPath + @"FN_FAL_bolt.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_body.png", @"Assets\Textures\");
-                    CopyFile(dirPath + @"FN_FAL_pistolGrip_basic.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_pistolGrip_arBased.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_stock_basic.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_barrel_533mm.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_flashhider_fnAmerica.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_handGuard_dsArms.png", @"Assets\Textures\");
                     CopyFile(dirPath + @"FN_FAL_chargingHandle.png", @"Assets\Textures\");
+                    CopyFile(dirPath + @"FN_FAL_dustCover_basic.png", @"Assets\Textures\");
                 }
                 {
                     dirPath = tdirPath + @"\FN_FAL_MAG\";

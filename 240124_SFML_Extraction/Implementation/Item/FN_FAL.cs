@@ -112,39 +112,32 @@ namespace _231109_SFML_Test
                 {
                     socketList = new List<AttachSocket> {
                         new AttachSocket( AttachmentType.BARREL,
-                            new Vector2f(58f, -1f), true,
+                            new Vector2f(41f, -0.5f), true,
                             [
                                 typeof(FN_FAL_Barrel_533mm),
                             ],
                             new FN_FAL_Barrel_533mm()
                         ),
-                        new AttachSocket( AttachmentType.,
-                            new Vector2f(58f, -1f), true,
+                        new AttachSocket( AttachmentType.STOCK,
+                            new Vector2f(-23f, 4f), true,
                             [
-                                typeof(FN_FAL_Barrel_533mm),
+                                typeof(FN_FAL_Polymer_Stock),
                             ],
-                            new FN_FAL_Barrel_533mm()
+                            new FN_FAL_Polymer_Stock()
                         ),
                         new AttachSocket( AttachmentType.TOP_RECIEVER,
-                            new Vector2f(58f, -1f), true,
+                            new Vector2f(6f, -1f), false,
                             [
-                                typeof(FN_FAL_Barrel_533mm),
+                                typeof(FN_FAL_DuskCover_Basic),
                             ],
-                            new FN_FAL_Barrel_533mm()
+                            new FN_FAL_DuskCover_Basic()
                         ),
                         new AttachSocket( AttachmentType.PISTOL_GRIP,
-                            new Vector2f(58f, -1f), true,
+                            new Vector2f(-4.5f, +7.5f), true,
                             [
-                                typeof(FN_FAL_Barrel_533mm),
+                                typeof(FN_FAL_PistolGrip_ArBased),
                             ],
-                            new FN_FAL_Barrel_533mm()
-                        ),
-                        new AttachSocket( AttachmentType.TOP_RECIEVER,
-                            new Vector2f(58f, -1f), true,
-                            [
-                                typeof(FN_FAL_Barrel_533mm),
-                            ],
-                            new FN_FAL_Barrel_533mm()
+                            new FN_FAL_PistolGrip_ArBased()
                         ),
                     },
                 },
@@ -162,8 +155,6 @@ namespace _231109_SFML_Test
             InitHandableParts(new Vector2i(200, 100),
             [
                 ResourceManager.textures["FN_FAL_chargingHandle"],
-                ResourceManager.textures["FN_FAL_stock_basic"],
-                ResourceManager.textures["FN_FAL_pistolGrip_basic"],
                 ResourceManager.textures["FN_FAL_body"],
                 ResourceManager.textures["FN_FAL_bolt"],
 
@@ -296,7 +287,7 @@ namespace _231109_SFML_Test
             //부착물 슬롯들
             attachments = new List<AttachSocket>
             {
-                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(46f, 00f),
+                new AttachSocket(AttachmentType.MUZZLE, new Vector2f(26f, 00f),
                     false,
                     new List<Type>()
                     {
@@ -482,9 +473,9 @@ namespace _231109_SFML_Test
                 //아이템 이름
                 "FN FAL 먼지덮게",
                 //스프라이트 이름
-                "Undefined",
+                "FN_FAL_dustCover_basic",
                 //설명
-                "",
+                "FN FAL의 기본 먼지 덮개입니다. 이물질이 유입되는 것을 방지하고 작동중인 노리쇠가 사용자를 치는 것을 방지해줍니다.",
                 //무게
                 0.060f,
                 //아이템 크기

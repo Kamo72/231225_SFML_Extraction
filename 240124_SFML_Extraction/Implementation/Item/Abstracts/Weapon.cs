@@ -23,7 +23,7 @@ namespace _231109_SFML_Test
         {
             //기존 스텟 가져오기
             this.weaponCode = weaponCode;
-            status = statusOrigin;
+            //status = statusOrigin;
             selectorNow = status.typeDt.selectorList[1];
             this.attachments = status.attachDt.CopyList();
             chambers = new List<Ammo>(status.detailDt.chamberSize);
@@ -236,7 +236,36 @@ namespace _231109_SFML_Test
 
         //스테이터스
         public WeaponStatus statusOrigin { get { return WeaponLibrary.Get(weaponCode); } }
-        public WeaponStatus status;
+
+        public WeaponStatus status
+        {
+            get
+            {
+                WeaponStatus retStat = statusOrigin;
+
+                foreach (AttachSocket socket in attachments)
+                    if (socket.attachment != null)
+                        if (socket.attachment is Attachment tAttachment)
+                            retStat = GetAttachmentAdjustedStatus(retStat, tAttachment);
+
+                return retStat;
+            }
+        }
+        WeaponStatus GetAttachmentAdjustedStatus(WeaponStatus oriStat, Attachment attachment)
+        {
+            WeaponStatus retStat = oriStat;
+
+            foreach (WeaponAdjust adjust in attachment.weaponAdjusts)
+                retStat = adjust.adjustFun(retStat);
+
+            if (attachment is IAttachable iattachable)
+                foreach (AttachSocket socket in iattachable.attachments)
+                    if (socket.attachment != null)
+                        if (socket.attachment is Attachment tAttachment)
+                            retStat = GetAttachmentAdjustedStatus(retStat, tAttachment);
+
+            return retStat;
+        }
         string weaponCode;
 
         //size 재정의
@@ -473,7 +502,7 @@ namespace _231109_SFML_Test
         public (Vector2f backwardVec, Vector2f lockVec) boltVec;
         public (float backwardValue, float lockValue) boltValue = (0f, 0f);
 
-        public List<AttachSocket> attachments { get; set; }
+        public List<AttachSocket> attachments { get; set; } = new List<AttachSocket> ();
 
         public bool IsValidAttachments(IAttachable iatc)
         {

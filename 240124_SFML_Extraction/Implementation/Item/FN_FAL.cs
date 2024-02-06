@@ -48,10 +48,10 @@ namespace _231109_SFML_Test
                 },
                 timeDt = new WeaponStatus.TimeData()
                 {
-                    adsTime = 0.200f,
+                    adsTime = 0.340f,
                     reloadTime = (2.250f, 2.600f, 2.400f),
                     sprintTime = 0.220f,
-                    swapTime = 0.250f,
+                    swapTime = 0.860f,
                 },
                 aimDt = new WeaponStatus.AimData()
                 {
@@ -59,33 +59,33 @@ namespace _231109_SFML_Test
                     {
                         stance = new WeaponStatus.AimData.HipData.HipStancelData()
                         {
-                            recovery = 6.50f,
-                            accuracy = 90.00f,
+                            recovery = 4.50f,
+                            accuracy = 220.00f,
                             accuracyAdjust = (crounch: 0.62f, walk: 1.95f),
                         },
                         recoil = new WeaponStatus.AimData.HipData.HipRecoilData()
                         {
-                            recovery = 12.00f,
+                            recovery = 4.00f,
                             recoveryAdjust = (crounch: 1.74f, walk: 0.70f),
-                            strength = 80.00f,
+                            strength = 194.00f,
                         },
-                        traggingSpeed = 10.00f,
+                        traggingSpeed = 12.00f,
                     },
                     ads = new WeaponStatus.AimData.AdsData()
                     {
                         stance = new WeaponStatus.AimData.AdsData.AdsStancelData()
                         {
-                            accuracy = 40.00f,
+                            accuracy = 95.00f,
                             accuracyAdjust = (crounch: 0.45f, walk: 1.67f),
                         },
                         recoil = new WeaponStatus.AimData.AdsData.AdsRecoilData()
                         {
-                            fix = new Vector2f(21.0f, -75.0f),
-                            random = new Vector2f(65.5f, 55.0f),
-                            recovery = 28.50f,
+                            fix = new Vector2f(27.0f, -112.0f),
+                            random = new Vector2f(91.5f, 102.0f),
+                            recovery = 8.50f,
                             strengthAdjust = (crounch: 0.48f, walk: 1.22f),
                         },
-                        moa = 3.5f,
+                        moa = 4.5f,
                         adsName = adsName,
                     },
                 },

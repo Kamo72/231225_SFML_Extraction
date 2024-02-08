@@ -67,7 +67,6 @@ namespace _231109_SFML_Test
 
             Type type = gmEnumToType[this.gamemode];
 
-
             gmNow = TryCreateInstance(type) as Gamemode;
         }
 

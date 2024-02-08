@@ -260,6 +260,30 @@ namespace _231109_SFML_Test
 
         public Item()
         {
+            if (Program.tm != null)
+                if (Program.tm.gmNow != null)
+                    if (Program.tm.gmNow is GamemodeIngame gm)
+                    {
+                        gm.items.Add(this);
+                        return;
+                    }
+
+            Thread thread = new Thread(new ThreadStart(() =>
+            {
+                while (true)
+                {
+                    if (Program.tm != null)
+                        if (Program.tm.gmNow != null)
+                            if (Program.tm.gmNow is GamemodeIngame gm)
+                            {
+                                gm.items.Add(this);
+                                break;
+                            }
+
+                    Thread.Sleep(100);
+                }
+            }));
+            thread.Start();
         }
 
         public virtual void SetupBasicData(string name, string spriteName, string description, float mass, Vector2i size, Rarerity rare, float value) 
@@ -276,6 +300,8 @@ namespace _231109_SFML_Test
         {
             droppedItem = new DroppedItem(Program.tm.gmNow, pos, this);
         }
+        
+        public Vector2i itemTexSize => (Vector2i)ResourceManager.textures[spriteName].Size;
 
         //스토리지에 저장.
         public bool Store(Storage storage)
@@ -301,6 +327,9 @@ namespace _231109_SFML_Test
         public virtual void Dispose()
         {
             droppedItem?.Dispose();
+
+            if (Program.tm.gmNow is GamemodeIngame gm)
+                gm.items.Remove(this);
 
             //onStorage에서 제거
             if (onStorage != null)

@@ -19,11 +19,14 @@ namespace _231109_SFML_Test
             lock (ingm.entitys)
                 ingm.entitys.Add(this);
 
-            Texture drawTexture = ResourceManager.textures[item.spriteName];
             drawShape = new RectangleShape(new Vector2f(100f, 100f));
-            drawShape.Origin = drawShape.Size / 2f;
-            drawShape.Texture = drawTexture;
-
+            if (item is IHandable ihand) { }
+            else
+            {
+                Texture drawTexture = ResourceManager.textures[item.spriteName];
+                drawShape.Origin = drawShape.Size / 2f;
+                drawShape.Texture = drawTexture;
+            }
 
 
             InitHighlight();
@@ -112,14 +115,22 @@ namespace _231109_SFML_Test
             if(isDisposed) return;
             try
             {
-                //드로우 위치
-                drawShape.Position = Position;
-
                 //하이라이트 그리기
                 DrawHighlight();
 
-                //드로우
-                DrawManager.texWrLower.Draw(drawShape, CameraManager.worldRenderState);
+                if (item is IHandable ihand)
+                {
+                    ihand.DrawHandable(DrawManager.texWrLower, Position, 0f, new Vector2f(1f, 1f), CameraManager.worldRenderState);
+                }
+                else
+                {
+                    //드로우 위치
+                    drawShape.Position = Position;
+
+                    //드로우
+                    DrawManager.texWrLower.Draw(drawShape, CameraManager.worldRenderState);
+                }
+
             }
             catch (System.AccessViolationException ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
         }

@@ -62,6 +62,7 @@ namespace _231109_SFML_Test
                     spawner.Dispose();
                     return;
                 }
+                new FN_FAL().DroppedItem(new Vector2f(random.Next(-100, 100), random.Next(-100, 100)));
 
                 //드랍 아이템 테스트
                 new Oddment().DroppedItem(new Vector2f(random.Next(-100, 100), random.Next(-100, 100)));

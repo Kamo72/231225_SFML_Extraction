@@ -151,7 +151,7 @@ namespace _231109_SFML_Test
                 "FN FAL",
                 "Undefined",
                 "7.62x51mm NATO탄을 사용하는 벨기에제 지정사수 소총입니다. 튼튼하고 다루기 쉬운데도 불구하고 강력한 전자동 사격 기능을 가지고 있습니다.",
-                3.5f, new Vector2i(4, 2), Rarerity.COMMON, 20000f);
+                3.5f, new Vector2i(1, 1), Rarerity.COMMON, 20000f);
             InitHandableParts(new Vector2i(200, 100),
             [
                 ResourceManager.textures["FN_FAL_chargingHandle"],
@@ -282,7 +282,7 @@ namespace _231109_SFML_Test
                 //가격
                 3700f
                 );
-            sizeAdjust = (0, 0, 0, 3);
+            sizeAdjust = (0, 0, 0, 2);
 
             //부착물 슬롯들
             attachments = new List<AttachSocket>

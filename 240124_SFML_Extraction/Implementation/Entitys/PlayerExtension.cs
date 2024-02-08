@@ -144,7 +144,6 @@ namespace _231109_SFML_Test
 
             public PlayerCrosshairDrawer(Player master) : base(master)
             {
-
                 staticDot = new CircleShape(4f);
                 staticDot.FillColor = new Color(255, 255, 255, 255);
                 staticDot.Origin = new Vector2f(staticDot.Radius, staticDot.Radius);
@@ -201,7 +200,7 @@ namespace _231109_SFML_Test
 
         class PlayerAdsDrawer : PlayerUiDrawer
         {
-            static RectangleShape drawable;
+            public RectangleShape drawable;
             public AdsData sightAds;
             public AdsData weaponAds;
             public Weapon weapon;
@@ -228,7 +227,6 @@ namespace _231109_SFML_Test
                         
                     }
 
-
                     if (this.weapon != null)
                     {
                         //값가져오기
@@ -250,8 +248,6 @@ namespace _231109_SFML_Test
                         //드로우
                         DrawAds(DrawManager.texWrAugment, weaponAds, posTo, posFrom, adsAlpha, size + (float)Math.Pow(1f - adsAlpha, 1.5f));
                     }
-
-
 
                 }
                 catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }

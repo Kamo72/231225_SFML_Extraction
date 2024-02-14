@@ -581,11 +581,24 @@ namespace _231109_SFML_Test
                     Dm.texUiPopup.Draw(itemShape);
                     //희귀도에 따른 배경색
 
-                    itemShape.Texture = Rm.textures[sNode.item.spriteName];
-                    itemShape.FillColor = new Color(255, 255, 255, (byte)(sNode.Equals(onDrag)? 63 : 255));
+                    if (sNode.item is IHandable ihand)
+                    {
+                        ihand.DrawHandable(Dm.texUiPopup,
+                            itemShape.Position +
+                            new Vector2f(
+                                sNode.isRotated ? sNode.item.size.Y : sNode.item.size.X / 1.5f,
+                                sNode.isRotated ? -sNode.item.size.X / 1.5f : sNode.item.size.Y
+                                ) * slotWidth / 2f,
+                            itemShape.Rotation, new Vector2f(1f, 1f) * 3f, RenderStates.Default);
+                    }
+                    else
+                    {
+                        itemShape.Texture = Rm.textures[sNode.item.spriteName];
+                        itemShape.FillColor = new Color(255, 255, 255, (byte)(sNode.Equals(onDrag) ? 63 : 255));
 
-                    Dm.texUiPopup.Draw(itemShape);
-                    //아이템 그림 드로우
+                        Dm.texUiPopup.Draw(itemShape);
+                        //아이템 그림 드로우
+                    }
                 }
 
             }
